@@ -21,9 +21,19 @@ func FillSettings() {
 	Settings = SettingsINI{}
 	Settings.TELEGRAM_CHAT_NAME = os.Getenv("TELEGRAM_CHAT_NAME")
 	Settings.LOKI_URL = os.Getenv("LOKI_URL")
+	Settings.LOKI_LOGIN = os.Getenv("LOKI_LOGIN")
+	Settings.LOKI_PASSWORD = os.Getenv("LOKI_PASSWORD")
 
 	if Settings.TELEGRAM_CHAT_NAME == "" {
 		log.Panic("Error: Need fill TELEGRAM_CHAT_NAME")
+	}
+
+	if Settings.LOKI_URL == "" {
+		log.Panic("Error: Need fill LOKI_URL")
+	}
+
+	if Settings.LOKI_PASSWORD == "" {
+		log.Panic("Error: Need fill LOKI_PASSWORD")
 	}
 
 	if Settings.LOKI_URL == "" {
