@@ -14,15 +14,35 @@ import (
 
 var Client = &http.Client{}
 
+func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) string {
+	Otvet := ""
+
+	limit := "1000"
+	query := "%7Bapp%3D%22" + ServiceName + "%22%7D"
+	if Filter != "" {
+		query = query + "%7C~%22(" + Filter + ")%22"
+		limit = "10"
+	}
+
+	sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
+	sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
+	Otvet = config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=" + limit + "&query=" + query
+	Otvet += "&start=" + sTime1 + "&end=" + sTime2
+
+	return Otvet
+}
+
 func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message, error) {
 	Otvet := types.Message{}
 	var err error
 
-	query := "%7Bapp%3D%22" + ServiceName + "%22%7D%7C~%22(error%7Cpanic)%22"
-	sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
-	sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
-	URL := config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=10&query=" + query
-	URL += "&start=" + sTime1 + "&end=" + sTime2
+	Filter := "error:%7Cpanic:%7CERROR:%7CPANIC:"
+	URL := QueryApp(ServiceName, DateFrom, DateTo, Filter)
+	//query := "%7Bapp%3D%22" + ServiceName + "%22%7D%7C~%22(error:%7Cpanic:%7CERROR:%7CPANIC:)%22"
+	//sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
+	//sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
+	//URL := config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=10&query=" + query
+	//URL += "&start=" + sTime1 + "&end=" + sTime2
 
 	//URL = "http://logmon.dev.atomsbt.ru/api/datasources" //удалить
 
@@ -32,7 +52,7 @@ func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message
 		return Otvet, fmt.Errorf("request(), ошибка создания GET запроса, err=%w", err)
 	}
 
-	req.SetBasicAuth(config.Settings.LOKI_LOGIN, config.Settings.LOKI_PASSWORD)
+	req.SetBasicAuth(config.Settings.GRAFANA_LOGIN, config.Settings.GRAFANA_PASSWORD)
 	//req.Header.Add("Content-Type:", "application/json")
 
 	//client := &http.Client{}
@@ -74,7 +94,7 @@ func Authentication() error {
 		log.Fatal(err)
 	}
 
-	req.SetBasicAuth(config.Settings.LOKI_LOGIN, config.Settings.LOKI_PASSWORD)
+	req.SetBasicAuth(config.Settings.GRAFANA_LOGIN, config.Settings.GRAFANA_PASSWORD)
 
 	res, err := Client.Do(req)
 	if err != nil {

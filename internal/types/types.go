@@ -67,3 +67,6 @@ type Message struct {
 		} `json:"stats"`
 	} `json:"data"`
 }
+
+// MapServiceDeveloper - карта Имя сервиса - telegram логин программиста
+var MapServiceDeveloper = make(map[string]string)

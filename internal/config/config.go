@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 )
 
 // Settings хранит все нужные переменные окружения
@@ -10,19 +11,26 @@ var Settings SettingsINI
 
 // SettingsINI - структура для хранения всех нужных переменных окружения
 type SettingsINI struct {
-	LOKI_URL           string
-	TELEGRAM_CHAT_NAME string
-	LOKI_LOGIN         string
-	LOKI_PASSWORD      string
+	LOKI_URL              string
+	TELEGRAM_CHAT_NAME    string
+	GRAFANA_LOGIN         string
+	GRAFANA_PASSWORD      string
+	INTERVAL_SEND_MINUTES int
 }
 
 // FillSettings загружает переменные окружения в структуру из переменных окружения
 func FillSettings() {
+	var err error
+
 	Settings = SettingsINI{}
 	Settings.TELEGRAM_CHAT_NAME = os.Getenv("TELEGRAM_CHAT_NAME")
 	Settings.LOKI_URL = os.Getenv("LOKI_URL")
-	Settings.LOKI_LOGIN = os.Getenv("LOKI_LOGIN")
-	Settings.LOKI_PASSWORD = os.Getenv("LOKI_PASSWORD")
+	Settings.GRAFANA_LOGIN = os.Getenv("GRAFANA_LOGIN")
+	Settings.GRAFANA_PASSWORD = os.Getenv("GRAFANA_PASSWORD")
+	Settings.INTERVAL_SEND_MINUTES, err = strconv.Atoi(os.Getenv("INTERVAL_SEND_MINUTES"))
+	if err != nil {
+		Settings.INTERVAL_SEND_MINUTES = 10
+	}
 
 	if Settings.TELEGRAM_CHAT_NAME == "" {
 		log.Panic("Error: Need fill TELEGRAM_CHAT_NAME")
@@ -32,12 +40,12 @@ func FillSettings() {
 		log.Panic("Error: Need fill LOKI_URL")
 	}
 
-	if Settings.LOKI_PASSWORD == "" {
-		log.Panic("Error: Need fill LOKI_PASSWORD")
+	if Settings.GRAFANA_LOGIN == "" {
+		log.Panic("Error: Need fill GRAFANA_LOGIN")
 	}
 
-	if Settings.LOKI_URL == "" {
-		log.Panic("Error: Need fill LOKI_URL")
+	if Settings.GRAFANA_PASSWORD == "" {
+		log.Panic("Error: Need fill GRAFANA_PASSWORD")
 	}
 
 	//

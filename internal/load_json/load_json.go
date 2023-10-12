@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/micro"
-	"github.com/ManyakRus/telegram_loki/internal/logic"
+	"github.com/ManyakRus/telegram_loki/internal/types"
 	"os"
 )
 
@@ -16,12 +16,15 @@ func LoadJSON() {
 	log.Info("app directory: ", dir)
 
 	//главный файл
-	FileName := dir + "settings" + micro.SeparatorFile() + "connections.txt"
+	FileName := dir + "settings" + micro.SeparatorFile() + "services.txt"
 	err = LoadJSON_from_file(FileName)
 
 	//дополнительный файл, необязательный
-	FileName = dir + "settings" + micro.SeparatorFile() + "connections_add.txt"
-	err = LoadJSON_from_file(FileName)
+	FileName = dir + "settings" + micro.SeparatorFile() + "services_add.txt"
+	ok, err := micro.FileExists(FileName)
+	if ok == true {
+		err = LoadJSON_from_file(FileName)
+	}
 
 	if err != nil {
 
@@ -47,7 +50,7 @@ func LoadJSON_from_file(FileName string) error {
 
 	//заполнение главного map
 	for k, v := range MapServiceURL2 {
-		logic.MapServiceURL[k] = v
+		types.MapServiceDeveloper[k] = v
 	}
 
 	return err
