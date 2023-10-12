@@ -1,4 +1,0 @@
-{
-  "casebook-service": "@ManyakRus",
-  "sync-service": "@ManyakRus"
-}
