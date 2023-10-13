@@ -28,7 +28,7 @@ func Start() {
 	Date1 := carbon.Time2Carbon(Date2).AddMinutes(-1 * config.Settings.INTERVAL_SEND_MINUTES).Carbon2Time()
 	Start_period(Date1, Date2)
 
-	Ticker = time.NewTicker(500 * time.Millisecond)
+	Ticker = time.NewTicker(time.Duration(config.Settings.INTERVAL_SEND_MINUTES) * time.Minute)
 	defer Ticker.Stop()
 
 	ReadTicker()
