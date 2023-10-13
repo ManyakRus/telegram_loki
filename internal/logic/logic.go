@@ -31,7 +31,7 @@ func Start() {
 	Ticker = time.NewTicker(500 * time.Millisecond)
 	defer Ticker.Stop()
 
-	go ReadTicker()
+	ReadTicker()
 }
 
 // ReadTicker - запускается каждые INTERVAL_SEND_MINUTES минут
@@ -50,6 +50,7 @@ func ReadTicker() {
 
 // Start_period - запускает чтение логов всех сервисов за период
 func Start_period(Date1, Date2 time.Time) {
+	log.Debug("Start search errors from: ", Date1, " to: ", Date2)
 	for ServiceName, DeveloperName := range types.MapServiceDeveloper {
 		select {
 		case <-contextmain.GetContext().Done():

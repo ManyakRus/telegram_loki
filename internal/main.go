@@ -5,6 +5,7 @@ import (
 	"github.com/ManyakRus/starter/stopapp"
 	"github.com/ManyakRus/starter/telegram_client"
 	"github.com/ManyakRus/telegram_loki/internal/config"
+	"github.com/ManyakRus/telegram_loki/internal/logic"
 )
 
 func main() {
@@ -19,6 +20,8 @@ func StartApp() {
 
 	telegram_client.CreateTelegramClient(nil)
 	telegram_client.ConnectTelegram()
+
+	logic.Start()
 
 	stopapp.GetWaitGroup_Main().Wait()
 }
