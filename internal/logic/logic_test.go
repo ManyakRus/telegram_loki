@@ -32,3 +32,18 @@ func TestTime(t *testing.T) {
 	//TextDate := fmt.Sprintf(constants.Layout, time.Now())
 	print(TextDate)
 }
+
+func TestSendMessage(t *testing.T) {
+	ConfigMain.LoadEnv()
+	config.FillSettings()
+
+	telegram_client.CreateTelegramClient(nil)
+	telegram_client.ConnectTelegram()
+
+	TELEGRAM_CHAT_NAME := "t.me/rapira_errors"
+	_, err := telegram_client.SendMessage(TELEGRAM_CHAT_NAME, "test "+time.Now().String())
+	if err != nil {
+		t.Error("TestSendMessage() error: ", err)
+	}
+
+}

@@ -16,15 +16,39 @@ import (
 
 //var MassTable []types.Table
 
+var LastReadTime time.Time
+
+var Ticker *time.Ticker
+
+// Start - старт работы логики программы
 func Start() {
 	load_json.LoadJSON()
 
 	Date2 := time.Now()
-	Date1 := carbon.Time2Carbon(Date2).AddDays(-2).Carbon2Time()
+	Date1 := carbon.Time2Carbon(Date2).AddMinutes(-1 * config.Settings.INTERVAL_SEND_MINUTES).Carbon2Time()
 	Start_period(Date1, Date2)
 
+	Ticker = time.NewTicker(500 * time.Millisecond)
+	defer Ticker.Stop()
+
+	go ReadTicker()
 }
 
+// ReadTicker - запускается каждые INTERVAL_SEND_MINUTES минут
+func ReadTicker() {
+	for {
+		select {
+		case <-contextmain.GetContext().Done():
+			return
+		case <-Ticker.C:
+			Date2 := time.Now()
+			Date1 := LastReadTime
+			Start_period(Date1, Date2)
+		}
+	}
+}
+
+// Start_period - запускает чтение логов всех сервисов за период
 func Start_period(Date1, Date2 time.Time) {
 	for ServiceName, DeveloperName := range types.MapServiceDeveloper {
 		select {
@@ -35,9 +59,10 @@ func Start_period(Date1, Date2 time.Time) {
 		}
 
 	}
-
+	LastReadTime = Date2
 }
 
+// Start_period1 - запускает чтение логов одного сервиса за период
 func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time) {
 	var err error
 
@@ -92,6 +117,7 @@ func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time
 
 }
 
+// FindURLLoki - находит URL ссылку в LOKI на которую можно кликнуть в телеграмме
 func FindURLLoki(ServiceName string, DateFrom, DateTo time.Time) string {
 	sTimeFrom := strconv.FormatInt(DateFrom.UnixMilli(), 10)
 	sTimeTo := strconv.FormatInt(DateTo.UnixMilli(), 10)
