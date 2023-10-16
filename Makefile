@@ -23,8 +23,8 @@ build:
 	go build -race -o $(FILEAPP) $(FILEMAIN)
 	cd ./cmd && \
 	./VersionToFile.py
-	cp ./settings/services.txt $(GOPATH)/bin/settings/services.txt
-	cp ./settings/services_add.txt $(GOPATH)/bin/settings/services_add.txt
+	cp ./settings/services.txt ./bin/settings/services.txt
+	cp ./settings/services_add.txt ./bin/settings/services_add.txt
 
 lint:
 	clear
