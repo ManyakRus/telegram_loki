@@ -3,6 +3,7 @@ package logic
 import (
 	"github.com/ManyakRus/starter/contextmain"
 	"github.com/ManyakRus/starter/log"
+	"github.com/ManyakRus/starter/micro"
 	"github.com/ManyakRus/starter/telegram_client"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/constants"
@@ -57,6 +58,7 @@ func Start_period(Date1, Date2 time.Time) {
 			log.Warn("Context app is canceled. Start()")
 		default:
 			Start_period1(ServiceName, DeveloperName, Date1, Date2)
+			micro.Pause(100) //error: 429 Too Many Requests
 		}
 
 	}
