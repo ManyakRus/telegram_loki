@@ -17,16 +17,16 @@ var Client = &http.Client{}
 func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) string {
 	Otvet := ""
 
-	limit := "1000"
+	slimit := "1000"
 	query := "%7Bapp%3D%22" + ServiceName + "%22%7D"
 	if Filter != "" {
 		query = query + "%7C~%22(" + Filter + ")%22"
-		limit = "10"
+		slimit = strconv.Itoa(config.Settings.TELEGRAM_MESSAGES_COUNT)
 	}
 
 	sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
 	sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
-	Otvet = config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=" + limit + "&query=" + query
+	Otvet = config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=" + slimit + "&query=" + query
 	Otvet += "&start=" + sTime1 + "&end=" + sTime2
 
 	return Otvet
