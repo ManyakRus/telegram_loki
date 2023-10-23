@@ -2,12 +2,14 @@ package loki
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -20,7 +22,8 @@ func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) str
 	slimit := "1000"
 	query := "%7Bapp%3D%22" + ServiceName + "%22%7D"
 	if Filter != "" {
-		query = query + "%7C~%22(" + Filter + ")%22"
+		FilterURL := url.QueryEscape(Filter)
+		query = query + "%7C~%22(" + FilterURL + ")%22"
 		slimit = strconv.Itoa(config.Settings.TELEGRAM_MESSAGES_COUNT)
 	}
 
@@ -36,7 +39,7 @@ func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message
 	Otvet := types.Message{}
 	var err error
 
-	Filter := "error:%7Cpanic:%7CERROR:%7CPANIC:"
+	Filter := config.Settings.LOKI_SEARCH_TEXT
 	URL := QueryApp(ServiceName, DateFrom, DateTo, Filter)
 	//query := "%7Bapp%3D%22" + ServiceName + "%22%7D%7C~%22(error:%7Cpanic:%7CERROR:%7CPANIC:)%22"
 	//sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
@@ -65,7 +68,9 @@ func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message
 	case 200:
 	default:
 		{
-			log.Error("http request error: ", response.Status)
+			TextError := fmt.Sprint("http request error: ", response.Status)
+			err = errors.New(TextError)
+			log.Error(TextError)
 			return Otvet, err
 		}
 	}

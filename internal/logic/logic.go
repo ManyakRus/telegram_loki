@@ -66,12 +66,14 @@ func Start_period(Date1, Date2 time.Time) {
 }
 
 // Start_period1 - запускает чтение логов одного сервиса за период
-func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time) {
+func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time) error {
 	var err error
 
 	LokiMessage, err := loki.DownloadJSON(ServiceName, DateFrom, DateTo)
 	if err != nil {
-		log.Error("TestDownloadJSON() error: ", err)
+		log.Error("DownloadJSON() error: ", err)
+		micro.Pause(1000)
+		return err
 	}
 
 	for _, Result1 := range LokiMessage.Data.Result {
@@ -118,6 +120,7 @@ func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time
 		}
 	}
 
+	return err
 }
 
 // FindURLLoki - находит URL ссылку в LOKI на которую можно кликнуть в телеграмме

@@ -11,12 +11,13 @@ var Settings SettingsINI
 
 // SettingsINI - структура для хранения всех нужных переменных окружения
 type SettingsINI struct {
-	LOKI_URL                string
-	TELEGRAM_CHAT_NAME      string
 	GRAFANA_LOGIN           string
 	GRAFANA_PASSWORD        string
-	INTERVAL_SEND_MINUTES   int
+	LOKI_URL                string
+	LOKI_SEARCH_TEXT        string
+	TELEGRAM_CHAT_NAME      string
 	TELEGRAM_MESSAGES_COUNT int
+	INTERVAL_SEND_MINUTES   int
 }
 
 // FillSettings загружает переменные окружения в структуру из переменных окружения
@@ -35,6 +36,11 @@ func FillSettings() {
 	Settings.TELEGRAM_MESSAGES_COUNT, err = strconv.Atoi(os.Getenv("TELEGRAM_MESSAGES_COUNT"))
 	if err != nil || Settings.TELEGRAM_MESSAGES_COUNT == 0 {
 		Settings.TELEGRAM_MESSAGES_COUNT = 1
+	}
+	Settings.LOKI_SEARCH_TEXT = os.Getenv("LOKI_SEARCH_TEXT")
+	if Settings.LOKI_SEARCH_TEXT == "" {
+		Settings.LOKI_SEARCH_TEXT = "error:|panic:|ERROR:|PANIC:"
+		//Settings.LOKI_SEARCH_TEXT = "error:%7Cpanic:%7CERROR:%7CPANIC:"
 	}
 
 	if Settings.TELEGRAM_CHAT_NAME == "" {
