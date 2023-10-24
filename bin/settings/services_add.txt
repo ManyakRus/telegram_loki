@@ -1,5 +1,5 @@
 {
-  "admin-service": "@t_bondarenko140",
+  "admin-service": "@rexMonstra",
   "billing-status-service": "@ivanov_i_i",
   "calendar-service": "@AliceDwarf",
   "claim-service": "@t_bondarenko140",

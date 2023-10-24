@@ -11,7 +11,7 @@ import (
 // LoadJSON - загружает 2 файла в формате .json в map
 func LoadJSON() {
 	var err error
-	dir := micro.ProgramDir()
+	dir := micro.ProgramDir_bin()
 
 	log.Info("app directory: ", dir)
 
