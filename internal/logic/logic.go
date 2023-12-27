@@ -26,7 +26,7 @@ func Start() {
 	load_json.LoadJSON()
 
 	Date2 := time.Now()
-	Date1 := carbon.Time2Carbon(Date2).AddMinutes(-1 * config.Settings.INTERVAL_SEND_MINUTES).Carbon2Time()
+	Date1 := carbon.CreateFromStdTime(Date2).AddMinutes(-1 * config.Settings.INTERVAL_SEND_MINUTES).ToStdTime()
 	Start_period(Date1, Date2)
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.INTERVAL_SEND_MINUTES) * time.Minute)
