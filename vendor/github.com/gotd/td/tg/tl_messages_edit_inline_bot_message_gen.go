@@ -43,6 +43,9 @@ type MessagesEditInlineBotMessageRequest struct {
 	Flags bin.Fields
 	// Disable webpage preview
 	NoWebpage bool
+	// If set, any eventual webpage preview will be shown on top of the message instead of at
+	// the bottom.
+	InvertMedia bool
 	// Sent inline message ID
 	ID InputBotInlineMessageIDClass
 	// Message
@@ -87,6 +90,9 @@ func (e *MessagesEditInlineBotMessageRequest) Zero() bool {
 	if !(e.NoWebpage == false) {
 		return false
 	}
+	if !(e.InvertMedia == false) {
+		return false
+	}
 	if !(e.ID == nil) {
 		return false
 	}
@@ -118,6 +124,7 @@ func (e *MessagesEditInlineBotMessageRequest) String() string {
 // FillFrom fills MessagesEditInlineBotMessageRequest from given interface.
 func (e *MessagesEditInlineBotMessageRequest) FillFrom(from interface {
 	GetNoWebpage() (value bool)
+	GetInvertMedia() (value bool)
 	GetID() (value InputBotInlineMessageIDClass)
 	GetMessage() (value string, ok bool)
 	GetMedia() (value InputMediaClass, ok bool)
@@ -125,6 +132,7 @@ func (e *MessagesEditInlineBotMessageRequest) FillFrom(from interface {
 	GetEntities() (value []MessageEntityClass, ok bool)
 }) {
 	e.NoWebpage = from.GetNoWebpage()
+	e.InvertMedia = from.GetInvertMedia()
 	e.ID = from.GetID()
 	if val, ok := from.GetMessage(); ok {
 		e.Message = val
@@ -173,6 +181,11 @@ func (e *MessagesEditInlineBotMessageRequest) TypeInfo() tdp.Type {
 			Null:       !e.Flags.Has(1),
 		},
 		{
+			Name:       "InvertMedia",
+			SchemaName: "invert_media",
+			Null:       !e.Flags.Has(16),
+		},
+		{
 			Name:       "ID",
 			SchemaName: "id",
 		},
@@ -204,6 +217,9 @@ func (e *MessagesEditInlineBotMessageRequest) TypeInfo() tdp.Type {
 func (e *MessagesEditInlineBotMessageRequest) SetFlags() {
 	if !(e.NoWebpage == false) {
 		e.Flags.Set(1)
+	}
+	if !(e.InvertMedia == false) {
+		e.Flags.Set(16)
 	}
 	if !(e.Message == "") {
 		e.Flags.Set(11)
@@ -298,6 +314,7 @@ func (e *MessagesEditInlineBotMessageRequest) DecodeBare(b *bin.Buffer) error {
 		}
 	}
 	e.NoWebpage = e.Flags.Has(1)
+	e.InvertMedia = e.Flags.Has(16)
 	{
 		value, err := DecodeInputBotInlineMessageID(b)
 		if err != nil {
@@ -363,6 +380,25 @@ func (e *MessagesEditInlineBotMessageRequest) GetNoWebpage() (value bool) {
 		return
 	}
 	return e.Flags.Has(1)
+}
+
+// SetInvertMedia sets value of InvertMedia conditional field.
+func (e *MessagesEditInlineBotMessageRequest) SetInvertMedia(value bool) {
+	if value {
+		e.Flags.Set(16)
+		e.InvertMedia = true
+	} else {
+		e.Flags.Unset(16)
+		e.InvertMedia = false
+	}
+}
+
+// GetInvertMedia returns value of InvertMedia conditional field.
+func (e *MessagesEditInlineBotMessageRequest) GetInvertMedia() (value bool) {
+	if e == nil {
+		return
+	}
+	return e.Flags.Has(16)
 }
 
 // GetID returns value of ID field.

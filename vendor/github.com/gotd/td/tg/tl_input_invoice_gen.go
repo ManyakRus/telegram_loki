@@ -341,6 +341,191 @@ func (i *InputInvoiceSlug) GetSlug() (value string) {
 	return i.Slug
 }
 
+// InputInvoicePremiumGiftCode represents TL type `inputInvoicePremiumGiftCode#98986c0d`.
+// Used if the user wishes to start a channel giveaway¹ or send some giftcodes² to
+// members of a channel, in exchange for boosts³.
+//
+// Links:
+//  1. https://core.telegram.org/api/giveaways
+//  2. https://core.telegram.org/api/giveaways
+//  3. https://core.telegram.org/api/boost
+//
+// See https://core.telegram.org/constructor/inputInvoicePremiumGiftCode for reference.
+type InputInvoicePremiumGiftCode struct {
+	// Should be populated with inputStorePaymentPremiumGiveaway¹ for giveaways² and
+	// inputStorePaymentPremiumGiftCode³ for gifts⁴.
+	//
+	// Links:
+	//  1) https://core.telegram.org/constructor/inputStorePaymentPremiumGiveaway
+	//  2) https://core.telegram.org/api/giveaways
+	//  3) https://core.telegram.org/constructor/inputStorePaymentPremiumGiftCode
+	//  4) https://core.telegram.org/api/giveaways
+	Purpose InputStorePaymentPurposeClass
+	// Should be populated with one of the giveaway options returned by payments
+	// getPremiumGiftCodeOptions¹, see the giveaways »² documentation for more info.
+	//
+	// Links:
+	//  1) https://core.telegram.org/method/payments.getPremiumGiftCodeOptions
+	//  2) https://core.telegram.org/api/giveaways
+	Option PremiumGiftCodeOption
+}
+
+// InputInvoicePremiumGiftCodeTypeID is TL type id of InputInvoicePremiumGiftCode.
+const InputInvoicePremiumGiftCodeTypeID = 0x98986c0d
+
+// construct implements constructor of InputInvoiceClass.
+func (i InputInvoicePremiumGiftCode) construct() InputInvoiceClass { return &i }
+
+// Ensuring interfaces in compile-time for InputInvoicePremiumGiftCode.
+var (
+	_ bin.Encoder     = &InputInvoicePremiumGiftCode{}
+	_ bin.Decoder     = &InputInvoicePremiumGiftCode{}
+	_ bin.BareEncoder = &InputInvoicePremiumGiftCode{}
+	_ bin.BareDecoder = &InputInvoicePremiumGiftCode{}
+
+	_ InputInvoiceClass = &InputInvoicePremiumGiftCode{}
+)
+
+func (i *InputInvoicePremiumGiftCode) Zero() bool {
+	if i == nil {
+		return true
+	}
+	if !(i.Purpose == nil) {
+		return false
+	}
+	if !(i.Option.Zero()) {
+		return false
+	}
+
+	return true
+}
+
+// String implements fmt.Stringer.
+func (i *InputInvoicePremiumGiftCode) String() string {
+	if i == nil {
+		return "InputInvoicePremiumGiftCode(nil)"
+	}
+	type Alias InputInvoicePremiumGiftCode
+	return fmt.Sprintf("InputInvoicePremiumGiftCode%+v", Alias(*i))
+}
+
+// FillFrom fills InputInvoicePremiumGiftCode from given interface.
+func (i *InputInvoicePremiumGiftCode) FillFrom(from interface {
+	GetPurpose() (value InputStorePaymentPurposeClass)
+	GetOption() (value PremiumGiftCodeOption)
+}) {
+	i.Purpose = from.GetPurpose()
+	i.Option = from.GetOption()
+}
+
+// TypeID returns type id in TL schema.
+//
+// See https://core.telegram.org/mtproto/TL-tl#remarks.
+func (*InputInvoicePremiumGiftCode) TypeID() uint32 {
+	return InputInvoicePremiumGiftCodeTypeID
+}
+
+// TypeName returns name of type in TL schema.
+func (*InputInvoicePremiumGiftCode) TypeName() string {
+	return "inputInvoicePremiumGiftCode"
+}
+
+// TypeInfo returns info about TL type.
+func (i *InputInvoicePremiumGiftCode) TypeInfo() tdp.Type {
+	typ := tdp.Type{
+		Name: "inputInvoicePremiumGiftCode",
+		ID:   InputInvoicePremiumGiftCodeTypeID,
+	}
+	if i == nil {
+		typ.Null = true
+		return typ
+	}
+	typ.Fields = []tdp.Field{
+		{
+			Name:       "Purpose",
+			SchemaName: "purpose",
+		},
+		{
+			Name:       "Option",
+			SchemaName: "option",
+		},
+	}
+	return typ
+}
+
+// Encode implements bin.Encoder.
+func (i *InputInvoicePremiumGiftCode) Encode(b *bin.Buffer) error {
+	if i == nil {
+		return fmt.Errorf("can't encode inputInvoicePremiumGiftCode#98986c0d as nil")
+	}
+	b.PutID(InputInvoicePremiumGiftCodeTypeID)
+	return i.EncodeBare(b)
+}
+
+// EncodeBare implements bin.BareEncoder.
+func (i *InputInvoicePremiumGiftCode) EncodeBare(b *bin.Buffer) error {
+	if i == nil {
+		return fmt.Errorf("can't encode inputInvoicePremiumGiftCode#98986c0d as nil")
+	}
+	if i.Purpose == nil {
+		return fmt.Errorf("unable to encode inputInvoicePremiumGiftCode#98986c0d: field purpose is nil")
+	}
+	if err := i.Purpose.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode inputInvoicePremiumGiftCode#98986c0d: field purpose: %w", err)
+	}
+	if err := i.Option.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode inputInvoicePremiumGiftCode#98986c0d: field option: %w", err)
+	}
+	return nil
+}
+
+// Decode implements bin.Decoder.
+func (i *InputInvoicePremiumGiftCode) Decode(b *bin.Buffer) error {
+	if i == nil {
+		return fmt.Errorf("can't decode inputInvoicePremiumGiftCode#98986c0d to nil")
+	}
+	if err := b.ConsumeID(InputInvoicePremiumGiftCodeTypeID); err != nil {
+		return fmt.Errorf("unable to decode inputInvoicePremiumGiftCode#98986c0d: %w", err)
+	}
+	return i.DecodeBare(b)
+}
+
+// DecodeBare implements bin.BareDecoder.
+func (i *InputInvoicePremiumGiftCode) DecodeBare(b *bin.Buffer) error {
+	if i == nil {
+		return fmt.Errorf("can't decode inputInvoicePremiumGiftCode#98986c0d to nil")
+	}
+	{
+		value, err := DecodeInputStorePaymentPurpose(b)
+		if err != nil {
+			return fmt.Errorf("unable to decode inputInvoicePremiumGiftCode#98986c0d: field purpose: %w", err)
+		}
+		i.Purpose = value
+	}
+	{
+		if err := i.Option.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode inputInvoicePremiumGiftCode#98986c0d: field option: %w", err)
+		}
+	}
+	return nil
+}
+
+// GetPurpose returns value of Purpose field.
+func (i *InputInvoicePremiumGiftCode) GetPurpose() (value InputStorePaymentPurposeClass) {
+	if i == nil {
+		return
+	}
+	return i.Purpose
+}
+
+// GetOption returns value of Option field.
+func (i *InputInvoicePremiumGiftCode) GetOption() (value PremiumGiftCodeOption) {
+	if i == nil {
+		return
+	}
+	return i.Option
+}
+
 // InputInvoiceClassName is schema name of InputInvoiceClass.
 const InputInvoiceClassName = "InputInvoice"
 
@@ -357,6 +542,7 @@ const InputInvoiceClassName = "InputInvoice"
 //	switch v := g.(type) {
 //	case *tg.InputInvoiceMessage: // inputInvoiceMessage#c5b56859
 //	case *tg.InputInvoiceSlug: // inputInvoiceSlug#c326caef
+//	case *tg.InputInvoicePremiumGiftCode: // inputInvoicePremiumGiftCode#98986c0d
 //	default: panic(v)
 //	}
 type InputInvoiceClass interface {
@@ -395,6 +581,13 @@ func DecodeInputInvoice(buf *bin.Buffer) (InputInvoiceClass, error) {
 	case InputInvoiceSlugTypeID:
 		// Decoding inputInvoiceSlug#c326caef.
 		v := InputInvoiceSlug{}
+		if err := v.Decode(buf); err != nil {
+			return nil, fmt.Errorf("unable to decode InputInvoiceClass: %w", err)
+		}
+		return &v, nil
+	case InputInvoicePremiumGiftCodeTypeID:
+		// Decoding inputInvoicePremiumGiftCode#98986c0d.
+		v := InputInvoicePremiumGiftCode{}
 		if err := v.Decode(buf); err != nil {
 			return nil, fmt.Errorf("unable to decode InputInvoiceClass: %w", err)
 		}

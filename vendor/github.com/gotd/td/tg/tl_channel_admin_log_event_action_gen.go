@@ -6707,6 +6707,678 @@ func (c *ChannelAdminLogEventActionToggleAntiSpam) GetNewValue() (value bool) {
 	return c.NewValue
 }
 
+// ChannelAdminLogEventActionChangePeerColor represents TL type `channelAdminLogEventActionChangePeerColor#5796e780`.
+//
+// See https://core.telegram.org/constructor/channelAdminLogEventActionChangePeerColor for reference.
+type ChannelAdminLogEventActionChangePeerColor struct {
+	// PrevValue field of ChannelAdminLogEventActionChangePeerColor.
+	PrevValue PeerColor
+	// NewValue field of ChannelAdminLogEventActionChangePeerColor.
+	NewValue PeerColor
+}
+
+// ChannelAdminLogEventActionChangePeerColorTypeID is TL type id of ChannelAdminLogEventActionChangePeerColor.
+const ChannelAdminLogEventActionChangePeerColorTypeID = 0x5796e780
+
+// construct implements constructor of ChannelAdminLogEventActionClass.
+func (c ChannelAdminLogEventActionChangePeerColor) construct() ChannelAdminLogEventActionClass {
+	return &c
+}
+
+// Ensuring interfaces in compile-time for ChannelAdminLogEventActionChangePeerColor.
+var (
+	_ bin.Encoder     = &ChannelAdminLogEventActionChangePeerColor{}
+	_ bin.Decoder     = &ChannelAdminLogEventActionChangePeerColor{}
+	_ bin.BareEncoder = &ChannelAdminLogEventActionChangePeerColor{}
+	_ bin.BareDecoder = &ChannelAdminLogEventActionChangePeerColor{}
+
+	_ ChannelAdminLogEventActionClass = &ChannelAdminLogEventActionChangePeerColor{}
+)
+
+func (c *ChannelAdminLogEventActionChangePeerColor) Zero() bool {
+	if c == nil {
+		return true
+	}
+	if !(c.PrevValue.Zero()) {
+		return false
+	}
+	if !(c.NewValue.Zero()) {
+		return false
+	}
+
+	return true
+}
+
+// String implements fmt.Stringer.
+func (c *ChannelAdminLogEventActionChangePeerColor) String() string {
+	if c == nil {
+		return "ChannelAdminLogEventActionChangePeerColor(nil)"
+	}
+	type Alias ChannelAdminLogEventActionChangePeerColor
+	return fmt.Sprintf("ChannelAdminLogEventActionChangePeerColor%+v", Alias(*c))
+}
+
+// FillFrom fills ChannelAdminLogEventActionChangePeerColor from given interface.
+func (c *ChannelAdminLogEventActionChangePeerColor) FillFrom(from interface {
+	GetPrevValue() (value PeerColor)
+	GetNewValue() (value PeerColor)
+}) {
+	c.PrevValue = from.GetPrevValue()
+	c.NewValue = from.GetNewValue()
+}
+
+// TypeID returns type id in TL schema.
+//
+// See https://core.telegram.org/mtproto/TL-tl#remarks.
+func (*ChannelAdminLogEventActionChangePeerColor) TypeID() uint32 {
+	return ChannelAdminLogEventActionChangePeerColorTypeID
+}
+
+// TypeName returns name of type in TL schema.
+func (*ChannelAdminLogEventActionChangePeerColor) TypeName() string {
+	return "channelAdminLogEventActionChangePeerColor"
+}
+
+// TypeInfo returns info about TL type.
+func (c *ChannelAdminLogEventActionChangePeerColor) TypeInfo() tdp.Type {
+	typ := tdp.Type{
+		Name: "channelAdminLogEventActionChangePeerColor",
+		ID:   ChannelAdminLogEventActionChangePeerColorTypeID,
+	}
+	if c == nil {
+		typ.Null = true
+		return typ
+	}
+	typ.Fields = []tdp.Field{
+		{
+			Name:       "PrevValue",
+			SchemaName: "prev_value",
+		},
+		{
+			Name:       "NewValue",
+			SchemaName: "new_value",
+		},
+	}
+	return typ
+}
+
+// Encode implements bin.Encoder.
+func (c *ChannelAdminLogEventActionChangePeerColor) Encode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangePeerColor#5796e780 as nil")
+	}
+	b.PutID(ChannelAdminLogEventActionChangePeerColorTypeID)
+	return c.EncodeBare(b)
+}
+
+// EncodeBare implements bin.BareEncoder.
+func (c *ChannelAdminLogEventActionChangePeerColor) EncodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangePeerColor#5796e780 as nil")
+	}
+	if err := c.PrevValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangePeerColor#5796e780: field prev_value: %w", err)
+	}
+	if err := c.NewValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangePeerColor#5796e780: field new_value: %w", err)
+	}
+	return nil
+}
+
+// Decode implements bin.Decoder.
+func (c *ChannelAdminLogEventActionChangePeerColor) Decode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangePeerColor#5796e780 to nil")
+	}
+	if err := b.ConsumeID(ChannelAdminLogEventActionChangePeerColorTypeID); err != nil {
+		return fmt.Errorf("unable to decode channelAdminLogEventActionChangePeerColor#5796e780: %w", err)
+	}
+	return c.DecodeBare(b)
+}
+
+// DecodeBare implements bin.BareDecoder.
+func (c *ChannelAdminLogEventActionChangePeerColor) DecodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangePeerColor#5796e780 to nil")
+	}
+	{
+		if err := c.PrevValue.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangePeerColor#5796e780: field prev_value: %w", err)
+		}
+	}
+	{
+		if err := c.NewValue.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangePeerColor#5796e780: field new_value: %w", err)
+		}
+	}
+	return nil
+}
+
+// GetPrevValue returns value of PrevValue field.
+func (c *ChannelAdminLogEventActionChangePeerColor) GetPrevValue() (value PeerColor) {
+	if c == nil {
+		return
+	}
+	return c.PrevValue
+}
+
+// GetNewValue returns value of NewValue field.
+func (c *ChannelAdminLogEventActionChangePeerColor) GetNewValue() (value PeerColor) {
+	if c == nil {
+		return
+	}
+	return c.NewValue
+}
+
+// ChannelAdminLogEventActionChangeProfilePeerColor represents TL type `channelAdminLogEventActionChangeProfilePeerColor#5e477b25`.
+//
+// See https://core.telegram.org/constructor/channelAdminLogEventActionChangeProfilePeerColor for reference.
+type ChannelAdminLogEventActionChangeProfilePeerColor struct {
+	// PrevValue field of ChannelAdminLogEventActionChangeProfilePeerColor.
+	PrevValue PeerColor
+	// NewValue field of ChannelAdminLogEventActionChangeProfilePeerColor.
+	NewValue PeerColor
+}
+
+// ChannelAdminLogEventActionChangeProfilePeerColorTypeID is TL type id of ChannelAdminLogEventActionChangeProfilePeerColor.
+const ChannelAdminLogEventActionChangeProfilePeerColorTypeID = 0x5e477b25
+
+// construct implements constructor of ChannelAdminLogEventActionClass.
+func (c ChannelAdminLogEventActionChangeProfilePeerColor) construct() ChannelAdminLogEventActionClass {
+	return &c
+}
+
+// Ensuring interfaces in compile-time for ChannelAdminLogEventActionChangeProfilePeerColor.
+var (
+	_ bin.Encoder     = &ChannelAdminLogEventActionChangeProfilePeerColor{}
+	_ bin.Decoder     = &ChannelAdminLogEventActionChangeProfilePeerColor{}
+	_ bin.BareEncoder = &ChannelAdminLogEventActionChangeProfilePeerColor{}
+	_ bin.BareDecoder = &ChannelAdminLogEventActionChangeProfilePeerColor{}
+
+	_ ChannelAdminLogEventActionClass = &ChannelAdminLogEventActionChangeProfilePeerColor{}
+)
+
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) Zero() bool {
+	if c == nil {
+		return true
+	}
+	if !(c.PrevValue.Zero()) {
+		return false
+	}
+	if !(c.NewValue.Zero()) {
+		return false
+	}
+
+	return true
+}
+
+// String implements fmt.Stringer.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) String() string {
+	if c == nil {
+		return "ChannelAdminLogEventActionChangeProfilePeerColor(nil)"
+	}
+	type Alias ChannelAdminLogEventActionChangeProfilePeerColor
+	return fmt.Sprintf("ChannelAdminLogEventActionChangeProfilePeerColor%+v", Alias(*c))
+}
+
+// FillFrom fills ChannelAdminLogEventActionChangeProfilePeerColor from given interface.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) FillFrom(from interface {
+	GetPrevValue() (value PeerColor)
+	GetNewValue() (value PeerColor)
+}) {
+	c.PrevValue = from.GetPrevValue()
+	c.NewValue = from.GetNewValue()
+}
+
+// TypeID returns type id in TL schema.
+//
+// See https://core.telegram.org/mtproto/TL-tl#remarks.
+func (*ChannelAdminLogEventActionChangeProfilePeerColor) TypeID() uint32 {
+	return ChannelAdminLogEventActionChangeProfilePeerColorTypeID
+}
+
+// TypeName returns name of type in TL schema.
+func (*ChannelAdminLogEventActionChangeProfilePeerColor) TypeName() string {
+	return "channelAdminLogEventActionChangeProfilePeerColor"
+}
+
+// TypeInfo returns info about TL type.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) TypeInfo() tdp.Type {
+	typ := tdp.Type{
+		Name: "channelAdminLogEventActionChangeProfilePeerColor",
+		ID:   ChannelAdminLogEventActionChangeProfilePeerColorTypeID,
+	}
+	if c == nil {
+		typ.Null = true
+		return typ
+	}
+	typ.Fields = []tdp.Field{
+		{
+			Name:       "PrevValue",
+			SchemaName: "prev_value",
+		},
+		{
+			Name:       "NewValue",
+			SchemaName: "new_value",
+		},
+	}
+	return typ
+}
+
+// Encode implements bin.Encoder.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) Encode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangeProfilePeerColor#5e477b25 as nil")
+	}
+	b.PutID(ChannelAdminLogEventActionChangeProfilePeerColorTypeID)
+	return c.EncodeBare(b)
+}
+
+// EncodeBare implements bin.BareEncoder.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) EncodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangeProfilePeerColor#5e477b25 as nil")
+	}
+	if err := c.PrevValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeProfilePeerColor#5e477b25: field prev_value: %w", err)
+	}
+	if err := c.NewValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeProfilePeerColor#5e477b25: field new_value: %w", err)
+	}
+	return nil
+}
+
+// Decode implements bin.Decoder.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) Decode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangeProfilePeerColor#5e477b25 to nil")
+	}
+	if err := b.ConsumeID(ChannelAdminLogEventActionChangeProfilePeerColorTypeID); err != nil {
+		return fmt.Errorf("unable to decode channelAdminLogEventActionChangeProfilePeerColor#5e477b25: %w", err)
+	}
+	return c.DecodeBare(b)
+}
+
+// DecodeBare implements bin.BareDecoder.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) DecodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangeProfilePeerColor#5e477b25 to nil")
+	}
+	{
+		if err := c.PrevValue.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangeProfilePeerColor#5e477b25: field prev_value: %w", err)
+		}
+	}
+	{
+		if err := c.NewValue.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangeProfilePeerColor#5e477b25: field new_value: %w", err)
+		}
+	}
+	return nil
+}
+
+// GetPrevValue returns value of PrevValue field.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) GetPrevValue() (value PeerColor) {
+	if c == nil {
+		return
+	}
+	return c.PrevValue
+}
+
+// GetNewValue returns value of NewValue field.
+func (c *ChannelAdminLogEventActionChangeProfilePeerColor) GetNewValue() (value PeerColor) {
+	if c == nil {
+		return
+	}
+	return c.NewValue
+}
+
+// ChannelAdminLogEventActionChangeWallpaper represents TL type `channelAdminLogEventActionChangeWallpaper#31bb5d52`.
+//
+// See https://core.telegram.org/constructor/channelAdminLogEventActionChangeWallpaper for reference.
+type ChannelAdminLogEventActionChangeWallpaper struct {
+	// PrevValue field of ChannelAdminLogEventActionChangeWallpaper.
+	PrevValue WallPaperClass
+	// NewValue field of ChannelAdminLogEventActionChangeWallpaper.
+	NewValue WallPaperClass
+}
+
+// ChannelAdminLogEventActionChangeWallpaperTypeID is TL type id of ChannelAdminLogEventActionChangeWallpaper.
+const ChannelAdminLogEventActionChangeWallpaperTypeID = 0x31bb5d52
+
+// construct implements constructor of ChannelAdminLogEventActionClass.
+func (c ChannelAdminLogEventActionChangeWallpaper) construct() ChannelAdminLogEventActionClass {
+	return &c
+}
+
+// Ensuring interfaces in compile-time for ChannelAdminLogEventActionChangeWallpaper.
+var (
+	_ bin.Encoder     = &ChannelAdminLogEventActionChangeWallpaper{}
+	_ bin.Decoder     = &ChannelAdminLogEventActionChangeWallpaper{}
+	_ bin.BareEncoder = &ChannelAdminLogEventActionChangeWallpaper{}
+	_ bin.BareDecoder = &ChannelAdminLogEventActionChangeWallpaper{}
+
+	_ ChannelAdminLogEventActionClass = &ChannelAdminLogEventActionChangeWallpaper{}
+)
+
+func (c *ChannelAdminLogEventActionChangeWallpaper) Zero() bool {
+	if c == nil {
+		return true
+	}
+	if !(c.PrevValue == nil) {
+		return false
+	}
+	if !(c.NewValue == nil) {
+		return false
+	}
+
+	return true
+}
+
+// String implements fmt.Stringer.
+func (c *ChannelAdminLogEventActionChangeWallpaper) String() string {
+	if c == nil {
+		return "ChannelAdminLogEventActionChangeWallpaper(nil)"
+	}
+	type Alias ChannelAdminLogEventActionChangeWallpaper
+	return fmt.Sprintf("ChannelAdminLogEventActionChangeWallpaper%+v", Alias(*c))
+}
+
+// FillFrom fills ChannelAdminLogEventActionChangeWallpaper from given interface.
+func (c *ChannelAdminLogEventActionChangeWallpaper) FillFrom(from interface {
+	GetPrevValue() (value WallPaperClass)
+	GetNewValue() (value WallPaperClass)
+}) {
+	c.PrevValue = from.GetPrevValue()
+	c.NewValue = from.GetNewValue()
+}
+
+// TypeID returns type id in TL schema.
+//
+// See https://core.telegram.org/mtproto/TL-tl#remarks.
+func (*ChannelAdminLogEventActionChangeWallpaper) TypeID() uint32 {
+	return ChannelAdminLogEventActionChangeWallpaperTypeID
+}
+
+// TypeName returns name of type in TL schema.
+func (*ChannelAdminLogEventActionChangeWallpaper) TypeName() string {
+	return "channelAdminLogEventActionChangeWallpaper"
+}
+
+// TypeInfo returns info about TL type.
+func (c *ChannelAdminLogEventActionChangeWallpaper) TypeInfo() tdp.Type {
+	typ := tdp.Type{
+		Name: "channelAdminLogEventActionChangeWallpaper",
+		ID:   ChannelAdminLogEventActionChangeWallpaperTypeID,
+	}
+	if c == nil {
+		typ.Null = true
+		return typ
+	}
+	typ.Fields = []tdp.Field{
+		{
+			Name:       "PrevValue",
+			SchemaName: "prev_value",
+		},
+		{
+			Name:       "NewValue",
+			SchemaName: "new_value",
+		},
+	}
+	return typ
+}
+
+// Encode implements bin.Encoder.
+func (c *ChannelAdminLogEventActionChangeWallpaper) Encode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangeWallpaper#31bb5d52 as nil")
+	}
+	b.PutID(ChannelAdminLogEventActionChangeWallpaperTypeID)
+	return c.EncodeBare(b)
+}
+
+// EncodeBare implements bin.BareEncoder.
+func (c *ChannelAdminLogEventActionChangeWallpaper) EncodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangeWallpaper#31bb5d52 as nil")
+	}
+	if c.PrevValue == nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeWallpaper#31bb5d52: field prev_value is nil")
+	}
+	if err := c.PrevValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeWallpaper#31bb5d52: field prev_value: %w", err)
+	}
+	if c.NewValue == nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeWallpaper#31bb5d52: field new_value is nil")
+	}
+	if err := c.NewValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeWallpaper#31bb5d52: field new_value: %w", err)
+	}
+	return nil
+}
+
+// Decode implements bin.Decoder.
+func (c *ChannelAdminLogEventActionChangeWallpaper) Decode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangeWallpaper#31bb5d52 to nil")
+	}
+	if err := b.ConsumeID(ChannelAdminLogEventActionChangeWallpaperTypeID); err != nil {
+		return fmt.Errorf("unable to decode channelAdminLogEventActionChangeWallpaper#31bb5d52: %w", err)
+	}
+	return c.DecodeBare(b)
+}
+
+// DecodeBare implements bin.BareDecoder.
+func (c *ChannelAdminLogEventActionChangeWallpaper) DecodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangeWallpaper#31bb5d52 to nil")
+	}
+	{
+		value, err := DecodeWallPaper(b)
+		if err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangeWallpaper#31bb5d52: field prev_value: %w", err)
+		}
+		c.PrevValue = value
+	}
+	{
+		value, err := DecodeWallPaper(b)
+		if err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangeWallpaper#31bb5d52: field new_value: %w", err)
+		}
+		c.NewValue = value
+	}
+	return nil
+}
+
+// GetPrevValue returns value of PrevValue field.
+func (c *ChannelAdminLogEventActionChangeWallpaper) GetPrevValue() (value WallPaperClass) {
+	if c == nil {
+		return
+	}
+	return c.PrevValue
+}
+
+// GetNewValue returns value of NewValue field.
+func (c *ChannelAdminLogEventActionChangeWallpaper) GetNewValue() (value WallPaperClass) {
+	if c == nil {
+		return
+	}
+	return c.NewValue
+}
+
+// ChannelAdminLogEventActionChangeEmojiStatus represents TL type `channelAdminLogEventActionChangeEmojiStatus#3ea9feb1`.
+//
+// See https://core.telegram.org/constructor/channelAdminLogEventActionChangeEmojiStatus for reference.
+type ChannelAdminLogEventActionChangeEmojiStatus struct {
+	// PrevValue field of ChannelAdminLogEventActionChangeEmojiStatus.
+	PrevValue EmojiStatusClass
+	// NewValue field of ChannelAdminLogEventActionChangeEmojiStatus.
+	NewValue EmojiStatusClass
+}
+
+// ChannelAdminLogEventActionChangeEmojiStatusTypeID is TL type id of ChannelAdminLogEventActionChangeEmojiStatus.
+const ChannelAdminLogEventActionChangeEmojiStatusTypeID = 0x3ea9feb1
+
+// construct implements constructor of ChannelAdminLogEventActionClass.
+func (c ChannelAdminLogEventActionChangeEmojiStatus) construct() ChannelAdminLogEventActionClass {
+	return &c
+}
+
+// Ensuring interfaces in compile-time for ChannelAdminLogEventActionChangeEmojiStatus.
+var (
+	_ bin.Encoder     = &ChannelAdminLogEventActionChangeEmojiStatus{}
+	_ bin.Decoder     = &ChannelAdminLogEventActionChangeEmojiStatus{}
+	_ bin.BareEncoder = &ChannelAdminLogEventActionChangeEmojiStatus{}
+	_ bin.BareDecoder = &ChannelAdminLogEventActionChangeEmojiStatus{}
+
+	_ ChannelAdminLogEventActionClass = &ChannelAdminLogEventActionChangeEmojiStatus{}
+)
+
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) Zero() bool {
+	if c == nil {
+		return true
+	}
+	if !(c.PrevValue == nil) {
+		return false
+	}
+	if !(c.NewValue == nil) {
+		return false
+	}
+
+	return true
+}
+
+// String implements fmt.Stringer.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) String() string {
+	if c == nil {
+		return "ChannelAdminLogEventActionChangeEmojiStatus(nil)"
+	}
+	type Alias ChannelAdminLogEventActionChangeEmojiStatus
+	return fmt.Sprintf("ChannelAdminLogEventActionChangeEmojiStatus%+v", Alias(*c))
+}
+
+// FillFrom fills ChannelAdminLogEventActionChangeEmojiStatus from given interface.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) FillFrom(from interface {
+	GetPrevValue() (value EmojiStatusClass)
+	GetNewValue() (value EmojiStatusClass)
+}) {
+	c.PrevValue = from.GetPrevValue()
+	c.NewValue = from.GetNewValue()
+}
+
+// TypeID returns type id in TL schema.
+//
+// See https://core.telegram.org/mtproto/TL-tl#remarks.
+func (*ChannelAdminLogEventActionChangeEmojiStatus) TypeID() uint32 {
+	return ChannelAdminLogEventActionChangeEmojiStatusTypeID
+}
+
+// TypeName returns name of type in TL schema.
+func (*ChannelAdminLogEventActionChangeEmojiStatus) TypeName() string {
+	return "channelAdminLogEventActionChangeEmojiStatus"
+}
+
+// TypeInfo returns info about TL type.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) TypeInfo() tdp.Type {
+	typ := tdp.Type{
+		Name: "channelAdminLogEventActionChangeEmojiStatus",
+		ID:   ChannelAdminLogEventActionChangeEmojiStatusTypeID,
+	}
+	if c == nil {
+		typ.Null = true
+		return typ
+	}
+	typ.Fields = []tdp.Field{
+		{
+			Name:       "PrevValue",
+			SchemaName: "prev_value",
+		},
+		{
+			Name:       "NewValue",
+			SchemaName: "new_value",
+		},
+	}
+	return typ
+}
+
+// Encode implements bin.Encoder.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) Encode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1 as nil")
+	}
+	b.PutID(ChannelAdminLogEventActionChangeEmojiStatusTypeID)
+	return c.EncodeBare(b)
+}
+
+// EncodeBare implements bin.BareEncoder.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) EncodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't encode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1 as nil")
+	}
+	if c.PrevValue == nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1: field prev_value is nil")
+	}
+	if err := c.PrevValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1: field prev_value: %w", err)
+	}
+	if c.NewValue == nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1: field new_value is nil")
+	}
+	if err := c.NewValue.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1: field new_value: %w", err)
+	}
+	return nil
+}
+
+// Decode implements bin.Decoder.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) Decode(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1 to nil")
+	}
+	if err := b.ConsumeID(ChannelAdminLogEventActionChangeEmojiStatusTypeID); err != nil {
+		return fmt.Errorf("unable to decode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1: %w", err)
+	}
+	return c.DecodeBare(b)
+}
+
+// DecodeBare implements bin.BareDecoder.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) DecodeBare(b *bin.Buffer) error {
+	if c == nil {
+		return fmt.Errorf("can't decode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1 to nil")
+	}
+	{
+		value, err := DecodeEmojiStatus(b)
+		if err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1: field prev_value: %w", err)
+		}
+		c.PrevValue = value
+	}
+	{
+		value, err := DecodeEmojiStatus(b)
+		if err != nil {
+			return fmt.Errorf("unable to decode channelAdminLogEventActionChangeEmojiStatus#3ea9feb1: field new_value: %w", err)
+		}
+		c.NewValue = value
+	}
+	return nil
+}
+
+// GetPrevValue returns value of PrevValue field.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) GetPrevValue() (value EmojiStatusClass) {
+	if c == nil {
+		return
+	}
+	return c.PrevValue
+}
+
+// GetNewValue returns value of NewValue field.
+func (c *ChannelAdminLogEventActionChangeEmojiStatus) GetNewValue() (value EmojiStatusClass) {
+	if c == nil {
+		return
+	}
+	return c.NewValue
+}
+
 // ChannelAdminLogEventActionClassName is schema name of ChannelAdminLogEventActionClass.
 const ChannelAdminLogEventActionClassName = "ChannelAdminLogEventAction"
 
@@ -6764,6 +7436,10 @@ const ChannelAdminLogEventActionClassName = "ChannelAdminLogEventAction"
 //	case *tg.ChannelAdminLogEventActionDeleteTopic: // channelAdminLogEventActionDeleteTopic#ae168909
 //	case *tg.ChannelAdminLogEventActionPinTopic: // channelAdminLogEventActionPinTopic#5d8d353b
 //	case *tg.ChannelAdminLogEventActionToggleAntiSpam: // channelAdminLogEventActionToggleAntiSpam#64f36dfc
+//	case *tg.ChannelAdminLogEventActionChangePeerColor: // channelAdminLogEventActionChangePeerColor#5796e780
+//	case *tg.ChannelAdminLogEventActionChangeProfilePeerColor: // channelAdminLogEventActionChangeProfilePeerColor#5e477b25
+//	case *tg.ChannelAdminLogEventActionChangeWallpaper: // channelAdminLogEventActionChangeWallpaper#31bb5d52
+//	case *tg.ChannelAdminLogEventActionChangeEmojiStatus: // channelAdminLogEventActionChangeEmojiStatus#3ea9feb1
 //	default: panic(v)
 //	}
 type ChannelAdminLogEventActionClass interface {
@@ -7089,6 +7765,34 @@ func DecodeChannelAdminLogEventAction(buf *bin.Buffer) (ChannelAdminLogEventActi
 	case ChannelAdminLogEventActionToggleAntiSpamTypeID:
 		// Decoding channelAdminLogEventActionToggleAntiSpam#64f36dfc.
 		v := ChannelAdminLogEventActionToggleAntiSpam{}
+		if err := v.Decode(buf); err != nil {
+			return nil, fmt.Errorf("unable to decode ChannelAdminLogEventActionClass: %w", err)
+		}
+		return &v, nil
+	case ChannelAdminLogEventActionChangePeerColorTypeID:
+		// Decoding channelAdminLogEventActionChangePeerColor#5796e780.
+		v := ChannelAdminLogEventActionChangePeerColor{}
+		if err := v.Decode(buf); err != nil {
+			return nil, fmt.Errorf("unable to decode ChannelAdminLogEventActionClass: %w", err)
+		}
+		return &v, nil
+	case ChannelAdminLogEventActionChangeProfilePeerColorTypeID:
+		// Decoding channelAdminLogEventActionChangeProfilePeerColor#5e477b25.
+		v := ChannelAdminLogEventActionChangeProfilePeerColor{}
+		if err := v.Decode(buf); err != nil {
+			return nil, fmt.Errorf("unable to decode ChannelAdminLogEventActionClass: %w", err)
+		}
+		return &v, nil
+	case ChannelAdminLogEventActionChangeWallpaperTypeID:
+		// Decoding channelAdminLogEventActionChangeWallpaper#31bb5d52.
+		v := ChannelAdminLogEventActionChangeWallpaper{}
+		if err := v.Decode(buf); err != nil {
+			return nil, fmt.Errorf("unable to decode ChannelAdminLogEventActionClass: %w", err)
+		}
+		return &v, nil
+	case ChannelAdminLogEventActionChangeEmojiStatusTypeID:
+		// Decoding channelAdminLogEventActionChangeEmojiStatus#3ea9feb1.
+		v := ChannelAdminLogEventActionChangeEmojiStatus{}
 		if err := v.Decode(buf); err != nil {
 			return nil, fmt.Errorf("unable to decode ChannelAdminLogEventActionClass: %w", err)
 		}

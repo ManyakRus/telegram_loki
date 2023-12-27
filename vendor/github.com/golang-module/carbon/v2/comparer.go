@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+// IsDST reports whether is daylight saving time.
+// 是否是夏令时
+func (c Carbon) IsDST() bool {
+	return c.ToStdTime().IsDST()
+}
+
 // IsZero reports whether is zero time.
 // 是否是零值时间
 func (c Carbon) IsZero() bool {

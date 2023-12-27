@@ -1,7 +1,7 @@
 package loki
 
 import (
-	ConfigMain "github.com/ManyakRus/starter/config"
+	ConfigMain "github.com/ManyakRus/starter/config_main"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/golang-module/carbon/v2"
 	"testing"

@@ -37,11 +37,14 @@ const (
 	ErrAboutTooLong                     = "ABOUT_TOO_LONG"
 	ErrAccessTokenExpired               = "ACCESS_TOKEN_EXPIRED"
 	ErrAccessTokenInvalid               = "ACCESS_TOKEN_INVALID"
+	ErrAddressInvalid                   = "ADDRESS_INVALID"
 	ErrAdminsTooMuch                    = "ADMINS_TOO_MUCH"
 	ErrAdminIDInvalid                   = "ADMIN_ID_INVALID"
 	ErrAdminRankEmojiNotAllowed         = "ADMIN_RANK_EMOJI_NOT_ALLOWED"
 	ErrAdminRankInvalid                 = "ADMIN_RANK_INVALID"
+	ErrAdminRightsEmpty                 = "ADMIN_RIGHTS_EMPTY"
 	ErrAlbumPhotosTooMany               = "ALBUM_PHOTOS_TOO_MANY"
+	ErrAnonymousReactionsDisabled       = "ANONYMOUS_REACTIONS_DISABLED"
 	ErrAPIIDInvalid                     = "API_ID_INVALID"
 	ErrAPIIDPublishedFlood              = "API_ID_PUBLISHED_FLOOD"
 	ErrArticleTitleEmpty                = "ARTICLE_TITLE_EMPTY"
@@ -57,6 +60,9 @@ const (
 	ErrAutoarchiveNotAvailable          = "AUTOARCHIVE_NOT_AVAILABLE"
 	ErrBankCardNumberInvalid            = "BANK_CARD_NUMBER_INVALID"
 	ErrBannedRightsInvalid              = "BANNED_RIGHTS_INVALID"
+	ErrBoostsEmpty                      = "BOOSTS_EMPTY"
+	ErrBoostsRequired                   = "BOOSTS_REQUIRED"
+	ErrBoostPeerInvalid                 = "BOOST_PEER_INVALID"
 	ErrBotsTooMuch                      = "BOTS_TOO_MUCH"
 	ErrBotAppInvalid                    = "BOT_APP_INVALID"
 	ErrBotChannelsNa                    = "BOT_CHANNELS_NA"
@@ -84,6 +90,7 @@ const (
 	ErrCallAlreadyDeclined              = "CALL_ALREADY_DECLINED"
 	ErrCallOccupyFailed                 = "CALL_OCCUPY_FAILED"
 	ErrCallPeerInvalid                  = "CALL_PEER_INVALID"
+	ErrCallProtocolCompatLayerInvalid   = "CALL_PROTOCOL_COMPAT_LAYER_INVALID"
 	ErrCallProtocolFlagsInvalid         = "CALL_PROTOCOL_FLAGS_INVALID"
 	ErrCDNMethodInvalid                 = "CDN_METHOD_INVALID"
 	ErrCDNUploadTimeout                 = "CDN_UPLOAD_TIMEOUT"
@@ -98,6 +105,7 @@ const (
 	ErrChannelPublicGroupNa             = "CHANNEL_PUBLIC_GROUP_NA"
 	ErrChannelTooBig                    = "CHANNEL_TOO_BIG"
 	ErrChannelTooLarge                  = "CHANNEL_TOO_LARGE"
+	ErrChatlistExcludeInvalid           = "CHATLIST_EXCLUDE_INVALID"
 	ErrChatAboutNotModified             = "CHAT_ABOUT_NOT_MODIFIED"
 	ErrChatAboutTooLong                 = "CHAT_ABOUT_TOO_LONG"
 	ErrChatAdminInviteRequired          = "CHAT_ADMIN_INVITE_REQUIRED"
@@ -133,6 +141,7 @@ const (
 	ErrCodeEmpty                        = "CODE_EMPTY"
 	ErrCodeHashInvalid                  = "CODE_HASH_INVALID"
 	ErrCodeInvalid                      = "CODE_INVALID"
+	ErrColorInvalid                     = "COLOR_INVALID"
 	ErrConnectionAPIIDInvalid           = "CONNECTION_API_ID_INVALID"
 	ErrConnectionAppVersionEmpty        = "CONNECTION_APP_VERSION_EMPTY"
 	ErrConnectionLayerInvalid           = "CONNECTION_LAYER_INVALID"
@@ -142,6 +151,7 @@ const (
 	ErrContactReqMissing                = "CONTACT_REQ_MISSING"
 	ErrCreateCallFailed                 = "CREATE_CALL_FAILED"
 	ErrCurrencyTotalAmountInvalid       = "CURRENCY_TOTAL_AMOUNT_INVALID"
+	ErrCustomReactionsTooMany           = "CUSTOM_REACTIONS_TOO_MANY"
 	ErrDataInvalid                      = "DATA_INVALID"
 	ErrDataJSONInvalid                  = "DATA_JSON_INVALID"
 	ErrDataTooLong                      = "DATA_TOO_LONG"
@@ -195,18 +205,23 @@ const (
 	ErrFilterTitleEmpty                 = "FILTER_TITLE_EMPTY"
 	ErrFirstnameInvalid                 = "FIRSTNAME_INVALID"
 	ErrFolderIDInvalid                  = "FOLDER_ID_INVALID"
+	ErrForumEnabled                     = "FORUM_ENABLED"
 	ErrFreshChangeAdminsForbidden       = "FRESH_CHANGE_ADMINS_FORBIDDEN"
 	ErrFreshChangePhoneForbidden        = "FRESH_CHANGE_PHONE_FORBIDDEN"
 	ErrFreshResetAuthorisationForbidden = "FRESH_RESET_AUTHORISATION_FORBIDDEN"
 	ErrFromMessageBotDisabled           = "FROM_MESSAGE_BOT_DISABLED"
 	ErrFromPeerInvalid                  = "FROM_PEER_INVALID"
 	ErrGameBotInvalid                   = "GAME_BOT_INVALID"
+	ErrGeneralModifyIconForbidden       = "GENERAL_MODIFY_ICON_FORBIDDEN"
 	ErrGeoPointInvalid                  = "GEO_POINT_INVALID"
+	ErrGiftcodeNotAllowed               = "GIFTCODE_NOT_ALLOWED"
+	ErrGiftSlugInvalid                  = "GIFT_SLUG_INVALID"
 	ErrGifContentTypeInvalid            = "GIF_CONTENT_TYPE_INVALID"
 	ErrGifIDInvalid                     = "GIF_ID_INVALID"
 	ErrGraphExpiredReload               = "GRAPH_EXPIRED_RELOAD"
 	ErrGraphInvalidReload               = "GRAPH_INVALID_RELOAD"
 	ErrGraphOutdatedReload              = "GRAPH_OUTDATED_RELOAD"
+	ErrGroupcallAddParticipantsFailed   = "GROUPCALL_ADD_PARTICIPANTS_FAILED"
 	ErrGroupcallAlreadyDiscarded        = "GROUPCALL_ALREADY_DISCARDED"
 	ErrGroupcallAlreadyStarted          = "GROUPCALL_ALREADY_STARTED"
 	ErrGroupcallForbidden               = "GROUPCALL_FORBIDDEN"
@@ -224,6 +239,7 @@ const (
 	ErrImportTokenInvalid               = "IMPORT_TOKEN_INVALID"
 	ErrInlineBotRequired                = "INLINE_BOT_REQUIRED"
 	ErrInlineResultExpired              = "INLINE_RESULT_EXPIRED"
+	ErrInputChatlistInvalid             = "INPUT_CHATLIST_INVALID"
 	ErrInputFilterInvalid               = "INPUT_FILTER_INVALID"
 	ErrInputTextEmpty                   = "INPUT_TEXT_EMPTY"
 	ErrInputUserDeactivated             = "INPUT_USER_DEACTIVATED"
@@ -235,6 +251,7 @@ const (
 	ErrInviteRequestSent                = "INVITE_REQUEST_SENT"
 	ErrInviteRevokedMissing             = "INVITE_REVOKED_MISSING"
 	ErrInviteSlugEmpty                  = "INVITE_SLUG_EMPTY"
+	ErrInviteSlugExpired                = "INVITE_SLUG_EXPIRED"
 	ErrInvoicePayloadInvalid            = "INVOICE_PAYLOAD_INVALID"
 	ErrJoinAsPeerInvalid                = "JOIN_AS_PEER_INVALID"
 	ErrLangCodeInvalid                  = "LANG_CODE_INVALID"
@@ -250,13 +267,19 @@ const (
 	ErrMD5ChecksumInvalid               = "MD5_CHECKSUM_INVALID"
 	ErrMediaCaptionTooLong              = "MEDIA_CAPTION_TOO_LONG"
 	ErrMediaEmpty                       = "MEDIA_EMPTY"
+	ErrMediaFileInvalid                 = "MEDIA_FILE_INVALID"
 	ErrMediaGroupedInvalid              = "MEDIA_GROUPED_INVALID"
 	ErrMediaInvalid                     = "MEDIA_INVALID"
 	ErrMediaNewInvalid                  = "MEDIA_NEW_INVALID"
 	ErrMediaPrevInvalid                 = "MEDIA_PREV_INVALID"
+	ErrMediaTTLInvalid                  = "MEDIA_TTL_INVALID"
+	ErrMediaTypeInvalid                 = "MEDIA_TYPE_INVALID"
+	ErrMediaVideoStoryMissing           = "MEDIA_VIDEO_STORY_MISSING"
+	ErrMegagroupGeoRequired             = "MEGAGROUP_GEO_REQUIRED"
 	ErrMegagroupIDInvalid               = "MEGAGROUP_ID_INVALID"
 	ErrMegagroupPrehistoryHidden        = "MEGAGROUP_PREHISTORY_HIDDEN"
 	ErrMegagroupRequired                = "MEGAGROUP_REQUIRED"
+	ErrMemberNotFound                   = "MEMBER_NOT_FOUND"
 	ErrMessageAuthorRequired            = "MESSAGE_AUTHOR_REQUIRED"
 	ErrMessageDeleteForbidden           = "MESSAGE_DELETE_FORBIDDEN"
 	ErrMessageEditTimeExpired           = "MESSAGE_EDIT_TIME_EXPIRED"
@@ -363,6 +386,8 @@ const (
 	ErrReplyMarkupBuyEmpty              = "REPLY_MARKUP_BUY_EMPTY"
 	ErrReplyMarkupInvalid               = "REPLY_MARKUP_INVALID"
 	ErrReplyMarkupTooLong               = "REPLY_MARKUP_TOO_LONG"
+	ErrReplyToInvalid                   = "REPLY_TO_INVALID"
+	ErrReplyToUserInvalid               = "REPLY_TO_USER_INVALID"
 	ErrResetRequestMissing              = "RESET_REQUEST_MISSING"
 	ErrResultsTooMuch                   = "RESULTS_TOO_MUCH"
 	ErrResultIDDuplicate                = "RESULT_ID_DUPLICATE"
@@ -384,6 +409,7 @@ const (
 	ErrSecondsInvalid                   = "SECONDS_INVALID"
 	ErrSendAsPeerInvalid                = "SEND_AS_PEER_INVALID"
 	ErrSendCodeUnavailable              = "SEND_CODE_UNAVAILABLE"
+	ErrSendMediaInvalid                 = "SEND_MEDIA_INVALID"
 	ErrSendMessageMediaInvalid          = "SEND_MESSAGE_MEDIA_INVALID"
 	ErrSendMessageTypeInvalid           = "SEND_MESSAGE_TYPE_INVALID"
 	ErrSensitiveChangeForbidden         = "SENSITIVE_CHANGE_FORBIDDEN"
@@ -393,8 +419,10 @@ const (
 	ErrShortNameInvalid                 = "SHORT_NAME_INVALID"
 	ErrShortNameOccupied                = "SHORT_NAME_OCCUPIED"
 	ErrSignInFailed                     = "SIGN_IN_FAILED"
+	ErrSlotsEmpty                       = "SLOTS_EMPTY"
 	ErrSlowmodeMultiMsgsDisabled        = "SLOWMODE_MULTI_MSGS_DISABLED"
 	ErrSlowmodeWait                     = "SLOWMODE_WAIT"
+	ErrSlugInvalid                      = "SLUG_INVALID"
 	ErrSMSCodeCreateFailed              = "SMS_CODE_CREATE_FAILED"
 	ErrSRPIDInvalid                     = "SRP_ID_INVALID"
 	ErrSRPPasswordChanged               = "SRP_PASSWORD_CHANGED"
@@ -422,6 +450,14 @@ const (
 	ErrStickerVideoBig                  = "STICKER_VIDEO_BIG"
 	ErrStickerVideoNodoc                = "STICKER_VIDEO_NODOC"
 	ErrStickerVideoNowebm               = "STICKER_VIDEO_NOWEBM"
+	ErrStoriesNeverCreated              = "STORIES_NEVER_CREATED"
+	ErrStoriesTooMuch                   = "STORIES_TOO_MUCH"
+	ErrStoryIDEmpty                     = "STORY_ID_EMPTY"
+	ErrStoryIDInvalid                   = "STORY_ID_INVALID"
+	ErrStoryNotModified                 = "STORY_NOT_MODIFIED"
+	ErrStoryPeriodInvalid               = "STORY_PERIOD_INVALID"
+	ErrStorySendFloodMonthly            = "STORY_SEND_FLOOD_MONTHLY"
+	ErrStorySendFloodWeekly             = "STORY_SEND_FLOOD_WEEKLY"
 	ErrSwitchPmTextEmpty                = "SWITCH_PM_TEXT_EMPTY"
 	ErrTakeoutInitDelay                 = "TAKEOUT_INIT_DELAY"
 	ErrTakeoutRequired                  = "TAKEOUT_REQUIRED"
@@ -438,10 +474,14 @@ const (
 	ErrTokenEmpty                       = "TOKEN_EMPTY"
 	ErrTokenInvalid                     = "TOKEN_INVALID"
 	ErrTokenTypeInvalid                 = "TOKEN_TYPE_INVALID"
+	ErrTopicsEmpty                      = "TOPICS_EMPTY"
 	ErrTopicClosed                      = "TOPIC_CLOSED"
+	ErrTopicCloseSeparately             = "TOPIC_CLOSE_SEPARATELY"
 	ErrTopicDeleted                     = "TOPIC_DELETED"
+	ErrTopicHideSeparately              = "TOPIC_HIDE_SEPARATELY"
 	ErrTopicIDInvalid                   = "TOPIC_ID_INVALID"
 	ErrTopicNotModified                 = "TOPIC_NOT_MODIFIED"
+	ErrTopicTitleEmpty                  = "TOPIC_TITLE_EMPTY"
 	ErrToLangInvalid                    = "TO_LANG_INVALID"
 	ErrTranscriptionFailed              = "TRANSCRIPTION_FAILED"
 	ErrTTLDaysInvalid                   = "TTL_DAYS_INVALID"
@@ -481,8 +521,10 @@ const (
 	ErrUserNotMutualContact             = "USER_NOT_MUTUAL_CONTACT"
 	ErrUserNotParticipant               = "USER_NOT_PARTICIPANT"
 	ErrUserPrivacyRestricted            = "USER_PRIVACY_RESTRICTED"
+	ErrUserPublicMissing                = "USER_PUBLIC_MISSING"
 	ErrUserRestricted                   = "USER_RESTRICTED"
 	ErrUserVolumeInvalid                = "USER_VOLUME_INVALID"
+	ErrVenueIDInvalid                   = "VENUE_ID_INVALID"
 	ErrVideoContentTypeInvalid          = "VIDEO_CONTENT_TYPE_INVALID"
 	ErrVideoFileInvalid                 = "VIDEO_FILE_INVALID"
 	ErrVideoTitleEmpty                  = "VIDEO_TITLE_EMPTY"
@@ -490,6 +532,7 @@ const (
 	ErrWallpaperFileInvalid             = "WALLPAPER_FILE_INVALID"
 	ErrWallpaperInvalid                 = "WALLPAPER_INVALID"
 	ErrWallpaperMimeInvalid             = "WALLPAPER_MIME_INVALID"
+	ErrWallpaperNotFound                = "WALLPAPER_NOT_FOUND"
 	ErrWcConvertURLInvalid              = "WC_CONVERT_URL_INVALID"
 	ErrWebdocumentInvalid               = "WEBDOCUMENT_INVALID"
 	ErrWebdocumentMimeInvalid           = "WEBDOCUMENT_MIME_INVALID"
@@ -497,6 +540,8 @@ const (
 	ErrWebdocumentURLInvalid            = "WEBDOCUMENT_URL_INVALID"
 	ErrWebpageCurlFailed                = "WEBPAGE_CURL_FAILED"
 	ErrWebpageMediaEmpty                = "WEBPAGE_MEDIA_EMPTY"
+	ErrWebpageNotFound                  = "WEBPAGE_NOT_FOUND"
+	ErrWebpageURLInvalid                = "WEBPAGE_URL_INVALID"
 	ErrWebpushAuthInvalid               = "WEBPUSH_AUTH_INVALID"
 	ErrWebpushKeyInvalid                = "WEBPUSH_KEY_INVALID"
 	ErrWebpushTokenInvalid              = "WEBPUSH_TOKEN_INVALID"
@@ -523,6 +568,11 @@ func IsAccessTokenInvalid(err error) bool {
 	return tgerr.Is(err, ErrAccessTokenInvalid)
 }
 
+// IsAddressInvalid reports whether err is ADDRESS_INVALID.
+func IsAddressInvalid(err error) bool {
+	return tgerr.Is(err, ErrAddressInvalid)
+}
+
 // IsAdminsTooMuch reports whether err is ADMINS_TOO_MUCH.
 func IsAdminsTooMuch(err error) bool {
 	return tgerr.Is(err, ErrAdminsTooMuch)
@@ -543,9 +593,19 @@ func IsAdminRankInvalid(err error) bool {
 	return tgerr.Is(err, ErrAdminRankInvalid)
 }
 
+// IsAdminRightsEmpty reports whether err is ADMIN_RIGHTS_EMPTY.
+func IsAdminRightsEmpty(err error) bool {
+	return tgerr.Is(err, ErrAdminRightsEmpty)
+}
+
 // IsAlbumPhotosTooMany reports whether err is ALBUM_PHOTOS_TOO_MANY.
 func IsAlbumPhotosTooMany(err error) bool {
 	return tgerr.Is(err, ErrAlbumPhotosTooMany)
+}
+
+// IsAnonymousReactionsDisabled reports whether err is ANONYMOUS_REACTIONS_DISABLED.
+func IsAnonymousReactionsDisabled(err error) bool {
+	return tgerr.Is(err, ErrAnonymousReactionsDisabled)
 }
 
 // IsAPIIDInvalid reports whether err is API_ID_INVALID.
@@ -621,6 +681,21 @@ func IsBankCardNumberInvalid(err error) bool {
 // IsBannedRightsInvalid reports whether err is BANNED_RIGHTS_INVALID.
 func IsBannedRightsInvalid(err error) bool {
 	return tgerr.Is(err, ErrBannedRightsInvalid)
+}
+
+// IsBoostsEmpty reports whether err is BOOSTS_EMPTY.
+func IsBoostsEmpty(err error) bool {
+	return tgerr.Is(err, ErrBoostsEmpty)
+}
+
+// IsBoostsRequired reports whether err is BOOSTS_REQUIRED.
+func IsBoostsRequired(err error) bool {
+	return tgerr.Is(err, ErrBoostsRequired)
+}
+
+// IsBoostPeerInvalid reports whether err is BOOST_PEER_INVALID.
+func IsBoostPeerInvalid(err error) bool {
+	return tgerr.Is(err, ErrBoostPeerInvalid)
 }
 
 // IsBotsTooMuch reports whether err is BOTS_TOO_MUCH.
@@ -758,6 +833,11 @@ func IsCallPeerInvalid(err error) bool {
 	return tgerr.Is(err, ErrCallPeerInvalid)
 }
 
+// IsCallProtocolCompatLayerInvalid reports whether err is CALL_PROTOCOL_COMPAT_LAYER_INVALID.
+func IsCallProtocolCompatLayerInvalid(err error) bool {
+	return tgerr.Is(err, ErrCallProtocolCompatLayerInvalid)
+}
+
 // IsCallProtocolFlagsInvalid reports whether err is CALL_PROTOCOL_FLAGS_INVALID.
 func IsCallProtocolFlagsInvalid(err error) bool {
 	return tgerr.Is(err, ErrCallProtocolFlagsInvalid)
@@ -826,6 +906,11 @@ func IsChannelTooBig(err error) bool {
 // IsChannelTooLarge reports whether err is CHANNEL_TOO_LARGE.
 func IsChannelTooLarge(err error) bool {
 	return tgerr.Is(err, ErrChannelTooLarge)
+}
+
+// IsChatlistExcludeInvalid reports whether err is CHATLIST_EXCLUDE_INVALID.
+func IsChatlistExcludeInvalid(err error) bool {
+	return tgerr.Is(err, ErrChatlistExcludeInvalid)
 }
 
 // IsChatAboutNotModified reports whether err is CHAT_ABOUT_NOT_MODIFIED.
@@ -1003,6 +1088,11 @@ func IsCodeInvalid(err error) bool {
 	return tgerr.Is(err, ErrCodeInvalid)
 }
 
+// IsColorInvalid reports whether err is COLOR_INVALID.
+func IsColorInvalid(err error) bool {
+	return tgerr.Is(err, ErrColorInvalid)
+}
+
 // IsConnectionAPIIDInvalid reports whether err is CONNECTION_API_ID_INVALID.
 func IsConnectionAPIIDInvalid(err error) bool {
 	return tgerr.Is(err, ErrConnectionAPIIDInvalid)
@@ -1046,6 +1136,11 @@ func IsCreateCallFailed(err error) bool {
 // IsCurrencyTotalAmountInvalid reports whether err is CURRENCY_TOTAL_AMOUNT_INVALID.
 func IsCurrencyTotalAmountInvalid(err error) bool {
 	return tgerr.Is(err, ErrCurrencyTotalAmountInvalid)
+}
+
+// IsCustomReactionsTooMany reports whether err is CUSTOM_REACTIONS_TOO_MANY.
+func IsCustomReactionsTooMany(err error) bool {
+	return tgerr.Is(err, ErrCustomReactionsTooMany)
 }
 
 // IsDataInvalid reports whether err is DATA_INVALID.
@@ -1313,6 +1408,11 @@ func IsFolderIDInvalid(err error) bool {
 	return tgerr.Is(err, ErrFolderIDInvalid)
 }
 
+// IsForumEnabled reports whether err is FORUM_ENABLED.
+func IsForumEnabled(err error) bool {
+	return tgerr.Is(err, ErrForumEnabled)
+}
+
 // IsFreshChangeAdminsForbidden reports whether err is FRESH_CHANGE_ADMINS_FORBIDDEN.
 func IsFreshChangeAdminsForbidden(err error) bool {
 	return tgerr.Is(err, ErrFreshChangeAdminsForbidden)
@@ -1343,9 +1443,24 @@ func IsGameBotInvalid(err error) bool {
 	return tgerr.Is(err, ErrGameBotInvalid)
 }
 
+// IsGeneralModifyIconForbidden reports whether err is GENERAL_MODIFY_ICON_FORBIDDEN.
+func IsGeneralModifyIconForbidden(err error) bool {
+	return tgerr.Is(err, ErrGeneralModifyIconForbidden)
+}
+
 // IsGeoPointInvalid reports whether err is GEO_POINT_INVALID.
 func IsGeoPointInvalid(err error) bool {
 	return tgerr.Is(err, ErrGeoPointInvalid)
+}
+
+// IsGiftcodeNotAllowed reports whether err is GIFTCODE_NOT_ALLOWED.
+func IsGiftcodeNotAllowed(err error) bool {
+	return tgerr.Is(err, ErrGiftcodeNotAllowed)
+}
+
+// IsGiftSlugInvalid reports whether err is GIFT_SLUG_INVALID.
+func IsGiftSlugInvalid(err error) bool {
+	return tgerr.Is(err, ErrGiftSlugInvalid)
 }
 
 // IsGifContentTypeInvalid reports whether err is GIF_CONTENT_TYPE_INVALID.
@@ -1371,6 +1486,11 @@ func IsGraphInvalidReload(err error) bool {
 // IsGraphOutdatedReload reports whether err is GRAPH_OUTDATED_RELOAD.
 func IsGraphOutdatedReload(err error) bool {
 	return tgerr.Is(err, ErrGraphOutdatedReload)
+}
+
+// IsGroupcallAddParticipantsFailed reports whether err is GROUPCALL_ADD_PARTICIPANTS_FAILED.
+func IsGroupcallAddParticipantsFailed(err error) bool {
+	return tgerr.Is(err, ErrGroupcallAddParticipantsFailed)
 }
 
 // IsGroupcallAlreadyDiscarded reports whether err is GROUPCALL_ALREADY_DISCARDED.
@@ -1458,6 +1578,11 @@ func IsInlineResultExpired(err error) bool {
 	return tgerr.Is(err, ErrInlineResultExpired)
 }
 
+// IsInputChatlistInvalid reports whether err is INPUT_CHATLIST_INVALID.
+func IsInputChatlistInvalid(err error) bool {
+	return tgerr.Is(err, ErrInputChatlistInvalid)
+}
+
 // IsInputFilterInvalid reports whether err is INPUT_FILTER_INVALID.
 func IsInputFilterInvalid(err error) bool {
 	return tgerr.Is(err, ErrInputFilterInvalid)
@@ -1511,6 +1636,11 @@ func IsInviteRevokedMissing(err error) bool {
 // IsInviteSlugEmpty reports whether err is INVITE_SLUG_EMPTY.
 func IsInviteSlugEmpty(err error) bool {
 	return tgerr.Is(err, ErrInviteSlugEmpty)
+}
+
+// IsInviteSlugExpired reports whether err is INVITE_SLUG_EXPIRED.
+func IsInviteSlugExpired(err error) bool {
+	return tgerr.Is(err, ErrInviteSlugExpired)
 }
 
 // IsInvoicePayloadInvalid reports whether err is INVOICE_PAYLOAD_INVALID.
@@ -1588,6 +1718,11 @@ func IsMediaEmpty(err error) bool {
 	return tgerr.Is(err, ErrMediaEmpty)
 }
 
+// IsMediaFileInvalid reports whether err is MEDIA_FILE_INVALID.
+func IsMediaFileInvalid(err error) bool {
+	return tgerr.Is(err, ErrMediaFileInvalid)
+}
+
 // IsMediaGroupedInvalid reports whether err is MEDIA_GROUPED_INVALID.
 func IsMediaGroupedInvalid(err error) bool {
 	return tgerr.Is(err, ErrMediaGroupedInvalid)
@@ -1608,6 +1743,26 @@ func IsMediaPrevInvalid(err error) bool {
 	return tgerr.Is(err, ErrMediaPrevInvalid)
 }
 
+// IsMediaTTLInvalid reports whether err is MEDIA_TTL_INVALID.
+func IsMediaTTLInvalid(err error) bool {
+	return tgerr.Is(err, ErrMediaTTLInvalid)
+}
+
+// IsMediaTypeInvalid reports whether err is MEDIA_TYPE_INVALID.
+func IsMediaTypeInvalid(err error) bool {
+	return tgerr.Is(err, ErrMediaTypeInvalid)
+}
+
+// IsMediaVideoStoryMissing reports whether err is MEDIA_VIDEO_STORY_MISSING.
+func IsMediaVideoStoryMissing(err error) bool {
+	return tgerr.Is(err, ErrMediaVideoStoryMissing)
+}
+
+// IsMegagroupGeoRequired reports whether err is MEGAGROUP_GEO_REQUIRED.
+func IsMegagroupGeoRequired(err error) bool {
+	return tgerr.Is(err, ErrMegagroupGeoRequired)
+}
+
 // IsMegagroupIDInvalid reports whether err is MEGAGROUP_ID_INVALID.
 func IsMegagroupIDInvalid(err error) bool {
 	return tgerr.Is(err, ErrMegagroupIDInvalid)
@@ -1621,6 +1776,11 @@ func IsMegagroupPrehistoryHidden(err error) bool {
 // IsMegagroupRequired reports whether err is MEGAGROUP_REQUIRED.
 func IsMegagroupRequired(err error) bool {
 	return tgerr.Is(err, ErrMegagroupRequired)
+}
+
+// IsMemberNotFound reports whether err is MEMBER_NOT_FOUND.
+func IsMemberNotFound(err error) bool {
+	return tgerr.Is(err, ErrMemberNotFound)
 }
 
 // IsMessageAuthorRequired reports whether err is MESSAGE_AUTHOR_REQUIRED.
@@ -2153,6 +2313,16 @@ func IsReplyMarkupTooLong(err error) bool {
 	return tgerr.Is(err, ErrReplyMarkupTooLong)
 }
 
+// IsReplyToInvalid reports whether err is REPLY_TO_INVALID.
+func IsReplyToInvalid(err error) bool {
+	return tgerr.Is(err, ErrReplyToInvalid)
+}
+
+// IsReplyToUserInvalid reports whether err is REPLY_TO_USER_INVALID.
+func IsReplyToUserInvalid(err error) bool {
+	return tgerr.Is(err, ErrReplyToUserInvalid)
+}
+
 // IsResetRequestMissing reports whether err is RESET_REQUEST_MISSING.
 func IsResetRequestMissing(err error) bool {
 	return tgerr.Is(err, ErrResetRequestMissing)
@@ -2258,6 +2428,11 @@ func IsSendCodeUnavailable(err error) bool {
 	return tgerr.Is(err, ErrSendCodeUnavailable)
 }
 
+// IsSendMediaInvalid reports whether err is SEND_MEDIA_INVALID.
+func IsSendMediaInvalid(err error) bool {
+	return tgerr.Is(err, ErrSendMediaInvalid)
+}
+
 // IsSendMessageMediaInvalid reports whether err is SEND_MESSAGE_MEDIA_INVALID.
 func IsSendMessageMediaInvalid(err error) bool {
 	return tgerr.Is(err, ErrSendMessageMediaInvalid)
@@ -2303,6 +2478,11 @@ func IsSignInFailed(err error) bool {
 	return tgerr.Is(err, ErrSignInFailed)
 }
 
+// IsSlotsEmpty reports whether err is SLOTS_EMPTY.
+func IsSlotsEmpty(err error) bool {
+	return tgerr.Is(err, ErrSlotsEmpty)
+}
+
 // IsSlowmodeMultiMsgsDisabled reports whether err is SLOWMODE_MULTI_MSGS_DISABLED.
 func IsSlowmodeMultiMsgsDisabled(err error) bool {
 	return tgerr.Is(err, ErrSlowmodeMultiMsgsDisabled)
@@ -2311,6 +2491,11 @@ func IsSlowmodeMultiMsgsDisabled(err error) bool {
 // IsSlowmodeWait reports whether err is SLOWMODE_WAIT.
 func IsSlowmodeWait(err error) bool {
 	return tgerr.Is(err, ErrSlowmodeWait)
+}
+
+// IsSlugInvalid reports whether err is SLUG_INVALID.
+func IsSlugInvalid(err error) bool {
+	return tgerr.Is(err, ErrSlugInvalid)
 }
 
 // IsSMSCodeCreateFailed reports whether err is SMS_CODE_CREATE_FAILED.
@@ -2448,6 +2633,46 @@ func IsStickerVideoNowebm(err error) bool {
 	return tgerr.Is(err, ErrStickerVideoNowebm)
 }
 
+// IsStoriesNeverCreated reports whether err is STORIES_NEVER_CREATED.
+func IsStoriesNeverCreated(err error) bool {
+	return tgerr.Is(err, ErrStoriesNeverCreated)
+}
+
+// IsStoriesTooMuch reports whether err is STORIES_TOO_MUCH.
+func IsStoriesTooMuch(err error) bool {
+	return tgerr.Is(err, ErrStoriesTooMuch)
+}
+
+// IsStoryIDEmpty reports whether err is STORY_ID_EMPTY.
+func IsStoryIDEmpty(err error) bool {
+	return tgerr.Is(err, ErrStoryIDEmpty)
+}
+
+// IsStoryIDInvalid reports whether err is STORY_ID_INVALID.
+func IsStoryIDInvalid(err error) bool {
+	return tgerr.Is(err, ErrStoryIDInvalid)
+}
+
+// IsStoryNotModified reports whether err is STORY_NOT_MODIFIED.
+func IsStoryNotModified(err error) bool {
+	return tgerr.Is(err, ErrStoryNotModified)
+}
+
+// IsStoryPeriodInvalid reports whether err is STORY_PERIOD_INVALID.
+func IsStoryPeriodInvalid(err error) bool {
+	return tgerr.Is(err, ErrStoryPeriodInvalid)
+}
+
+// IsStorySendFloodMonthly reports whether err is STORY_SEND_FLOOD_MONTHLY.
+func IsStorySendFloodMonthly(err error) bool {
+	return tgerr.Is(err, ErrStorySendFloodMonthly)
+}
+
+// IsStorySendFloodWeekly reports whether err is STORY_SEND_FLOOD_WEEKLY.
+func IsStorySendFloodWeekly(err error) bool {
+	return tgerr.Is(err, ErrStorySendFloodWeekly)
+}
+
 // IsSwitchPmTextEmpty reports whether err is SWITCH_PM_TEXT_EMPTY.
 func IsSwitchPmTextEmpty(err error) bool {
 	return tgerr.Is(err, ErrSwitchPmTextEmpty)
@@ -2528,14 +2753,29 @@ func IsTokenTypeInvalid(err error) bool {
 	return tgerr.Is(err, ErrTokenTypeInvalid)
 }
 
+// IsTopicsEmpty reports whether err is TOPICS_EMPTY.
+func IsTopicsEmpty(err error) bool {
+	return tgerr.Is(err, ErrTopicsEmpty)
+}
+
 // IsTopicClosed reports whether err is TOPIC_CLOSED.
 func IsTopicClosed(err error) bool {
 	return tgerr.Is(err, ErrTopicClosed)
 }
 
+// IsTopicCloseSeparately reports whether err is TOPIC_CLOSE_SEPARATELY.
+func IsTopicCloseSeparately(err error) bool {
+	return tgerr.Is(err, ErrTopicCloseSeparately)
+}
+
 // IsTopicDeleted reports whether err is TOPIC_DELETED.
 func IsTopicDeleted(err error) bool {
 	return tgerr.Is(err, ErrTopicDeleted)
+}
+
+// IsTopicHideSeparately reports whether err is TOPIC_HIDE_SEPARATELY.
+func IsTopicHideSeparately(err error) bool {
+	return tgerr.Is(err, ErrTopicHideSeparately)
 }
 
 // IsTopicIDInvalid reports whether err is TOPIC_ID_INVALID.
@@ -2546,6 +2786,11 @@ func IsTopicIDInvalid(err error) bool {
 // IsTopicNotModified reports whether err is TOPIC_NOT_MODIFIED.
 func IsTopicNotModified(err error) bool {
 	return tgerr.Is(err, ErrTopicNotModified)
+}
+
+// IsTopicTitleEmpty reports whether err is TOPIC_TITLE_EMPTY.
+func IsTopicTitleEmpty(err error) bool {
+	return tgerr.Is(err, ErrTopicTitleEmpty)
 }
 
 // IsToLangInvalid reports whether err is TO_LANG_INVALID.
@@ -2743,6 +2988,11 @@ func IsUserPrivacyRestricted(err error) bool {
 	return tgerr.Is(err, ErrUserPrivacyRestricted)
 }
 
+// IsUserPublicMissing reports whether err is USER_PUBLIC_MISSING.
+func IsUserPublicMissing(err error) bool {
+	return tgerr.Is(err, ErrUserPublicMissing)
+}
+
 // IsUserRestricted reports whether err is USER_RESTRICTED.
 func IsUserRestricted(err error) bool {
 	return tgerr.Is(err, ErrUserRestricted)
@@ -2751,6 +3001,11 @@ func IsUserRestricted(err error) bool {
 // IsUserVolumeInvalid reports whether err is USER_VOLUME_INVALID.
 func IsUserVolumeInvalid(err error) bool {
 	return tgerr.Is(err, ErrUserVolumeInvalid)
+}
+
+// IsVenueIDInvalid reports whether err is VENUE_ID_INVALID.
+func IsVenueIDInvalid(err error) bool {
+	return tgerr.Is(err, ErrVenueIDInvalid)
 }
 
 // IsVideoContentTypeInvalid reports whether err is VIDEO_CONTENT_TYPE_INVALID.
@@ -2788,6 +3043,11 @@ func IsWallpaperMimeInvalid(err error) bool {
 	return tgerr.Is(err, ErrWallpaperMimeInvalid)
 }
 
+// IsWallpaperNotFound reports whether err is WALLPAPER_NOT_FOUND.
+func IsWallpaperNotFound(err error) bool {
+	return tgerr.Is(err, ErrWallpaperNotFound)
+}
+
 // IsWcConvertURLInvalid reports whether err is WC_CONVERT_URL_INVALID.
 func IsWcConvertURLInvalid(err error) bool {
 	return tgerr.Is(err, ErrWcConvertURLInvalid)
@@ -2821,6 +3081,16 @@ func IsWebpageCurlFailed(err error) bool {
 // IsWebpageMediaEmpty reports whether err is WEBPAGE_MEDIA_EMPTY.
 func IsWebpageMediaEmpty(err error) bool {
 	return tgerr.Is(err, ErrWebpageMediaEmpty)
+}
+
+// IsWebpageNotFound reports whether err is WEBPAGE_NOT_FOUND.
+func IsWebpageNotFound(err error) bool {
+	return tgerr.Is(err, ErrWebpageNotFound)
+}
+
+// IsWebpageURLInvalid reports whether err is WEBPAGE_URL_INVALID.
+func IsWebpageURLInvalid(err error) bool {
+	return tgerr.Is(err, ErrWebpageURLInvalid)
 }
 
 // IsWebpushAuthInvalid reports whether err is WEBPUSH_AUTH_INVALID.

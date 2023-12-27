@@ -519,10 +519,23 @@ func (s MessageActionClassArray) AsMessageActionSetChatWallPaper() (to MessageAc
 	return to
 }
 
-// AsMessageActionSetSameChatWallPaper returns copy with only MessageActionSetSameChatWallPaper constructors.
-func (s MessageActionClassArray) AsMessageActionSetSameChatWallPaper() (to MessageActionSetSameChatWallPaperArray) {
+// AsMessageActionGiftCode returns copy with only MessageActionGiftCode constructors.
+func (s MessageActionClassArray) AsMessageActionGiftCode() (to MessageActionGiftCodeArray) {
 	for _, elem := range s {
-		value, ok := elem.(*MessageActionSetSameChatWallPaper)
+		value, ok := elem.(*MessageActionGiftCode)
+		if !ok {
+			continue
+		}
+		to = append(to, *value)
+	}
+
+	return to
+}
+
+// AsMessageActionGiveawayResults returns copy with only MessageActionGiveawayResults constructors.
+func (s MessageActionClassArray) AsMessageActionGiveawayResults() (to MessageActionGiveawayResultsArray) {
+	for _, elem := range s {
+		value, ok := elem.(*MessageActionGiveawayResults)
 		if !ok {
 			continue
 		}
@@ -3074,27 +3087,27 @@ func (s *MessageActionSetChatWallPaperArray) Pop() (v MessageActionSetChatWallPa
 	return v, true
 }
 
-// MessageActionSetSameChatWallPaperArray is adapter for slice of MessageActionSetSameChatWallPaper.
-type MessageActionSetSameChatWallPaperArray []MessageActionSetSameChatWallPaper
+// MessageActionGiftCodeArray is adapter for slice of MessageActionGiftCode.
+type MessageActionGiftCodeArray []MessageActionGiftCode
 
-// Sort sorts slice of MessageActionSetSameChatWallPaper.
-func (s MessageActionSetSameChatWallPaperArray) Sort(less func(a, b MessageActionSetSameChatWallPaper) bool) MessageActionSetSameChatWallPaperArray {
+// Sort sorts slice of MessageActionGiftCode.
+func (s MessageActionGiftCodeArray) Sort(less func(a, b MessageActionGiftCode) bool) MessageActionGiftCodeArray {
 	sort.Slice(s, func(i, j int) bool {
 		return less(s[i], s[j])
 	})
 	return s
 }
 
-// SortStable sorts slice of MessageActionSetSameChatWallPaper.
-func (s MessageActionSetSameChatWallPaperArray) SortStable(less func(a, b MessageActionSetSameChatWallPaper) bool) MessageActionSetSameChatWallPaperArray {
+// SortStable sorts slice of MessageActionGiftCode.
+func (s MessageActionGiftCodeArray) SortStable(less func(a, b MessageActionGiftCode) bool) MessageActionGiftCodeArray {
 	sort.SliceStable(s, func(i, j int) bool {
 		return less(s[i], s[j])
 	})
 	return s
 }
 
-// Retain filters in-place slice of MessageActionSetSameChatWallPaper.
-func (s MessageActionSetSameChatWallPaperArray) Retain(keep func(x MessageActionSetSameChatWallPaper) bool) MessageActionSetSameChatWallPaperArray {
+// Retain filters in-place slice of MessageActionGiftCode.
+func (s MessageActionGiftCodeArray) Retain(keep func(x MessageActionGiftCode) bool) MessageActionGiftCodeArray {
 	n := 0
 	for _, x := range s {
 		if keep(x) {
@@ -3108,7 +3121,7 @@ func (s MessageActionSetSameChatWallPaperArray) Retain(keep func(x MessageAction
 }
 
 // First returns first element of slice (if exists).
-func (s MessageActionSetSameChatWallPaperArray) First() (v MessageActionSetSameChatWallPaper, ok bool) {
+func (s MessageActionGiftCodeArray) First() (v MessageActionGiftCode, ok bool) {
 	if len(s) < 1 {
 		return
 	}
@@ -3116,7 +3129,7 @@ func (s MessageActionSetSameChatWallPaperArray) First() (v MessageActionSetSameC
 }
 
 // Last returns last element of slice (if exists).
-func (s MessageActionSetSameChatWallPaperArray) Last() (v MessageActionSetSameChatWallPaper, ok bool) {
+func (s MessageActionGiftCodeArray) Last() (v MessageActionGiftCode, ok bool) {
 	if len(s) < 1 {
 		return
 	}
@@ -3124,7 +3137,7 @@ func (s MessageActionSetSameChatWallPaperArray) Last() (v MessageActionSetSameCh
 }
 
 // PopFirst returns first element of slice (if exists) and deletes it.
-func (s *MessageActionSetSameChatWallPaperArray) PopFirst() (v MessageActionSetSameChatWallPaper, ok bool) {
+func (s *MessageActionGiftCodeArray) PopFirst() (v MessageActionGiftCode, ok bool) {
 	if s == nil || len(*s) < 1 {
 		return
 	}
@@ -3134,7 +3147,7 @@ func (s *MessageActionSetSameChatWallPaperArray) PopFirst() (v MessageActionSetS
 
 	// Delete by index from SliceTricks.
 	copy(a[0:], a[1:])
-	var zero MessageActionSetSameChatWallPaper
+	var zero MessageActionGiftCode
 	a[len(a)-1] = zero
 	a = a[:len(a)-1]
 	*s = a
@@ -3143,7 +3156,89 @@ func (s *MessageActionSetSameChatWallPaperArray) PopFirst() (v MessageActionSetS
 }
 
 // Pop returns last element of slice (if exists) and deletes it.
-func (s *MessageActionSetSameChatWallPaperArray) Pop() (v MessageActionSetSameChatWallPaper, ok bool) {
+func (s *MessageActionGiftCodeArray) Pop() (v MessageActionGiftCode, ok bool) {
+	if s == nil || len(*s) < 1 {
+		return
+	}
+
+	a := *s
+	v = a[len(a)-1]
+	a = a[:len(a)-1]
+	*s = a
+
+	return v, true
+}
+
+// MessageActionGiveawayResultsArray is adapter for slice of MessageActionGiveawayResults.
+type MessageActionGiveawayResultsArray []MessageActionGiveawayResults
+
+// Sort sorts slice of MessageActionGiveawayResults.
+func (s MessageActionGiveawayResultsArray) Sort(less func(a, b MessageActionGiveawayResults) bool) MessageActionGiveawayResultsArray {
+	sort.Slice(s, func(i, j int) bool {
+		return less(s[i], s[j])
+	})
+	return s
+}
+
+// SortStable sorts slice of MessageActionGiveawayResults.
+func (s MessageActionGiveawayResultsArray) SortStable(less func(a, b MessageActionGiveawayResults) bool) MessageActionGiveawayResultsArray {
+	sort.SliceStable(s, func(i, j int) bool {
+		return less(s[i], s[j])
+	})
+	return s
+}
+
+// Retain filters in-place slice of MessageActionGiveawayResults.
+func (s MessageActionGiveawayResultsArray) Retain(keep func(x MessageActionGiveawayResults) bool) MessageActionGiveawayResultsArray {
+	n := 0
+	for _, x := range s {
+		if keep(x) {
+			s[n] = x
+			n++
+		}
+	}
+	s = s[:n]
+
+	return s
+}
+
+// First returns first element of slice (if exists).
+func (s MessageActionGiveawayResultsArray) First() (v MessageActionGiveawayResults, ok bool) {
+	if len(s) < 1 {
+		return
+	}
+	return s[0], true
+}
+
+// Last returns last element of slice (if exists).
+func (s MessageActionGiveawayResultsArray) Last() (v MessageActionGiveawayResults, ok bool) {
+	if len(s) < 1 {
+		return
+	}
+	return s[len(s)-1], true
+}
+
+// PopFirst returns first element of slice (if exists) and deletes it.
+func (s *MessageActionGiveawayResultsArray) PopFirst() (v MessageActionGiveawayResults, ok bool) {
+	if s == nil || len(*s) < 1 {
+		return
+	}
+
+	a := *s
+	v = a[0]
+
+	// Delete by index from SliceTricks.
+	copy(a[0:], a[1:])
+	var zero MessageActionGiveawayResults
+	a[len(a)-1] = zero
+	a = a[:len(a)-1]
+	*s = a
+
+	return v, true
+}
+
+// Pop returns last element of slice (if exists) and deletes it.
+func (s *MessageActionGiveawayResultsArray) Pop() (v MessageActionGiveawayResults, ok bool) {
 	if s == nil || len(*s) < 1 {
 		return
 	}

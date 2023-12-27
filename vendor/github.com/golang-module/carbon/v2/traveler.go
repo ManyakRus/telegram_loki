@@ -8,13 +8,13 @@ import (
 // 当前
 func (c Carbon) Now(timezone ...string) Carbon {
 	if len(timezone) > 0 {
-		c.loc, c.Error = getLocationByTimezone(timezone[len(timezone)-1])
+		c.loc, c.Error = getLocationByTimezone(timezone[0])
 	}
 	if c.Error != nil {
 		return c
 	}
-	if c.isTestNow && !c.IsZero() {
-		return c
+	if c.HasTestNow() {
+		return CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	c.time = time.Now().In(c.loc)
 	return c
@@ -30,13 +30,13 @@ func Now(timezone ...string) Carbon {
 // 明天
 func (c Carbon) Tomorrow(timezone ...string) Carbon {
 	if len(timezone) > 0 {
-		c.loc, c.Error = getLocationByTimezone(timezone[len(timezone)-1])
+		c.loc, c.Error = getLocationByTimezone(timezone[0])
 	}
 	if c.Error != nil {
 		return c
 	}
-	if c.isTestNow {
-		return c.AddDay()
+	if c.HasTestNow() {
+		return CreateFromTimestampNano(c.testNow, c.Location()).AddDay()
 	}
 	if !c.IsZero() {
 		return c.AddDay()
@@ -54,13 +54,13 @@ func Tomorrow(timezone ...string) Carbon {
 // 昨天
 func (c Carbon) Yesterday(timezone ...string) Carbon {
 	if len(timezone) > 0 {
-		c.loc, c.Error = getLocationByTimezone(timezone[len(timezone)-1])
+		c.loc, c.Error = getLocationByTimezone(timezone[0])
 	}
 	if c.Error != nil {
 		return c
 	}
-	if c.isTestNow {
-		return c.SubDay()
+	if c.HasTestNow() {
+		return CreateFromTimestampNano(c.testNow, c.Location()).SubDay()
 	}
 	if !c.IsZero() {
 		return c.SubDay()
@@ -72,6 +72,36 @@ func (c Carbon) Yesterday(timezone ...string) Carbon {
 // 昨天
 func Yesterday(timezone ...string) Carbon {
 	return NewCarbon().Yesterday(timezone...)
+}
+
+// Closest returns the closest Carbon instance from the given Carbon instance (second-precision).
+// 返回离给定 carbon 实例最近的 Carbon 实例
+func (c Carbon) Closest(c1 Carbon, c2 Carbon) Carbon {
+	if c1.IsZero() || c1.IsInvalid() {
+		return c2
+	}
+	if c2.IsZero() || c2.IsInvalid() {
+		return c1
+	}
+	if c.DiffAbsInSeconds(c1) < c.DiffAbsInSeconds(c2) {
+		return c1
+	}
+	return c2
+}
+
+// Farthest returns the farthest Carbon instance from the given Carbon instance (second-precision).
+// 返回离给定 carbon 实例最远的 Carbon 实例
+func (c Carbon) Farthest(c1 Carbon, c2 Carbon) Carbon {
+	if c1.IsZero() || c1.IsInvalid() {
+		return c2
+	}
+	if c2.IsZero() || c2.IsInvalid() {
+		return c1
+	}
+	if c.DiffAbsInSeconds(c1) > c.DiffAbsInSeconds(c2) {
+		return c1
+	}
+	return c2
 }
 
 // AddDuration adds one duration.

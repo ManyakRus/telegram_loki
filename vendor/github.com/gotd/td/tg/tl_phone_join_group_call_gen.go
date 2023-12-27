@@ -53,7 +53,7 @@ type PhoneJoinGroupCallRequest struct {
 	// livestream or muted group chat.
 	//
 	// Links:
-	//  1) https://core.telegram.org/api/links#video-chatlivestream-links
+	//  1) https://core.telegram.org/api/links#video-chat-livestream-links
 	//
 	// Use SetInviteHash and GetInviteHash helpers.
 	InviteHash string
@@ -369,6 +369,7 @@ func (j *PhoneJoinGroupCallRequest) GetParams() (value DataJSON) {
 // Possible errors:
 //
 //	400 DATA_JSON_INVALID: The provided JSON data is invalid.
+//	500 GROUPCALL_ADD_PARTICIPANTS_FAILED:
 //	403 GROUPCALL_FORBIDDEN: The group call has already ended.
 //	400 GROUPCALL_INVALID: The specified group call is invalid.
 //	400 GROUPCALL_SSRC_DUPLICATE_MUCH: The app needs to retry joining the group call with a new SSRC value.

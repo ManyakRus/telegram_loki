@@ -54,6 +54,12 @@ type StickerSet struct {
 	Videos bool
 	// This is a custom emoji stickerset
 	Emojis bool
+	// Whether the color of this TGS custom emoji stickerset should be changed to the text
+	// color when used in messages, the accent color if used as emoji status, white on chat
+	// photos, or another appropriate color based on context.
+	TextColor bool
+	// ChannelEmojiStatus field of StickerSet.
+	ChannelEmojiStatus bool
 	// When was this stickerset installed
 	//
 	// Use SetInstalledDate and GetInstalledDate helpers.
@@ -131,6 +137,12 @@ func (s *StickerSet) Zero() bool {
 	if !(s.Emojis == false) {
 		return false
 	}
+	if !(s.TextColor == false) {
+		return false
+	}
+	if !(s.ChannelEmojiStatus == false) {
+		return false
+	}
 	if !(s.InstalledDate == 0) {
 		return false
 	}
@@ -185,6 +197,8 @@ func (s *StickerSet) FillFrom(from interface {
 	GetAnimated() (value bool)
 	GetVideos() (value bool)
 	GetEmojis() (value bool)
+	GetTextColor() (value bool)
+	GetChannelEmojiStatus() (value bool)
 	GetInstalledDate() (value int, ok bool)
 	GetID() (value int64)
 	GetAccessHash() (value int64)
@@ -203,6 +217,8 @@ func (s *StickerSet) FillFrom(from interface {
 	s.Animated = from.GetAnimated()
 	s.Videos = from.GetVideos()
 	s.Emojis = from.GetEmojis()
+	s.TextColor = from.GetTextColor()
+	s.ChannelEmojiStatus = from.GetChannelEmojiStatus()
 	if val, ok := from.GetInstalledDate(); ok {
 		s.InstalledDate = val
 	}
@@ -285,6 +301,16 @@ func (s *StickerSet) TypeInfo() tdp.Type {
 			Null:       !s.Flags.Has(7),
 		},
 		{
+			Name:       "TextColor",
+			SchemaName: "text_color",
+			Null:       !s.Flags.Has(9),
+		},
+		{
+			Name:       "ChannelEmojiStatus",
+			SchemaName: "channel_emoji_status",
+			Null:       !s.Flags.Has(10),
+		},
+		{
 			Name:       "InstalledDate",
 			SchemaName: "installed_date",
 			Null:       !s.Flags.Has(0),
@@ -356,6 +382,12 @@ func (s *StickerSet) SetFlags() {
 	}
 	if !(s.Emojis == false) {
 		s.Flags.Set(7)
+	}
+	if !(s.TextColor == false) {
+		s.Flags.Set(9)
+	}
+	if !(s.ChannelEmojiStatus == false) {
+		s.Flags.Set(10)
 	}
 	if !(s.InstalledDate == 0) {
 		s.Flags.Set(0)
@@ -451,6 +483,8 @@ func (s *StickerSet) DecodeBare(b *bin.Buffer) error {
 	s.Animated = s.Flags.Has(5)
 	s.Videos = s.Flags.Has(6)
 	s.Emojis = s.Flags.Has(7)
+	s.TextColor = s.Flags.Has(9)
+	s.ChannelEmojiStatus = s.Flags.Has(10)
 	if s.Flags.Has(0) {
 		value, err := b.Int()
 		if err != nil {
@@ -653,6 +687,44 @@ func (s *StickerSet) GetEmojis() (value bool) {
 		return
 	}
 	return s.Flags.Has(7)
+}
+
+// SetTextColor sets value of TextColor conditional field.
+func (s *StickerSet) SetTextColor(value bool) {
+	if value {
+		s.Flags.Set(9)
+		s.TextColor = true
+	} else {
+		s.Flags.Unset(9)
+		s.TextColor = false
+	}
+}
+
+// GetTextColor returns value of TextColor conditional field.
+func (s *StickerSet) GetTextColor() (value bool) {
+	if s == nil {
+		return
+	}
+	return s.Flags.Has(9)
+}
+
+// SetChannelEmojiStatus sets value of ChannelEmojiStatus conditional field.
+func (s *StickerSet) SetChannelEmojiStatus(value bool) {
+	if value {
+		s.Flags.Set(10)
+		s.ChannelEmojiStatus = true
+	} else {
+		s.Flags.Unset(10)
+		s.ChannelEmojiStatus = false
+	}
+}
+
+// GetChannelEmojiStatus returns value of ChannelEmojiStatus conditional field.
+func (s *StickerSet) GetChannelEmojiStatus() (value bool) {
+	if s == nil {
+		return
+	}
+	return s.Flags.Has(10)
 }
 
 // SetInstalledDate sets value of InstalledDate conditional field.

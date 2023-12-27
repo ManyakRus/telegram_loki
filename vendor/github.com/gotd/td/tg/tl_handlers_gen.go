@@ -186,6 +186,16 @@ func (u UpdateDispatcher) OnUserName(handler UserNameHandler) {
 	}
 }
 
+// NewAuthorizationHandler is a NewAuthorization event handler.
+type NewAuthorizationHandler func(ctx context.Context, e Entities, update *UpdateNewAuthorization) error
+
+// OnNewAuthorization sets NewAuthorization handler.
+func (u UpdateDispatcher) OnNewAuthorization(handler NewAuthorizationHandler) {
+	u.handlers[UpdateNewAuthorizationTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateNewAuthorization))
+	}
+}
+
 // NewEncryptedMessageHandler is a NewEncryptedMessage event handler.
 type NewEncryptedMessageHandler func(ctx context.Context, e Entities, update *UpdateNewEncryptedMessage) error
 
@@ -1213,5 +1223,105 @@ type GroupInvitePrivacyForbiddenHandler func(ctx context.Context, e Entities, up
 func (u UpdateDispatcher) OnGroupInvitePrivacyForbidden(handler GroupInvitePrivacyForbiddenHandler) {
 	u.handlers[UpdateGroupInvitePrivacyForbiddenTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
 		return handler(ctx, e, update.(*UpdateGroupInvitePrivacyForbidden))
+	}
+}
+
+// StoryHandler is a Story event handler.
+type StoryHandler func(ctx context.Context, e Entities, update *UpdateStory) error
+
+// OnStory sets Story handler.
+func (u UpdateDispatcher) OnStory(handler StoryHandler) {
+	u.handlers[UpdateStoryTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateStory))
+	}
+}
+
+// ReadStoriesHandler is a ReadStories event handler.
+type ReadStoriesHandler func(ctx context.Context, e Entities, update *UpdateReadStories) error
+
+// OnReadStories sets ReadStories handler.
+func (u UpdateDispatcher) OnReadStories(handler ReadStoriesHandler) {
+	u.handlers[UpdateReadStoriesTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateReadStories))
+	}
+}
+
+// StoryIDHandler is a StoryID event handler.
+type StoryIDHandler func(ctx context.Context, e Entities, update *UpdateStoryID) error
+
+// OnStoryID sets StoryID handler.
+func (u UpdateDispatcher) OnStoryID(handler StoryIDHandler) {
+	u.handlers[UpdateStoryIDTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateStoryID))
+	}
+}
+
+// StoriesStealthModeHandler is a StoriesStealthMode event handler.
+type StoriesStealthModeHandler func(ctx context.Context, e Entities, update *UpdateStoriesStealthMode) error
+
+// OnStoriesStealthMode sets StoriesStealthMode handler.
+func (u UpdateDispatcher) OnStoriesStealthMode(handler StoriesStealthModeHandler) {
+	u.handlers[UpdateStoriesStealthModeTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateStoriesStealthMode))
+	}
+}
+
+// SentStoryReactionHandler is a SentStoryReaction event handler.
+type SentStoryReactionHandler func(ctx context.Context, e Entities, update *UpdateSentStoryReaction) error
+
+// OnSentStoryReaction sets SentStoryReaction handler.
+func (u UpdateDispatcher) OnSentStoryReaction(handler SentStoryReactionHandler) {
+	u.handlers[UpdateSentStoryReactionTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateSentStoryReaction))
+	}
+}
+
+// BotChatBoostHandler is a BotChatBoost event handler.
+type BotChatBoostHandler func(ctx context.Context, e Entities, update *UpdateBotChatBoost) error
+
+// OnBotChatBoost sets BotChatBoost handler.
+func (u UpdateDispatcher) OnBotChatBoost(handler BotChatBoostHandler) {
+	u.handlers[UpdateBotChatBoostTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateBotChatBoost))
+	}
+}
+
+// ChannelViewForumAsMessagesHandler is a ChannelViewForumAsMessages event handler.
+type ChannelViewForumAsMessagesHandler func(ctx context.Context, e Entities, update *UpdateChannelViewForumAsMessages) error
+
+// OnChannelViewForumAsMessages sets ChannelViewForumAsMessages handler.
+func (u UpdateDispatcher) OnChannelViewForumAsMessages(handler ChannelViewForumAsMessagesHandler) {
+	u.handlers[UpdateChannelViewForumAsMessagesTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateChannelViewForumAsMessages))
+	}
+}
+
+// PeerWallpaperHandler is a PeerWallpaper event handler.
+type PeerWallpaperHandler func(ctx context.Context, e Entities, update *UpdatePeerWallpaper) error
+
+// OnPeerWallpaper sets PeerWallpaper handler.
+func (u UpdateDispatcher) OnPeerWallpaper(handler PeerWallpaperHandler) {
+	u.handlers[UpdatePeerWallpaperTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdatePeerWallpaper))
+	}
+}
+
+// BotMessageReactionHandler is a BotMessageReaction event handler.
+type BotMessageReactionHandler func(ctx context.Context, e Entities, update *UpdateBotMessageReaction) error
+
+// OnBotMessageReaction sets BotMessageReaction handler.
+func (u UpdateDispatcher) OnBotMessageReaction(handler BotMessageReactionHandler) {
+	u.handlers[UpdateBotMessageReactionTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateBotMessageReaction))
+	}
+}
+
+// BotMessageReactionsHandler is a BotMessageReactions event handler.
+type BotMessageReactionsHandler func(ctx context.Context, e Entities, update *UpdateBotMessageReactions) error
+
+// OnBotMessageReactions sets BotMessageReactions handler.
+func (u UpdateDispatcher) OnBotMessageReactions(handler BotMessageReactionsHandler) {
+	u.handlers[UpdateBotMessageReactionsTypeID] = func(ctx context.Context, e Entities, update UpdateClass) error {
+		return handler(ctx, e, update.(*UpdateBotMessageReactions))
 	}
 }
