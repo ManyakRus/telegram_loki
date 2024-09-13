@@ -77,6 +77,8 @@ loop_for:
 
 	}
 
+	LastReadTime = Date2
+
 	// если только ошибки - то напишем в телеграм
 	if IsOnlyErrors == true {
 		TextError := fmt.Sprint("Search errors: only errors. Last error: ", err1)
@@ -85,8 +87,8 @@ loop_for:
 		if err != nil {
 			log.Error("telegram_client.SendMessage() error: ", err)
 		}
+		micro.Pause(60 * 60 * 1000) //пауза 1 час
 	}
-	LastReadTime = Date2
 }
 
 // Start_period1 - запускает чтение логов одного сервиса за период
