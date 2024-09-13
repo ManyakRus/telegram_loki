@@ -1473,7 +1473,7 @@ func (s *AuthSentCodeTypeFragmentSMS) GetLength() (value int) {
 	return s.Length
 }
 
-// AuthSentCodeTypeFirebaseSMS represents TL type `auth.sentCodeTypeFirebaseSms#e57b1432`.
+// AuthSentCodeTypeFirebaseSMS represents TL type `auth.sentCodeTypeFirebaseSms#9fd736`.
 // An authentication code should be delivered via SMS after Firebase attestation, as
 // described in the auth documentation »¹.
 //
@@ -1494,6 +1494,14 @@ type AuthSentCodeTypeFirebaseSMS struct {
 	//
 	// Use SetNonce and GetNonce helpers.
 	Nonce []byte
+	// PlayIntegrityProjectID field of AuthSentCodeTypeFirebaseSMS.
+	//
+	// Use SetPlayIntegrityProjectID and GetPlayIntegrityProjectID helpers.
+	PlayIntegrityProjectID int64
+	// PlayIntegrityNonce field of AuthSentCodeTypeFirebaseSMS.
+	//
+	// Use SetPlayIntegrityNonce and GetPlayIntegrityNonce helpers.
+	PlayIntegrityNonce []byte
 	// On iOS, must be compared with the receipt extracted from the received push
 	// notification.
 	//
@@ -1513,7 +1521,7 @@ type AuthSentCodeTypeFirebaseSMS struct {
 }
 
 // AuthSentCodeTypeFirebaseSMSTypeID is TL type id of AuthSentCodeTypeFirebaseSMS.
-const AuthSentCodeTypeFirebaseSMSTypeID = 0xe57b1432
+const AuthSentCodeTypeFirebaseSMSTypeID = 0x9fd736
 
 // construct implements constructor of AuthSentCodeTypeClass.
 func (s AuthSentCodeTypeFirebaseSMS) construct() AuthSentCodeTypeClass { return &s }
@@ -1536,6 +1544,12 @@ func (s *AuthSentCodeTypeFirebaseSMS) Zero() bool {
 		return false
 	}
 	if !(s.Nonce == nil) {
+		return false
+	}
+	if !(s.PlayIntegrityProjectID == 0) {
+		return false
+	}
+	if !(s.PlayIntegrityNonce == nil) {
 		return false
 	}
 	if !(s.Receipt == "") {
@@ -1563,12 +1577,22 @@ func (s *AuthSentCodeTypeFirebaseSMS) String() string {
 // FillFrom fills AuthSentCodeTypeFirebaseSMS from given interface.
 func (s *AuthSentCodeTypeFirebaseSMS) FillFrom(from interface {
 	GetNonce() (value []byte, ok bool)
+	GetPlayIntegrityProjectID() (value int64, ok bool)
+	GetPlayIntegrityNonce() (value []byte, ok bool)
 	GetReceipt() (value string, ok bool)
 	GetPushTimeout() (value int, ok bool)
 	GetLength() (value int)
 }) {
 	if val, ok := from.GetNonce(); ok {
 		s.Nonce = val
+	}
+
+	if val, ok := from.GetPlayIntegrityProjectID(); ok {
+		s.PlayIntegrityProjectID = val
+	}
+
+	if val, ok := from.GetPlayIntegrityNonce(); ok {
+		s.PlayIntegrityNonce = val
 	}
 
 	if val, ok := from.GetReceipt(); ok {
@@ -1611,6 +1635,16 @@ func (s *AuthSentCodeTypeFirebaseSMS) TypeInfo() tdp.Type {
 			Null:       !s.Flags.Has(0),
 		},
 		{
+			Name:       "PlayIntegrityProjectID",
+			SchemaName: "play_integrity_project_id",
+			Null:       !s.Flags.Has(2),
+		},
+		{
+			Name:       "PlayIntegrityNonce",
+			SchemaName: "play_integrity_nonce",
+			Null:       !s.Flags.Has(2),
+		},
+		{
 			Name:       "Receipt",
 			SchemaName: "receipt",
 			Null:       !s.Flags.Has(1),
@@ -1633,6 +1667,12 @@ func (s *AuthSentCodeTypeFirebaseSMS) SetFlags() {
 	if !(s.Nonce == nil) {
 		s.Flags.Set(0)
 	}
+	if !(s.PlayIntegrityProjectID == 0) {
+		s.Flags.Set(2)
+	}
+	if !(s.PlayIntegrityNonce == nil) {
+		s.Flags.Set(2)
+	}
 	if !(s.Receipt == "") {
 		s.Flags.Set(1)
 	}
@@ -1644,7 +1684,7 @@ func (s *AuthSentCodeTypeFirebaseSMS) SetFlags() {
 // Encode implements bin.Encoder.
 func (s *AuthSentCodeTypeFirebaseSMS) Encode(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't encode auth.sentCodeTypeFirebaseSms#e57b1432 as nil")
+		return fmt.Errorf("can't encode auth.sentCodeTypeFirebaseSms#9fd736 as nil")
 	}
 	b.PutID(AuthSentCodeTypeFirebaseSMSTypeID)
 	return s.EncodeBare(b)
@@ -1653,14 +1693,20 @@ func (s *AuthSentCodeTypeFirebaseSMS) Encode(b *bin.Buffer) error {
 // EncodeBare implements bin.BareEncoder.
 func (s *AuthSentCodeTypeFirebaseSMS) EncodeBare(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't encode auth.sentCodeTypeFirebaseSms#e57b1432 as nil")
+		return fmt.Errorf("can't encode auth.sentCodeTypeFirebaseSms#9fd736 as nil")
 	}
 	s.SetFlags()
 	if err := s.Flags.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode auth.sentCodeTypeFirebaseSms#e57b1432: field flags: %w", err)
+		return fmt.Errorf("unable to encode auth.sentCodeTypeFirebaseSms#9fd736: field flags: %w", err)
 	}
 	if s.Flags.Has(0) {
 		b.PutBytes(s.Nonce)
+	}
+	if s.Flags.Has(2) {
+		b.PutLong(s.PlayIntegrityProjectID)
+	}
+	if s.Flags.Has(2) {
+		b.PutBytes(s.PlayIntegrityNonce)
 	}
 	if s.Flags.Has(1) {
 		b.PutString(s.Receipt)
@@ -1675,10 +1721,10 @@ func (s *AuthSentCodeTypeFirebaseSMS) EncodeBare(b *bin.Buffer) error {
 // Decode implements bin.Decoder.
 func (s *AuthSentCodeTypeFirebaseSMS) Decode(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't decode auth.sentCodeTypeFirebaseSms#e57b1432 to nil")
+		return fmt.Errorf("can't decode auth.sentCodeTypeFirebaseSms#9fd736 to nil")
 	}
 	if err := b.ConsumeID(AuthSentCodeTypeFirebaseSMSTypeID); err != nil {
-		return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#e57b1432: %w", err)
+		return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: %w", err)
 	}
 	return s.DecodeBare(b)
 }
@@ -1686,38 +1732,52 @@ func (s *AuthSentCodeTypeFirebaseSMS) Decode(b *bin.Buffer) error {
 // DecodeBare implements bin.BareDecoder.
 func (s *AuthSentCodeTypeFirebaseSMS) DecodeBare(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't decode auth.sentCodeTypeFirebaseSms#e57b1432 to nil")
+		return fmt.Errorf("can't decode auth.sentCodeTypeFirebaseSms#9fd736 to nil")
 	}
 	{
 		if err := s.Flags.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#e57b1432: field flags: %w", err)
+			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: field flags: %w", err)
 		}
 	}
 	if s.Flags.Has(0) {
 		value, err := b.Bytes()
 		if err != nil {
-			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#e57b1432: field nonce: %w", err)
+			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: field nonce: %w", err)
 		}
 		s.Nonce = value
+	}
+	if s.Flags.Has(2) {
+		value, err := b.Long()
+		if err != nil {
+			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: field play_integrity_project_id: %w", err)
+		}
+		s.PlayIntegrityProjectID = value
+	}
+	if s.Flags.Has(2) {
+		value, err := b.Bytes()
+		if err != nil {
+			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: field play_integrity_nonce: %w", err)
+		}
+		s.PlayIntegrityNonce = value
 	}
 	if s.Flags.Has(1) {
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#e57b1432: field receipt: %w", err)
+			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: field receipt: %w", err)
 		}
 		s.Receipt = value
 	}
 	if s.Flags.Has(1) {
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#e57b1432: field push_timeout: %w", err)
+			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: field push_timeout: %w", err)
 		}
 		s.PushTimeout = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#e57b1432: field length: %w", err)
+			return fmt.Errorf("unable to decode auth.sentCodeTypeFirebaseSms#9fd736: field length: %w", err)
 		}
 		s.Length = value
 	}
@@ -1740,6 +1800,42 @@ func (s *AuthSentCodeTypeFirebaseSMS) GetNonce() (value []byte, ok bool) {
 		return value, false
 	}
 	return s.Nonce, true
+}
+
+// SetPlayIntegrityProjectID sets value of PlayIntegrityProjectID conditional field.
+func (s *AuthSentCodeTypeFirebaseSMS) SetPlayIntegrityProjectID(value int64) {
+	s.Flags.Set(2)
+	s.PlayIntegrityProjectID = value
+}
+
+// GetPlayIntegrityProjectID returns value of PlayIntegrityProjectID conditional field and
+// boolean which is true if field was set.
+func (s *AuthSentCodeTypeFirebaseSMS) GetPlayIntegrityProjectID() (value int64, ok bool) {
+	if s == nil {
+		return
+	}
+	if !s.Flags.Has(2) {
+		return value, false
+	}
+	return s.PlayIntegrityProjectID, true
+}
+
+// SetPlayIntegrityNonce sets value of PlayIntegrityNonce conditional field.
+func (s *AuthSentCodeTypeFirebaseSMS) SetPlayIntegrityNonce(value []byte) {
+	s.Flags.Set(2)
+	s.PlayIntegrityNonce = value
+}
+
+// GetPlayIntegrityNonce returns value of PlayIntegrityNonce conditional field and
+// boolean which is true if field was set.
+func (s *AuthSentCodeTypeFirebaseSMS) GetPlayIntegrityNonce() (value []byte, ok bool) {
+	if s == nil {
+		return
+	}
+	if !s.Flags.Has(2) {
+		return value, false
+	}
+	return s.PlayIntegrityNonce, true
 }
 
 // SetReceipt sets value of Receipt conditional field.
@@ -1786,6 +1882,352 @@ func (s *AuthSentCodeTypeFirebaseSMS) GetLength() (value int) {
 	return s.Length
 }
 
+// AuthSentCodeTypeSMSWord represents TL type `auth.sentCodeTypeSmsWord#a416ac81`.
+//
+// See https://core.telegram.org/constructor/auth.sentCodeTypeSmsWord for reference.
+type AuthSentCodeTypeSMSWord struct {
+	// Flags field of AuthSentCodeTypeSMSWord.
+	Flags bin.Fields
+	// Beginning field of AuthSentCodeTypeSMSWord.
+	//
+	// Use SetBeginning and GetBeginning helpers.
+	Beginning string
+}
+
+// AuthSentCodeTypeSMSWordTypeID is TL type id of AuthSentCodeTypeSMSWord.
+const AuthSentCodeTypeSMSWordTypeID = 0xa416ac81
+
+// construct implements constructor of AuthSentCodeTypeClass.
+func (s AuthSentCodeTypeSMSWord) construct() AuthSentCodeTypeClass { return &s }
+
+// Ensuring interfaces in compile-time for AuthSentCodeTypeSMSWord.
+var (
+	_ bin.Encoder     = &AuthSentCodeTypeSMSWord{}
+	_ bin.Decoder     = &AuthSentCodeTypeSMSWord{}
+	_ bin.BareEncoder = &AuthSentCodeTypeSMSWord{}
+	_ bin.BareDecoder = &AuthSentCodeTypeSMSWord{}
+
+	_ AuthSentCodeTypeClass = &AuthSentCodeTypeSMSWord{}
+)
+
+func (s *AuthSentCodeTypeSMSWord) Zero() bool {
+	if s == nil {
+		return true
+	}
+	if !(s.Flags.Zero()) {
+		return false
+	}
+	if !(s.Beginning == "") {
+		return false
+	}
+
+	return true
+}
+
+// String implements fmt.Stringer.
+func (s *AuthSentCodeTypeSMSWord) String() string {
+	if s == nil {
+		return "AuthSentCodeTypeSMSWord(nil)"
+	}
+	type Alias AuthSentCodeTypeSMSWord
+	return fmt.Sprintf("AuthSentCodeTypeSMSWord%+v", Alias(*s))
+}
+
+// FillFrom fills AuthSentCodeTypeSMSWord from given interface.
+func (s *AuthSentCodeTypeSMSWord) FillFrom(from interface {
+	GetBeginning() (value string, ok bool)
+}) {
+	if val, ok := from.GetBeginning(); ok {
+		s.Beginning = val
+	}
+
+}
+
+// TypeID returns type id in TL schema.
+//
+// See https://core.telegram.org/mtproto/TL-tl#remarks.
+func (*AuthSentCodeTypeSMSWord) TypeID() uint32 {
+	return AuthSentCodeTypeSMSWordTypeID
+}
+
+// TypeName returns name of type in TL schema.
+func (*AuthSentCodeTypeSMSWord) TypeName() string {
+	return "auth.sentCodeTypeSmsWord"
+}
+
+// TypeInfo returns info about TL type.
+func (s *AuthSentCodeTypeSMSWord) TypeInfo() tdp.Type {
+	typ := tdp.Type{
+		Name: "auth.sentCodeTypeSmsWord",
+		ID:   AuthSentCodeTypeSMSWordTypeID,
+	}
+	if s == nil {
+		typ.Null = true
+		return typ
+	}
+	typ.Fields = []tdp.Field{
+		{
+			Name:       "Beginning",
+			SchemaName: "beginning",
+			Null:       !s.Flags.Has(0),
+		},
+	}
+	return typ
+}
+
+// SetFlags sets flags for non-zero fields.
+func (s *AuthSentCodeTypeSMSWord) SetFlags() {
+	if !(s.Beginning == "") {
+		s.Flags.Set(0)
+	}
+}
+
+// Encode implements bin.Encoder.
+func (s *AuthSentCodeTypeSMSWord) Encode(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't encode auth.sentCodeTypeSmsWord#a416ac81 as nil")
+	}
+	b.PutID(AuthSentCodeTypeSMSWordTypeID)
+	return s.EncodeBare(b)
+}
+
+// EncodeBare implements bin.BareEncoder.
+func (s *AuthSentCodeTypeSMSWord) EncodeBare(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't encode auth.sentCodeTypeSmsWord#a416ac81 as nil")
+	}
+	s.SetFlags()
+	if err := s.Flags.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode auth.sentCodeTypeSmsWord#a416ac81: field flags: %w", err)
+	}
+	if s.Flags.Has(0) {
+		b.PutString(s.Beginning)
+	}
+	return nil
+}
+
+// Decode implements bin.Decoder.
+func (s *AuthSentCodeTypeSMSWord) Decode(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't decode auth.sentCodeTypeSmsWord#a416ac81 to nil")
+	}
+	if err := b.ConsumeID(AuthSentCodeTypeSMSWordTypeID); err != nil {
+		return fmt.Errorf("unable to decode auth.sentCodeTypeSmsWord#a416ac81: %w", err)
+	}
+	return s.DecodeBare(b)
+}
+
+// DecodeBare implements bin.BareDecoder.
+func (s *AuthSentCodeTypeSMSWord) DecodeBare(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't decode auth.sentCodeTypeSmsWord#a416ac81 to nil")
+	}
+	{
+		if err := s.Flags.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode auth.sentCodeTypeSmsWord#a416ac81: field flags: %w", err)
+		}
+	}
+	if s.Flags.Has(0) {
+		value, err := b.String()
+		if err != nil {
+			return fmt.Errorf("unable to decode auth.sentCodeTypeSmsWord#a416ac81: field beginning: %w", err)
+		}
+		s.Beginning = value
+	}
+	return nil
+}
+
+// SetBeginning sets value of Beginning conditional field.
+func (s *AuthSentCodeTypeSMSWord) SetBeginning(value string) {
+	s.Flags.Set(0)
+	s.Beginning = value
+}
+
+// GetBeginning returns value of Beginning conditional field and
+// boolean which is true if field was set.
+func (s *AuthSentCodeTypeSMSWord) GetBeginning() (value string, ok bool) {
+	if s == nil {
+		return
+	}
+	if !s.Flags.Has(0) {
+		return value, false
+	}
+	return s.Beginning, true
+}
+
+// AuthSentCodeTypeSMSPhrase represents TL type `auth.sentCodeTypeSmsPhrase#b37794af`.
+//
+// See https://core.telegram.org/constructor/auth.sentCodeTypeSmsPhrase for reference.
+type AuthSentCodeTypeSMSPhrase struct {
+	// Flags field of AuthSentCodeTypeSMSPhrase.
+	Flags bin.Fields
+	// Beginning field of AuthSentCodeTypeSMSPhrase.
+	//
+	// Use SetBeginning and GetBeginning helpers.
+	Beginning string
+}
+
+// AuthSentCodeTypeSMSPhraseTypeID is TL type id of AuthSentCodeTypeSMSPhrase.
+const AuthSentCodeTypeSMSPhraseTypeID = 0xb37794af
+
+// construct implements constructor of AuthSentCodeTypeClass.
+func (s AuthSentCodeTypeSMSPhrase) construct() AuthSentCodeTypeClass { return &s }
+
+// Ensuring interfaces in compile-time for AuthSentCodeTypeSMSPhrase.
+var (
+	_ bin.Encoder     = &AuthSentCodeTypeSMSPhrase{}
+	_ bin.Decoder     = &AuthSentCodeTypeSMSPhrase{}
+	_ bin.BareEncoder = &AuthSentCodeTypeSMSPhrase{}
+	_ bin.BareDecoder = &AuthSentCodeTypeSMSPhrase{}
+
+	_ AuthSentCodeTypeClass = &AuthSentCodeTypeSMSPhrase{}
+)
+
+func (s *AuthSentCodeTypeSMSPhrase) Zero() bool {
+	if s == nil {
+		return true
+	}
+	if !(s.Flags.Zero()) {
+		return false
+	}
+	if !(s.Beginning == "") {
+		return false
+	}
+
+	return true
+}
+
+// String implements fmt.Stringer.
+func (s *AuthSentCodeTypeSMSPhrase) String() string {
+	if s == nil {
+		return "AuthSentCodeTypeSMSPhrase(nil)"
+	}
+	type Alias AuthSentCodeTypeSMSPhrase
+	return fmt.Sprintf("AuthSentCodeTypeSMSPhrase%+v", Alias(*s))
+}
+
+// FillFrom fills AuthSentCodeTypeSMSPhrase from given interface.
+func (s *AuthSentCodeTypeSMSPhrase) FillFrom(from interface {
+	GetBeginning() (value string, ok bool)
+}) {
+	if val, ok := from.GetBeginning(); ok {
+		s.Beginning = val
+	}
+
+}
+
+// TypeID returns type id in TL schema.
+//
+// See https://core.telegram.org/mtproto/TL-tl#remarks.
+func (*AuthSentCodeTypeSMSPhrase) TypeID() uint32 {
+	return AuthSentCodeTypeSMSPhraseTypeID
+}
+
+// TypeName returns name of type in TL schema.
+func (*AuthSentCodeTypeSMSPhrase) TypeName() string {
+	return "auth.sentCodeTypeSmsPhrase"
+}
+
+// TypeInfo returns info about TL type.
+func (s *AuthSentCodeTypeSMSPhrase) TypeInfo() tdp.Type {
+	typ := tdp.Type{
+		Name: "auth.sentCodeTypeSmsPhrase",
+		ID:   AuthSentCodeTypeSMSPhraseTypeID,
+	}
+	if s == nil {
+		typ.Null = true
+		return typ
+	}
+	typ.Fields = []tdp.Field{
+		{
+			Name:       "Beginning",
+			SchemaName: "beginning",
+			Null:       !s.Flags.Has(0),
+		},
+	}
+	return typ
+}
+
+// SetFlags sets flags for non-zero fields.
+func (s *AuthSentCodeTypeSMSPhrase) SetFlags() {
+	if !(s.Beginning == "") {
+		s.Flags.Set(0)
+	}
+}
+
+// Encode implements bin.Encoder.
+func (s *AuthSentCodeTypeSMSPhrase) Encode(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't encode auth.sentCodeTypeSmsPhrase#b37794af as nil")
+	}
+	b.PutID(AuthSentCodeTypeSMSPhraseTypeID)
+	return s.EncodeBare(b)
+}
+
+// EncodeBare implements bin.BareEncoder.
+func (s *AuthSentCodeTypeSMSPhrase) EncodeBare(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't encode auth.sentCodeTypeSmsPhrase#b37794af as nil")
+	}
+	s.SetFlags()
+	if err := s.Flags.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode auth.sentCodeTypeSmsPhrase#b37794af: field flags: %w", err)
+	}
+	if s.Flags.Has(0) {
+		b.PutString(s.Beginning)
+	}
+	return nil
+}
+
+// Decode implements bin.Decoder.
+func (s *AuthSentCodeTypeSMSPhrase) Decode(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't decode auth.sentCodeTypeSmsPhrase#b37794af to nil")
+	}
+	if err := b.ConsumeID(AuthSentCodeTypeSMSPhraseTypeID); err != nil {
+		return fmt.Errorf("unable to decode auth.sentCodeTypeSmsPhrase#b37794af: %w", err)
+	}
+	return s.DecodeBare(b)
+}
+
+// DecodeBare implements bin.BareDecoder.
+func (s *AuthSentCodeTypeSMSPhrase) DecodeBare(b *bin.Buffer) error {
+	if s == nil {
+		return fmt.Errorf("can't decode auth.sentCodeTypeSmsPhrase#b37794af to nil")
+	}
+	{
+		if err := s.Flags.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode auth.sentCodeTypeSmsPhrase#b37794af: field flags: %w", err)
+		}
+	}
+	if s.Flags.Has(0) {
+		value, err := b.String()
+		if err != nil {
+			return fmt.Errorf("unable to decode auth.sentCodeTypeSmsPhrase#b37794af: field beginning: %w", err)
+		}
+		s.Beginning = value
+	}
+	return nil
+}
+
+// SetBeginning sets value of Beginning conditional field.
+func (s *AuthSentCodeTypeSMSPhrase) SetBeginning(value string) {
+	s.Flags.Set(0)
+	s.Beginning = value
+}
+
+// GetBeginning returns value of Beginning conditional field and
+// boolean which is true if field was set.
+func (s *AuthSentCodeTypeSMSPhrase) GetBeginning() (value string, ok bool) {
+	if s == nil {
+		return
+	}
+	if !s.Flags.Has(0) {
+		return value, false
+	}
+	return s.Beginning, true
+}
+
 // AuthSentCodeTypeClassName is schema name of AuthSentCodeTypeClass.
 const AuthSentCodeTypeClassName = "auth.SentCodeType"
 
@@ -1808,7 +2250,9 @@ const AuthSentCodeTypeClassName = "auth.SentCodeType"
 //	case *tg.AuthSentCodeTypeEmailCode: // auth.sentCodeTypeEmailCode#f450f59b
 //	case *tg.AuthSentCodeTypeSetUpEmailRequired: // auth.sentCodeTypeSetUpEmailRequired#a5491dea
 //	case *tg.AuthSentCodeTypeFragmentSMS: // auth.sentCodeTypeFragmentSms#d9565c39
-//	case *tg.AuthSentCodeTypeFirebaseSMS: // auth.sentCodeTypeFirebaseSms#e57b1432
+//	case *tg.AuthSentCodeTypeFirebaseSMS: // auth.sentCodeTypeFirebaseSms#9fd736
+//	case *tg.AuthSentCodeTypeSMSWord: // auth.sentCodeTypeSmsWord#a416ac81
+//	case *tg.AuthSentCodeTypeSMSPhrase: // auth.sentCodeTypeSmsPhrase#b37794af
 //	default: panic(v)
 //	}
 type AuthSentCodeTypeClass interface {
@@ -1894,8 +2338,22 @@ func DecodeAuthSentCodeType(buf *bin.Buffer) (AuthSentCodeTypeClass, error) {
 		}
 		return &v, nil
 	case AuthSentCodeTypeFirebaseSMSTypeID:
-		// Decoding auth.sentCodeTypeFirebaseSms#e57b1432.
+		// Decoding auth.sentCodeTypeFirebaseSms#9fd736.
 		v := AuthSentCodeTypeFirebaseSMS{}
+		if err := v.Decode(buf); err != nil {
+			return nil, fmt.Errorf("unable to decode AuthSentCodeTypeClass: %w", err)
+		}
+		return &v, nil
+	case AuthSentCodeTypeSMSWordTypeID:
+		// Decoding auth.sentCodeTypeSmsWord#a416ac81.
+		v := AuthSentCodeTypeSMSWord{}
+		if err := v.Decode(buf); err != nil {
+			return nil, fmt.Errorf("unable to decode AuthSentCodeTypeClass: %w", err)
+		}
+		return &v, nil
+	case AuthSentCodeTypeSMSPhraseTypeID:
+		// Decoding auth.sentCodeTypeSmsPhrase#b37794af.
+		v := AuthSentCodeTypeSMSPhrase{}
 		if err := v.Decode(buf); err != nil {
 			return nil, fmt.Errorf("unable to decode AuthSentCodeTypeClass: %w", err)
 		}

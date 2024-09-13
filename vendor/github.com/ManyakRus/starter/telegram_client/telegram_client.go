@@ -5,9 +5,14 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/ManyakRus/starter/logger"
-	"io/ioutil"
+	"github.com/ManyakRus/starter/log"
+	"github.com/gotd/contrib/storage"
+	"github.com/gotd/td/telegram/message/peer"
+	"go.etcd.io/bbolt"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -29,19 +34,28 @@ import (
 	"github.com/gotd/td/session"
 	"github.com/gotd/td/telegram"
 	"github.com/gotd/td/telegram/auth"
+	"github.com/gotd/td/telegram/updates"
+
+	pebbledb "github.com/cockroachdb/pebble"
+	boltstor "github.com/gotd/contrib/bbolt"
+	"github.com/gotd/contrib/pebble"
+	lj "gopkg.in/natefinch/lumberjack.v2"
 )
 
 // filenameSession - имя файла сохранения сессии мессенджера Телеграм
 var filenameSession string
 
-// client - клиент соединения мессенджера Телеграм
-var client *telegram.Client
+// Client - клиент соединения мессенджера Телеграм
+var Client *telegram.Client
+
+// UserSelf - собственный юзер в Телеграм
+var UserSelf *tg.User
 
 // lastSendTime - время последней отправки сообщения и мьютекс
 var lastSendTime = lastSendTimeMutex{}
 
-// log - глобальный логгер приложения
-var log = logger.GetLog()
+//// log - глобальный логгер приложения
+//var log = logger.GetLog()
 
 // stopTelegramFunc - функция остановки соединения с мессенджером Телеграм
 var stopTelegramFunc bg.StopFunc
@@ -74,6 +88,43 @@ type SettingsINI struct {
 	TELEGRAM_PHONE_SEND_TEST string
 }
 
+// PeerDB - локальная база данных cockroachdb, для хранения кеша PeerID отправителей
+var PeerDB *pebble.PeerStorage
+
+// Func_OnNewMessage - функция из внешнего модуля, для приёма новых сообщений
+var Func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error
+
+// Contacts - список контактов в Telegram
+var Contacts *tg.ContactsContacts
+
+// MessageTelegram - сообщение из Telegram сокращённо
+type MessageTelegram struct {
+	Text      string
+	FromID    int64
+	ChatID    int64
+	IsFromMe  bool
+	MediaType string
+	//NameTo    string
+	IsGroup  bool
+	ID       int
+	TimeSent time.Time
+}
+
+// String - возвращает строку из структуры
+func (m MessageTelegram) String() string {
+	Otvet := ""
+
+	Otvet = Otvet + fmt.Sprint("Text: ", m.Text, "\n")
+	Otvet = Otvet + fmt.Sprint("MediaType: ", m.MediaType, "\n")
+	Otvet = Otvet + fmt.Sprint("FromID: ", m.FromID, "\n")
+	Otvet = Otvet + fmt.Sprint("IsFromMe: ", m.IsFromMe, "\n")
+	Otvet = Otvet + fmt.Sprint("IsGroup: ", m.IsGroup, "\n")
+	Otvet = Otvet + fmt.Sprint("ID: ", m.ID, "\n")
+	Otvet = Otvet + fmt.Sprint("TimeSent: ", m.TimeSent, "\n")
+
+	return Otvet
+}
+
 // SendMessage - отправка сообщения в мессенджер Телеграм
 // возвращает:
 // id = id отправленного сообщения в telegram
@@ -83,23 +134,23 @@ func SendMessage(phone_send_to string, text string) (int, error) {
 	//var is_sent bool
 	//
 
-	if client == nil {
+	if Client == nil {
 		CreateTelegramClient(nil)
 		//if err != nil {
-		//	log.Error("ConnectTelegram() error: ", err)
+		//	log.Error("Connect() error: ", err)
 		//	return 0, false, err
 		//}
 	}
 
 	if text == "" {
-		text1 := "ConnectTelegram() text id empty ! "
+		text1 := "Connect() text id empty ! "
 		log.Error(text1)
 		err := errors.New(text1)
 		return 0, err
 	}
 
 	if phone_send_to == "" {
-		text1 := "ConnectTelegram() phone_send_to id empty ! "
+		text1 := "Connect() phone_send_to id empty ! "
 		log.Error(text1)
 		err := errors.New(text1)
 		return 0, err
@@ -111,7 +162,7 @@ func SendMessage(phone_send_to string, text string) (int, error) {
 	text = micro.SubstringLeft(text, MAX_MESSAGE_LEN)
 
 	//
-	api := client.API()
+	api := Client.API()
 
 	//ctxMain := contextmain.GetContext()
 	ctxMain := context.Background()
@@ -128,42 +179,46 @@ func SendMessage(phone_send_to string, text string) (int, error) {
 
 	//отправка сообщения
 	UpdatesClass, err := target.Text(ctx, text)
+	if err != nil {
+		log.Error("Text() error: ", err)
+		return 0, err
+	}
 
 	//проверка на ошибки
-	isFlood := false
-	if err != nil {
-		textFind := "peer: can't resolve phone"
-		if micro.SubstringLeft(err.Error(), len(textFind)) == textFind {
-			err2 := AddContact(ctx, phone_send_to)
-
-			isFlood = FloodWait(ctx, err2) //ожидание при ошибке FloodWait
-			if isFlood {
-				return SendMessage(phone_send_to, text)
-			}
-
-			if err2 == nil {
-				return SendMessage(phone_send_to, text)
-			} else {
-				log.Error("not send, text: " + err.Error())
-				return 0, err
-			}
-		} else {
-			isFlood = FloodWait(ctx, err) //ожидание при ошибке FloodWait
-			if isFlood {
-				return SendMessage(phone_send_to, text)
-			}
-		}
-
-	}
+	//isFlood := false
+	//if err != nil {
+	//	textFind := "peer: can't resolve phone"
+	//	if micro.SubstringLeft(err.Error(), len(textFind)) == textFind {
+	//		err2 := AddContact(ctx, phone_send_to)
+	//
+	//		isFlood = FloodWait(ctx, err2) //ожидание при ошибке FloodWait
+	//		if isFlood {
+	//			return SendMessage(phone_send_to, text)
+	//		}
+	//
+	//		if err2 == nil {
+	//			return SendMessage(phone_send_to, text)
+	//		} else {
+	//			log.Error("not send, text: " + err.Error())
+	//			return 0, err
+	//		}
+	//	} else {
+	//		isFlood = FloodWait(ctx, err) //ожидание при ошибке FloodWait
+	//		if isFlood {
+	//			return SendMessage(phone_send_to, text)
+	//		}
+	//	}
+	//
+	//}
 
 	if UpdatesClass != nil {
 		id = findIdFromUpdatesClass(UpdatesClass)
 	}
-	log.Debug("id: ", id, ", error: ", err, ", text: "+text)
+	//log.Debug("id: ", id, ", error: ", err, ", text: "+text)
 
 	//log.Print("Success")
 
-	// Return to close client connection and free up resources.
+	// Return to close Client connection and free up resources.
 	// Client is closed.
 	return id, err
 
@@ -182,7 +237,7 @@ func AddContact(ctx context.Context, phone_send_to string) error {
 
 	TimeLimit()
 
-	api := client.API()
+	api := Client.API()
 
 	//var contacts []tg.InputPhoneContact
 	contact := tg.InputPhoneContact{}
@@ -301,19 +356,13 @@ func (s *memorySession) LoadSession(context.Context) ([]byte, error) {
 	defer s.mux.RUnlock()
 
 	// read the whole file at once
-	cpy, err := ioutil.ReadFile(filenameSession)
+	cpy, err := os.ReadFile(filenameSession)
 	if err != nil {
 		cpy = nil
 		log.Error(err)
 		return nil, nil
 		//return nil, session.ErrNotFound
 	}
-
-	////было
-	//if len(s.data) == 0 {
-	//	return nil, session.ErrNotFound
-	//}
-	//cpy = append([]byte(nil), s.data...)
 
 	return cpy, nil
 }
@@ -329,7 +378,7 @@ func (s *memorySession) StoreSession(ctx context.Context, data []byte) error {
 	//s.data = data
 
 	// write the whole body at once
-	err := ioutil.WriteFile(filenameSession, data, 0644)
+	err := os.WriteFile(filenameSession, data, 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -339,31 +388,165 @@ func (s *memorySession) StoreSession(ctx context.Context, data []byte) error {
 	return nil
 }
 
-// CreateTelegramClient создание клиента Телеграм
-func CreateTelegramClient(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage) error) {
-	// https://core.telegram.org/api/obtaining_api_id
+// CreateTelegramClient создание клиента Телеграм, без подключения
+// лучше использовать Connect() - с подключением
+func CreateTelegramClient(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error) {
+	err := CreateTelegramClient_err(func_OnNewMessage)
+	if err != nil {
+		log.Panic("CreateTelegramClient_err() error: ", err)
+	} else {
+		log.Info("CreateTelegramClient() ok, phone from: ", Settings.TELEGRAM_PHONE_FROM)
+	}
+	return
+}
 
+// CreateTelegramClient_err создание клиента Телеграм, без подключения
+// лучше использовать Connect_err() - с подключением
+func CreateTelegramClient_err(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error) error {
+
+	//загрузим настройки, если они пустые
 	if Settings.TELEGRAM_APP_ID == 0 {
 		FillSettings()
 	}
 
+	//заполним глобальную функцию получения нового сообщения
+	Func_OnNewMessage = func_OnNewMessage
+
+	//
 	programDir := micro.ProgramDir()
-	filenameSession = programDir + "session.txt"
 
-	sessionStorage := &memorySession{}
-
-	dispatcher := tg.NewUpdateDispatcher()
-	client = telegram.NewClient(Settings.TELEGRAM_APP_ID, Settings.TELEGRAM_APP_HASH,
-		telegram.Options{
-			SessionStorage: sessionStorage,
-			UpdateHandler:  dispatcher,
-		})
-
-	if func_OnNewMessage != nil {
-		dispatcher.OnNewMessage(func_OnNewMessage)
+	//создадим логгер zap
+	sessionDir := programDir
+	LogDir := filepath.Join(sessionDir, "log")
+	logFilePath := filepath.Join(LogDir, "log.jsonl")
+	ok, err := micro.FileExists(LogDir)
+	if err != nil {
+		err = fmt.Errorf("FileExists() error: %w", err)
+		log.Error(err)
+		return err
+	}
+	if ok == false {
+		err = fmt.Errorf("FileExists() error: need create folder: %v", LogDir)
+		log.Error(err)
+		//micro.CreateFolder(LogDir, 0666)
+		return err
 	}
 
-	return
+	// Log to file, so we don't interfere with prompts and messages to user.
+	logWriter := zapcore.AddSync(&lj.Logger{
+		Filename:   logFilePath,
+		MaxBackups: 3,
+		MaxSize:    1, // megabytes
+		MaxAge:     7, // days
+	})
+	logCore := zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		logWriter,
+		zap.DebugLevel,
+	)
+	lg := zap.New(logCore)
+
+	//настройка хранения текущей сессии в файле
+	sessionStorage := &telegram.FileSessionStorage{
+		Path: filepath.Join(programDir, "session.txt"),
+	}
+
+	// Peer storage, for resolve caching and short updates handling.
+	db, err := pebbledb.Open(filepath.Join(programDir, "peers.pebble.db"), &pebbledb.Options{})
+	if err != nil {
+		return errors.Wrap(err, "create pebble storage")
+	}
+	PeerDB = pebble.NewPeerStorage(db)
+	if err != nil {
+		return errors.Wrap(err, "create bolt storage")
+	}
+
+	// Setting up client.
+	//
+	// Dispatcher is used to register handlers for events.
+	dispatcher := tg.NewUpdateDispatcher()
+	// Setting up update handler that will fill peer storage before
+	// calling dispatcher handlers.
+	updateHandler := storage.UpdateHook(dispatcher, PeerDB)
+
+	// Setting up persistent storage for qts/pts to be able to
+	// recover after restart.
+	boltdb, err := bbolt.Open(filepath.Join(sessionDir, "updates.bolt.db"), 0666, nil)
+	if err != nil {
+		return errors.Wrap(err, "create bolt storage")
+	}
+
+	updatesRecovery := updates.New(updates.Config{
+		Handler: updateHandler, // using previous handler with PeerDB
+		Logger:  lg.Named("updates.recovery"),
+		Storage: boltstor.NewStateStorage(boltdb),
+	})
+
+	//// Handler of FLOOD_WAIT that will automatically retry request.
+	//waiter := floodwait.NewWaiter().WithCallback(func(ctx context.Context, wait floodwait.FloodWait) {
+	//	// Notifying about flood wait.
+	//	lg.Warn("Flood wait", zap.Duration("wait", wait.Duration))
+	//	fmt.Println("Got FLOOD_WAIT. Will retry after", wait.Duration)
+	//})
+
+	// Filling client options.
+	options := telegram.Options{
+		Logger:         lg,              // Passing logger for observability.
+		SessionStorage: sessionStorage,  // Setting up session sessionStorage to store auth data.
+		UpdateHandler:  updatesRecovery, // Setting up handler for updates from server.
+		//Middlewares: []telegram.Middleware{
+		//	// Setting up FLOOD_WAIT handler to automatically wait and retry request.
+		//	waiter,
+		//	// Setting up general rate limits to less likely get flood wait errors.
+		//	ratelimit.New(rate.Every(time.Millisecond*100), 5),
+		//},
+	}
+
+	Client = telegram.NewClient(Settings.TELEGRAM_APP_ID, Settings.TELEGRAM_APP_HASH, options)
+
+	if func_OnNewMessage != nil {
+		dispatcher.OnNewMessage(OnNewMessage)
+	}
+
+	api := Client.API()
+
+	// Setting up resolver cache that will use peer storage.
+	//не знаю зачем, удалить
+	resolver := storage.NewResolverCache(peer.Plain(api), PeerDB)
+	_ = resolver
+
+	return err
+}
+
+// OnNewMessage - функция для получения новых сообщений, и перенаправления во внешний Func_OnNewMessage()
+// чтоб отправить сообщение надо:
+// api := telegram_client.Client.API()
+// sender := message.NewSender(api)
+// InputPeerClass1 := Peer1.AsInputPeer()
+// RequestBuilder1 := sender.To(InputPeerClass1)
+// UpdateClass1, err := RequestBuilder1.Text(ctx, TextMess)
+func OnNewMessage(ctx context.Context, entities tg.Entities, UpdateNewMessage1 *tg.UpdateNewMessage) error {
+	var err error
+
+	msg, ok := UpdateNewMessage1.Message.(*tg.Message)
+	if !ok {
+		err = fmt.Errorf("OnNewMessage() UpdateNewMessage1.Message.(*tg.Message) error")
+		return err
+	}
+
+	// Use PeerID to find peer because *Short updates does not contain any entities, so it necessary to
+	// store some entities.
+	//
+	// Storage can be filled using PeerCollector (i.e. fetching all dialogs first).
+	Peer1, err := storage.FindPeer(ctx, PeerDB, msg.GetPeerID())
+	if err != nil {
+		err = fmt.Errorf("OnNewMessage() FindPeer() error: %w", err)
+		return err
+	}
+
+	err = Func_OnNewMessage(ctx, entities, UpdateNewMessage1, Peer1)
+
+	return err
 }
 
 // OnNewMessage_Test - пример функции для получения новых сообщений
@@ -378,7 +561,7 @@ func OnNewMessage_Test(ctx context.Context, entities tg.Entities, u *tg.UpdateNe
 
 	// тестовый пример эхо
 	// Helper for sending messages.
-	api := client.API()
+	api := Client.API()
 	sender := message.NewSender(api)
 
 	// Sending reply.
@@ -411,9 +594,24 @@ func TimeLimit() {
 	lastSendTime.time = time.Now()
 }
 
-// ConnectTelegram подключение к серверу Телеграм
-func ConnectTelegram() error {
+// Connect подключение к серверу Телеграм, паника при ошибке
+func Connect(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error) {
+	err := Connect_err(func_OnNewMessage)
+	if err != nil {
+		TextError := fmt.Sprint("Telegram connected: ", Settings.TELEGRAM_PHONE_FROM)
+		log.Panic(TextError)
+	} else {
+		log.Info("Telegram connected: ", Settings.TELEGRAM_PHONE_FROM)
+	}
+}
 
+// Connect_err подключение к серверу Телеграм
+func Connect_err(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error) error {
+
+	//создаём клиент Telegram
+	CreateTelegramClient(func_OnNewMessage)
+
+	//
 	ctxMain := context.Background()
 	//ctxMain := contextmain.GetContext()
 	ctx, cancel := context.WithTimeout(ctxMain, 60*time.Second) //60
@@ -422,20 +620,21 @@ func ConnectTelegram() error {
 	bg.WithContext(ctx)
 	var err error
 	//Option := bg.WithContext(ctx)
-	stopTelegramFunc, err = bg.Connect(client)
+	stopTelegramFunc, err = bg.Connect(Client)
 	if err != nil {
-		log.Fatalln("Can not connect to Telegram ! Error: ", err)
+		return err
+		//log.Fatalln("Can not connect to Telegram ! Error: ", err)
 	}
 
 	micro.Sleep(100) //не успевает
 	//for i := 1; i <= 5; i++ {
-	//	err = client.Ping(ctx)
+	//	err = Client.Ping(ctx)
 	//	if err != nil {
 	//		micro.Sleep(1000)
 	//	}
 	//}
 
-	//fmt.Println("Client: ", client)
+	//fmt.Println("Client: ", Client)
 
 	//
 	flow := auth.NewFlow(
@@ -443,7 +642,13 @@ func ConnectTelegram() error {
 		auth.SendCodeOptions{},
 	)
 
-	if err := client.Auth().IfNecessary(ctx, flow); err != nil {
+	if err := Client.Auth().IfNecessary(ctx, flow); err != nil {
+		return err
+	}
+
+	//заполним UserSelf
+	UserSelf, err = Client.Self(ctx)
+	if err != nil {
 		return err
 	}
 
@@ -502,7 +707,7 @@ func FindMessageByID(ctx context.Context, id int) (*tg.Message, error) {
 		return Otvet, err
 	}
 
-	api := client.API()
+	api := Client.API()
 
 	var IMC []tg.InputMessageClass
 	IMC = append(IMC, &tg.InputMessageID{ID: id})
@@ -538,14 +743,14 @@ func WaitStop() {
 	stopapp.WaitTotalMessagesSendingNow("telegram")
 
 	//
-	StopTelegram()
+	CloseConnection()
 
 	//
 	stopapp.GetWaitGroup_Main().Done()
 }
 
-// StopTelegram - остановка работы клиента Телеграм
-func StopTelegram() {
+// CloseConnection - остановка работы клиента Телеграм
+func CloseConnection() {
 	if stopTelegramFunc != nil {
 		err := stopTelegramFunc()
 		if err != nil {
@@ -594,7 +799,6 @@ func FloodWait(ctx context.Context, err error) bool {
 // same method.
 func AsFloodWait(err error) (d int, ok bool) {
 	rpcErr, ok := tgerr.AsType(err, tgerr.ErrFloodWait)
-	//log.Debugf("error response: %v", rpcErr)
 	if ok {
 		return rpcErr.Argument, true
 	}
@@ -603,12 +807,12 @@ func AsFloodWait(err error) (d int, ok bool) {
 
 // StartTelegram - подключается к телеграмму, запускает остановку приложения.
 // func_OnNewMessage - функция для приёма новых сообщений
-func StartTelegram(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage) error) {
+func StartTelegram(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error) {
 	CreateTelegramClient(func_OnNewMessage)
 
-	err := ConnectTelegram()
+	err := Connect_err(func_OnNewMessage)
 	if err != nil {
-		log.Fatalln("Can not login to telegram ! Error: ", err)
+		log.Panic("Can not login to telegram ! Error: ", err)
 	}
 
 	stopapp.GetWaitGroup_Main().Add(1)
@@ -640,4 +844,120 @@ func FillSettings() {
 		log.Info("Need fill TELEGRAM_PHONE_SEND_TEST ! in os.ENV ")
 	}
 
+}
+
+// FillMessageTelegramFromMessage - заполнение струткру MessageTelegram из сообщения от Telegram
+func FillMessageTelegramFromMessage(m *tg.Message) MessageTelegram {
+	Otvet := MessageTelegram{}
+
+	//не подключен
+	if Client == nil {
+		return Otvet
+	}
+
+	////не подключен
+	//if stopTelegramFunc == nil {
+	//	return Otvet
+	//}
+
+	//не подключен
+	if UserSelf == nil {
+		return Otvet
+	}
+
+	//
+	//ctxMain := contextmain.GetContext()
+	//ctx, cancel_func := context.WithTimeout(ctxMain, 60*time.Second) //60
+	//defer cancel_func()
+	IsGroup := false
+
+	Otvet.Text = m.Message
+	Otvet.ID = m.ID
+	Otvet.MediaType = m.TypeName()
+	TimeInt := m.GetDate()
+	Otvet.TimeSent = time.UnixMilli(int64(TimeInt * 1000))
+	var ChatID int64
+
+	if m.PeerID != nil && micro.IsNilInterface(m.PeerID) == false {
+		switch v := m.PeerID.(type) {
+		case *tg.PeerUser:
+			ChatID = v.UserID
+		case *tg.PeerChat:
+			{
+				ChatID = v.ChatID
+				IsGroup = true
+			}
+		case *tg.PeerChannel:
+			{
+				ChatID = v.ChannelID
+				IsGroup = true
+			}
+		default:
+			{
+				IsGroup = true
+			}
+		}
+	}
+	Otvet.ChatID = ChatID
+
+	MyID := UserSelf.ID
+	var SenderID int64
+
+	IsFromMe := false
+	if m.FromID != nil && micro.IsNilInterface(m.FromID) == false {
+		switch v := m.FromID.(type) {
+		case *tg.PeerUser:
+			{
+				SenderID = v.UserID
+			}
+		//case *tg.PeerChat: // peerChat#36c6019a
+		//case *tg.PeerChannel: // peerChannel#a2a5371e
+		default:
+		}
+	} else {
+		if m.PeerID != nil && micro.IsNilInterface(m.PeerID) == false {
+			switch v := m.PeerID.(type) {
+			case *tg.PeerUser:
+				{
+					if v.UserID == MyID {
+						IsFromMe = true
+						SenderID = MyID
+					} else {
+						SenderID = v.UserID
+					}
+				}
+			//case *tg.PeerChat: // peerChat#36c6019a
+			//case *tg.PeerChannel: // peerChannel#a2a5371e
+			default:
+			}
+		}
+	}
+	Otvet.IsGroup = IsGroup //m.GroupedID != 0
+
+	//if MyID == SenderID {
+	//	IsFromMe = true
+	//}
+	Otvet.IsFromMe = IsFromMe
+	Otvet.FromID = SenderID
+
+	return Otvet
+}
+
+// GetContactsAll - обновляет список контактов
+func GetContactsAll() {
+	ctxMain := contextmain.GetContext()
+	ctx, cancel_func := context.WithTimeout(ctxMain, time.Second*60)
+	defer cancel_func()
+	IContacts, err := Client.API().ContactsGetContacts(ctx, 0)
+	if err != nil {
+		log.Error("GetContactsAll() error: ", err)
+		return
+	}
+	ok := false
+	Contacts, ok = IContacts.(*tg.ContactsContacts)
+	if ok == false {
+		log.Error("IContacts() error: ", err)
+		return
+	}
+	log.Debug("Contacts len: ", len(Contacts.Contacts))
 }

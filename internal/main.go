@@ -18,8 +18,8 @@ func StartApp() {
 
 	stopapp.StartWaitStop()
 
-	telegram_client.CreateTelegramClient(nil)
-	telegram_client.ConnectTelegram()
+	//telegram_client.CreateTelegramClient(nil)
+	telegram_client.Connect(nil)
 
 	logic.Start()
 

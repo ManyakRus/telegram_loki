@@ -23,6 +23,8 @@ import (
 // Writer returns a writer bounded by the context that will write
 // a WebSocket message of type dataType to the connection.
 //
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
+//
 // You must close the writer once you have written the entire message.
 //
 // Only one writer can be open at a time, multiple calls will block until the previous writer
@@ -36,6 +38,8 @@ func (c *Conn) Writer(ctx context.Context, typ MessageType) (io.WriteCloser, err
 }
 
 // Write writes a message to the connection.
+//
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
 //
 // See the Writer method if you want to stream a message.
 //
@@ -159,7 +163,6 @@ func (mw *msgWriter) Write(p []byte) (_ int, err error) {
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("failed to write: %w", err)
-			mw.c.close(err)
 		}
 	}()
 
@@ -242,29 +245,11 @@ func (c *Conn) writeControl(ctx context.Context, opcode opcode, p []byte) error 
 	return nil
 }
 
-// frame handles all writes to the connection.
+// writeFrame handles all writes to the connection.
 func (c *Conn) writeFrame(ctx context.Context, fin bool, flate bool, opcode opcode, p []byte) (_ int, err error) {
 	err = c.writeFrameMu.lock(ctx)
 	if err != nil {
 		return 0, err
-	}
-
-	// If the state says a close has already been written, we wait until
-	// the connection is closed and return that error.
-	//
-	// However, if the frame being written is a close, that means its the close from
-	// the state being set so we let it go through.
-	c.closeMu.Lock()
-	wroteClose := c.wroteClose
-	c.closeMu.Unlock()
-	if wroteClose && opcode != opClose {
-		c.writeFrameMu.unlock()
-		select {
-		case <-ctx.Done():
-			return 0, ctx.Err()
-		case <-c.closed:
-			return 0, net.ErrClosed
-		}
 	}
 	defer c.writeFrameMu.unlock()
 
@@ -283,7 +268,6 @@ func (c *Conn) writeFrame(ctx context.Context, fin bool, flate bool, opcode opco
 				err = ctx.Err()
 			default:
 			}
-			c.close(err)
 			err = fmt.Errorf("failed to write frame: %w", err)
 		}
 	}()
@@ -365,7 +349,7 @@ func (c *Conn) writeFramePayload(p []byte) (n int, err error) {
 			return n, err
 		}
 
-		maskKey = mask(maskKey, c.writeBuf[i:c.bw.Buffered()])
+		maskKey = mask(c.writeBuf[i:c.bw.Buffered()], maskKey)
 
 		p = p[j:]
 		n += j
@@ -392,7 +376,5 @@ func extractBufioWriterBuf(bw *bufio.Writer, w io.Writer) []byte {
 }
 
 func (c *Conn) writeError(code StatusCode, err error) {
-	c.setCloseErr(err)
 	c.writeClose(code, err.Error())
-	c.close(nil)
 }

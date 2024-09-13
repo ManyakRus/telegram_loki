@@ -3,19 +3,24 @@ package carbon
 import (
 	"math"
 	"strings"
+	"time"
+)
+
+const (
+	minDuration time.Duration = -1 << 63
+	maxDuration time.Duration = 1<<63 - 1
 )
 
 // DiffInYears gets the difference in years.
 // 相差多少年
 func (c Carbon) DiffInYears(carbon ...Carbon) int64 {
 	start, end := c, c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
 		end = carbon[0]
 	}
-
 	dy, dm, dd := end.Year()-start.Year(), end.Month()-start.Month(), end.Day()-start.Day()
 	if dm < 0 || (dm == 0 && dd < 0) {
 		dy--
@@ -36,7 +41,7 @@ func (c Carbon) DiffAbsInYears(carbon ...Carbon) int64 {
 // 相差多少月
 func (c Carbon) DiffInMonths(carbon ...Carbon) int64 {
 	end := c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -47,7 +52,6 @@ func (c Carbon) DiffInMonths(carbon ...Carbon) int64 {
 	}
 	startYear, startMonth, _ := c.Date()
 	endYear, endMonth, _ := end.Date()
-
 	diffYear, diffMonth := endYear-startYear, endMonth-startMonth
 	return int64(diffYear*MonthsPerYear + diffMonth)
 }
@@ -62,7 +66,7 @@ func (c Carbon) DiffAbsInMonths(carbon ...Carbon) int64 {
 // 相差多少周
 func (c Carbon) DiffInWeeks(carbon ...Carbon) int64 {
 	start, end := c, c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -81,7 +85,7 @@ func (c Carbon) DiffAbsInWeeks(carbon ...Carbon) int64 {
 // 相差多少天
 func (c Carbon) DiffInDays(carbon ...Carbon) int64 {
 	start, end := c, c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -100,7 +104,7 @@ func (c Carbon) DiffAbsInDays(carbon ...Carbon) int64 {
 // 相差多少小时
 func (c Carbon) DiffInHours(carbon ...Carbon) int64 {
 	end := c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -119,7 +123,7 @@ func (c Carbon) DiffAbsInHours(carbon ...Carbon) int64 {
 // 相差多少分钟
 func (c Carbon) DiffInMinutes(carbon ...Carbon) int64 {
 	end := c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -138,7 +142,7 @@ func (c Carbon) DiffAbsInMinutes(carbon ...Carbon) int64 {
 // 相差多少秒
 func (c Carbon) DiffInSeconds(carbon ...Carbon) int64 {
 	end := c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -157,7 +161,7 @@ func (c Carbon) DiffAbsInSeconds(carbon ...Carbon) int64 {
 // 相差字符串，支持i18n
 func (c Carbon) DiffInString(carbon ...Carbon) string {
 	end := c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -174,7 +178,7 @@ func (c Carbon) DiffInString(carbon ...Carbon) string {
 // 相差字符串，支持i18n(绝对值)
 func (c Carbon) DiffAbsInString(carbon ...Carbon) string {
 	end := c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {
@@ -187,11 +191,34 @@ func (c Carbon) DiffAbsInString(carbon ...Carbon) string {
 	return c.lang.translate(unit, getAbsValue(value))
 }
 
+// DiffInDuration gets the difference in duration.
+// 相差时长
+func (c Carbon) DiffInDuration(carbon ...Carbon) time.Duration {
+	end := c.Now()
+	if c.IsSetTestNow() {
+		end = CreateFromTimestampNano(c.testNow, c.Location())
+	}
+	if len(carbon) > 0 {
+		end = carbon[0]
+	}
+	return end.StdTime().Sub(c.StdTime())
+}
+
+// DiffAbsInDuration gets the difference in duration with absolute value.
+// 相差时长(绝对值)
+func (c Carbon) DiffAbsInDuration(carbon ...Carbon) time.Duration {
+	d := c.DiffInDuration(carbon...)
+	if d >= 0 {
+		return d
+	}
+	return -d
+}
+
 // DiffForHumans gets the difference in a human-readable format, i18n is supported.
 // 获取对人类友好的可读格式时间差，支持i18n
 func (c Carbon) DiffForHumans(carbon ...Carbon) string {
 	end := c.Now()
-	if c.HasTestNow() {
+	if c.IsSetTestNow() {
 		end = CreateFromTimestampNano(c.testNow, c.Location())
 	}
 	if len(carbon) > 0 {

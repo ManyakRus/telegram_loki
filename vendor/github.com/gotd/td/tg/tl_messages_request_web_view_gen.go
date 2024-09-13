@@ -59,6 +59,8 @@ type MessagesRequestWebViewRequest struct {
 	// Links:
 	//  1) https://core.telegram.org/method/messages.sendWebViewResultMessage
 	Silent bool
+	// Compact field of MessagesRequestWebViewRequest.
+	Compact bool
 	// Dialog where the web app is being opened, and where the resulting message will be sent
 	// (see the docs for more info »¹).
 	//
@@ -134,6 +136,9 @@ func (r *MessagesRequestWebViewRequest) Zero() bool {
 	if !(r.Silent == false) {
 		return false
 	}
+	if !(r.Compact == false) {
+		return false
+	}
 	if !(r.Peer == nil) {
 		return false
 	}
@@ -175,6 +180,7 @@ func (r *MessagesRequestWebViewRequest) String() string {
 func (r *MessagesRequestWebViewRequest) FillFrom(from interface {
 	GetFromBotMenu() (value bool)
 	GetSilent() (value bool)
+	GetCompact() (value bool)
 	GetPeer() (value InputPeerClass)
 	GetBot() (value InputUserClass)
 	GetURL() (value string, ok bool)
@@ -186,6 +192,7 @@ func (r *MessagesRequestWebViewRequest) FillFrom(from interface {
 }) {
 	r.FromBotMenu = from.GetFromBotMenu()
 	r.Silent = from.GetSilent()
+	r.Compact = from.GetCompact()
 	r.Peer = from.GetPeer()
 	r.Bot = from.GetBot()
 	if val, ok := from.GetURL(); ok {
@@ -245,6 +252,11 @@ func (r *MessagesRequestWebViewRequest) TypeInfo() tdp.Type {
 			Null:       !r.Flags.Has(5),
 		},
 		{
+			Name:       "Compact",
+			SchemaName: "compact",
+			Null:       !r.Flags.Has(7),
+		},
+		{
 			Name:       "Peer",
 			SchemaName: "peer",
 		},
@@ -292,6 +304,9 @@ func (r *MessagesRequestWebViewRequest) SetFlags() {
 	}
 	if !(r.Silent == false) {
 		r.Flags.Set(5)
+	}
+	if !(r.Compact == false) {
+		r.Flags.Set(7)
 	}
 	if !(r.URL == "") {
 		r.Flags.Set(1)
@@ -394,6 +409,7 @@ func (r *MessagesRequestWebViewRequest) DecodeBare(b *bin.Buffer) error {
 	}
 	r.FromBotMenu = r.Flags.Has(4)
 	r.Silent = r.Flags.Has(5)
+	r.Compact = r.Flags.Has(7)
 	{
 		value, err := DecodeInputPeer(b)
 		if err != nil {
@@ -487,6 +503,25 @@ func (r *MessagesRequestWebViewRequest) GetSilent() (value bool) {
 		return
 	}
 	return r.Flags.Has(5)
+}
+
+// SetCompact sets value of Compact conditional field.
+func (r *MessagesRequestWebViewRequest) SetCompact(value bool) {
+	if value {
+		r.Flags.Set(7)
+		r.Compact = true
+	} else {
+		r.Flags.Unset(7)
+		r.Compact = false
+	}
+}
+
+// GetCompact returns value of Compact conditional field.
+func (r *MessagesRequestWebViewRequest) GetCompact() (value bool) {
+	if r == nil {
+		return
+	}
+	return r.Flags.Has(7)
 }
 
 // GetPeer returns value of Peer field.
@@ -615,7 +650,10 @@ func (r *MessagesRequestWebViewRequest) GetSendAs() (value InputPeerClass, ok bo
 // Possible errors:
 //
 //	400 BOT_INVALID: This is not a valid bot.
+//	400 BOT_WEBVIEW_DISABLED: A webview cannot be opened in the specified conditions: emitted for example if from_bot_menu or url are set and peer is not the chat with the bot.
+//	400 INPUT_USER_DEACTIVATED: The specified user was deleted.
 //	400 PEER_ID_INVALID: The provided peer id is invalid.
+//	400 YOU_BLOCKED_USER: You blocked this user.
 //
 // See https://core.telegram.org/method/messages.requestWebView for reference.
 func (c *Client) MessagesRequestWebView(ctx context.Context, request *MessagesRequestWebViewRequest) (*WebViewResultURL, error) {

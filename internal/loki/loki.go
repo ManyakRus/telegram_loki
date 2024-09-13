@@ -1,9 +1,11 @@
 package loki
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ManyakRus/starter/contextmain"
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/types"
@@ -41,34 +43,37 @@ func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message
 
 	Filter := config.Settings.LOKI_SEARCH_TEXT
 	URL := QueryApp(ServiceName, DateFrom, DateTo, Filter)
-	//query := "%7Bapp%3D%22" + ServiceName + "%22%7D%7C~%22(error:%7Cpanic:%7CERROR:%7CPANIC:)%22"
-	//sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
-	//sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
-	//URL := config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=10&query=" + query
-	//URL += "&start=" + sTime1 + "&end=" + sTime2
-
-	//URL = "http://logmon.dev.atomsbt.ru/api/datasources" //удалить
 
 	//запрос http
 	req, err := http.NewRequest(http.MethodGet, URL, http.NoBody)
 	if err != nil {
-		return Otvet, fmt.Errorf("request(), ошибка создания GET запроса, err=%w", err)
+		err = fmt.Errorf("request(), ошибка создания GET запроса, URL: %s, error: %w", URL, err)
+		log.Error(err)
+		return Otvet, err
 	}
 
 	req.SetBasicAuth(config.Settings.GRAFANA_LOGIN, config.Settings.GRAFANA_PASSWORD)
 	//req.Header.Add("Content-Type:", "application/json")
 
-	//client := &http.Client{}
+	//таймаут 60 секунд
+	ctx, cancel_ctx := context.WithTimeout(contextmain.GetContext(), 60*time.Second)
+	defer cancel_ctx()
+	req = req.WithContext(ctx)
+
+	//отправка запроса
 	response, err := Client.Do(req)
 	if err != nil {
-		return Otvet, fmt.Errorf("request(), ошибка выполнения GET запроса, err=%w", err)
+		err = fmt.Errorf("Client.Do(), ошибка выполнения GET запроса, URL: %s, error: %w", URL, err)
+		log.Error(err)
+		return Otvet, err
 	}
 
+	//проверка статуса ответа
 	switch response.StatusCode {
 	case 200:
 	default:
 		{
-			TextError := fmt.Sprint("http request error: ", response.Status)
+			TextError := fmt.Sprintf("http request URL: %s, error status: %s", URL, response.Status)
 			err = errors.New(TextError)
 			log.Error(TextError)
 			return Otvet, err
@@ -79,6 +84,8 @@ func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message
 	TextJson, err := io.ReadAll(response.Body)
 	err = json.Unmarshal(TextJson, &Otvet)
 	if err != nil {
+		err = fmt.Errorf("json.Unmarshal(), ошибка десериализации JSON, URL: %s, error: %w", URL, err)
+		log.Error(err)
 		return Otvet, err
 	}
 

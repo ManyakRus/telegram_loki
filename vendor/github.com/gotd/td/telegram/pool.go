@@ -6,8 +6,8 @@ import (
 	"github.com/go-faster/errors"
 	"go.uber.org/zap"
 
-	"github.com/gotd/td/internal/mtproto"
-	"github.com/gotd/td/internal/pool"
+	"github.com/gotd/td/mtproto"
+	"github.com/gotd/td/pool"
 	"github.com/gotd/td/telegram/auth"
 	"github.com/gotd/td/telegram/dcs"
 	"github.com/gotd/td/telegram/internal/manager"
@@ -45,7 +45,7 @@ func (c *Client) Pool(max int64) (CloseInvoker, error) {
 	s := c.session.Load()
 	return c.createPool(s.DC, max, func() pool.Conn {
 		id := c.connsCounter.Inc()
-		return c.createConn(id, manager.ConnModeData, nil)
+		return c.createConn(id, manager.ConnModeData, nil, c.onDead)
 	})
 }
 
@@ -87,6 +87,7 @@ func (c *Client) dc(ctx context.Context, dcID int, max int64, dialer mtproto.Dia
 				DC:      dcID,
 				Device:  c.device,
 				Handler: c.asHandler(),
+				OnDead:  c.onDead,
 			},
 		)
 	})

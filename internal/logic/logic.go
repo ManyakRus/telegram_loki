@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"fmt"
 	"github.com/ManyakRus/starter/contextmain"
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/micro"
@@ -52,15 +53,38 @@ func ReadTicker() {
 // Start_period - запускает чтение логов всех сервисов за период
 func Start_period(Date1, Date2 time.Time) {
 	log.Debug("Start search errors from: ", Date1, " to: ", Date2)
+	IsOnlyErrors := true
+	var err1 error
+	var err error
+loop_for:
 	for ServiceName, DeveloperName := range types.MapServiceDeveloper {
+		//проверка завершения программы
 		select {
 		case <-contextmain.GetContext().Done():
 			log.Warn("Context app is canceled. Start()")
+			break loop_for
 		default:
-			Start_period1(ServiceName, DeveloperName, Date1, Date2)
+		}
+
+		//запуск проверки логов одного сервиса
+		err1 = Start_period1(ServiceName, DeveloperName, Date1, Date2)
+		if err1 != nil {
+			micro.Pause(1000) //error: 502 Bad Gateway
+		} else {
+			IsOnlyErrors = false
 			micro.Pause(100) //error: 429 Too Many Requests
 		}
 
+	}
+
+	// если только ошибки - то напишем в телеграм
+	if IsOnlyErrors == true {
+		TextError := fmt.Sprint("Search errors: only errors. Last error: ", err1)
+		log.Debug(TextError)
+		_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, TextError)
+		if err != nil {
+			log.Error("telegram_client.SendMessage() error: ", err)
+		}
 	}
 	LastReadTime = Date2
 }
@@ -71,7 +95,7 @@ func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time
 
 	LokiMessage, err := loki.DownloadJSON(ServiceName, DateFrom, DateTo)
 	if err != nil {
-		log.Error("DownloadJSON() error: ", err)
+		//log.Error("DownloadJSON() error: ", err)
 		micro.Pause(1000)
 		return err
 	}

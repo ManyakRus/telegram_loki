@@ -7,8 +7,8 @@ import (
 	"github.com/cenkalti/backoff/v4"
 
 	"github.com/gotd/td/clock"
-	"github.com/gotd/td/internal/mtproto"
-	"github.com/gotd/td/internal/tdsync"
+	"github.com/gotd/td/mtproto"
+	"github.com/gotd/td/tdsync"
 	"github.com/gotd/td/tg"
 )
 
@@ -22,6 +22,7 @@ type ConnOptions struct {
 	Device  DeviceConfig
 	Handler Handler
 	Setup   SetupCallback
+	OnDead  func()
 	Backoff func(ctx context.Context) backoff.BackOff
 }
 
@@ -69,6 +70,7 @@ func CreateConn(
 		gotConfig:   tdsync.NewReady(),
 		dead:        tdsync.NewReady(),
 		setup:       connOpts.Setup,
+		onDead:      connOpts.OnDead,
 		connBackoff: connOpts.Backoff,
 	}
 

@@ -31,7 +31,7 @@ var (
 	_ = tdjson.Encoder{}
 )
 
-// MessageFwdHeader represents TL type `messageFwdHeader#5f777dce`.
+// MessageFwdHeader represents TL type `messageFwdHeader#4e4df4bb`.
 // Info about a forwarded message
 //
 // See https://core.telegram.org/constructor/messageFwdHeader for reference.
@@ -47,6 +47,13 @@ type MessageFwdHeader struct {
 	// Links:
 	//  1) https://core.telegram.org/api/import
 	Imported bool
+	// Only for messages forwarded to saved messages »¹, set if the original message was
+	// outgoing (though the message may have been originally outgoing even if this flag is
+	// not set, if from_id points to the current user).
+	//
+	// Links:
+	//  1) https://core.telegram.org/api/saved-messages
+	SavedOut bool
 	// The ID of the user that originally sent the message
 	//
 	// Use SetFromID and GetFromID helpers.
@@ -65,16 +72,56 @@ type MessageFwdHeader struct {
 	//
 	// Use SetPostAuthor and GetPostAuthor helpers.
 	PostAuthor string
-	// Only for messages forwarded to the current user (inputPeerSelf), full info about the
-	// user/channel that originally sent the message
+	// Only for messages forwarded to saved messages »¹, contains the dialog where the
+	// message was originally sent.
+	//
+	// Links:
+	//  1) https://core.telegram.org/api/saved-messages
 	//
 	// Use SetSavedFromPeer and GetSavedFromPeer helpers.
 	SavedFromPeer PeerClass
-	// Only for messages forwarded to the current user (inputPeerSelf), ID of the message
-	// that was forwarded from the original user/channel
+	// Only for messages forwarded to saved messages »¹, contains the original ID of the
+	// message in saved_from_peer.
+	//
+	// Links:
+	//  1) https://core.telegram.org/api/saved-messages
 	//
 	// Use SetSavedFromMsgID and GetSavedFromMsgID helpers.
 	SavedFromMsgID int
+	// Only for forwarded messages reforwarded to saved messages »¹, contains the sender of
+	// the original message (i.e. if user A sends a message, then user B forwards it
+	// somewhere, then user C saves it to saved messages, this field will contain the ID of
+	// user B and from_id will contain the ID of user A).
+	//
+	// Links:
+	//  1) https://core.telegram.org/api/saved-messages
+	//
+	// Use SetSavedFromID and GetSavedFromID helpers.
+	SavedFromID PeerClass
+	// Only for forwarded messages from users with forward privacy enabled, sent by users
+	// with forward privacy enabled, reforwarded to saved messages »¹, contains the sender
+	// of the original message (i.e. if user A (fwd privacy enabled) sends a message, then
+	// user B (fwd privacy enabled) forwards it somewhere, then user C saves it to saved
+	// messages, this field will contain the name of user B and from_name will contain the
+	// name of user A).
+	//
+	// Links:
+	//  1) https://core.telegram.org/api/saved-messages
+	//
+	// Use SetSavedFromName and GetSavedFromName helpers.
+	SavedFromName string
+	// Only for forwarded messages reforwarded to saved messages »¹, indicates when was the
+	// original message sent (i.e. if user A sends a message @ unixtime 1, then user B
+	// forwards it somewhere @ unixtime 2, then user C saves it to saved messages @ unixtime
+	// 3, this field will contain 2, date will contain 1 and the date of the containing
+	// message² will contain 3).
+	//
+	// Links:
+	//  1) https://core.telegram.org/api/saved-messages
+	//  2) https://core.telegram.org/constructor/message
+	//
+	// Use SetSavedDate and GetSavedDate helpers.
+	SavedDate int
 	// PSA type
 	//
 	// Use SetPsaType and GetPsaType helpers.
@@ -82,7 +129,7 @@ type MessageFwdHeader struct {
 }
 
 // MessageFwdHeaderTypeID is TL type id of MessageFwdHeader.
-const MessageFwdHeaderTypeID = 0x5f777dce
+const MessageFwdHeaderTypeID = 0x4e4df4bb
 
 // Ensuring interfaces in compile-time for MessageFwdHeader.
 var (
@@ -100,6 +147,9 @@ func (m *MessageFwdHeader) Zero() bool {
 		return false
 	}
 	if !(m.Imported == false) {
+		return false
+	}
+	if !(m.SavedOut == false) {
 		return false
 	}
 	if !(m.FromID == nil) {
@@ -123,6 +173,15 @@ func (m *MessageFwdHeader) Zero() bool {
 	if !(m.SavedFromMsgID == 0) {
 		return false
 	}
+	if !(m.SavedFromID == nil) {
+		return false
+	}
+	if !(m.SavedFromName == "") {
+		return false
+	}
+	if !(m.SavedDate == 0) {
+		return false
+	}
 	if !(m.PsaType == "") {
 		return false
 	}
@@ -142,6 +201,7 @@ func (m *MessageFwdHeader) String() string {
 // FillFrom fills MessageFwdHeader from given interface.
 func (m *MessageFwdHeader) FillFrom(from interface {
 	GetImported() (value bool)
+	GetSavedOut() (value bool)
 	GetFromID() (value PeerClass, ok bool)
 	GetFromName() (value string, ok bool)
 	GetDate() (value int)
@@ -149,9 +209,13 @@ func (m *MessageFwdHeader) FillFrom(from interface {
 	GetPostAuthor() (value string, ok bool)
 	GetSavedFromPeer() (value PeerClass, ok bool)
 	GetSavedFromMsgID() (value int, ok bool)
+	GetSavedFromID() (value PeerClass, ok bool)
+	GetSavedFromName() (value string, ok bool)
+	GetSavedDate() (value int, ok bool)
 	GetPsaType() (value string, ok bool)
 }) {
 	m.Imported = from.GetImported()
+	m.SavedOut = from.GetSavedOut()
 	if val, ok := from.GetFromID(); ok {
 		m.FromID = val
 	}
@@ -175,6 +239,18 @@ func (m *MessageFwdHeader) FillFrom(from interface {
 
 	if val, ok := from.GetSavedFromMsgID(); ok {
 		m.SavedFromMsgID = val
+	}
+
+	if val, ok := from.GetSavedFromID(); ok {
+		m.SavedFromID = val
+	}
+
+	if val, ok := from.GetSavedFromName(); ok {
+		m.SavedFromName = val
+	}
+
+	if val, ok := from.GetSavedDate(); ok {
+		m.SavedDate = val
 	}
 
 	if val, ok := from.GetPsaType(); ok {
@@ -212,6 +288,11 @@ func (m *MessageFwdHeader) TypeInfo() tdp.Type {
 			Null:       !m.Flags.Has(7),
 		},
 		{
+			Name:       "SavedOut",
+			SchemaName: "saved_out",
+			Null:       !m.Flags.Has(11),
+		},
+		{
 			Name:       "FromID",
 			SchemaName: "from_id",
 			Null:       !m.Flags.Has(0),
@@ -246,6 +327,21 @@ func (m *MessageFwdHeader) TypeInfo() tdp.Type {
 			Null:       !m.Flags.Has(4),
 		},
 		{
+			Name:       "SavedFromID",
+			SchemaName: "saved_from_id",
+			Null:       !m.Flags.Has(8),
+		},
+		{
+			Name:       "SavedFromName",
+			SchemaName: "saved_from_name",
+			Null:       !m.Flags.Has(9),
+		},
+		{
+			Name:       "SavedDate",
+			SchemaName: "saved_date",
+			Null:       !m.Flags.Has(10),
+		},
+		{
 			Name:       "PsaType",
 			SchemaName: "psa_type",
 			Null:       !m.Flags.Has(6),
@@ -258,6 +354,9 @@ func (m *MessageFwdHeader) TypeInfo() tdp.Type {
 func (m *MessageFwdHeader) SetFlags() {
 	if !(m.Imported == false) {
 		m.Flags.Set(7)
+	}
+	if !(m.SavedOut == false) {
+		m.Flags.Set(11)
 	}
 	if !(m.FromID == nil) {
 		m.Flags.Set(0)
@@ -277,6 +376,15 @@ func (m *MessageFwdHeader) SetFlags() {
 	if !(m.SavedFromMsgID == 0) {
 		m.Flags.Set(4)
 	}
+	if !(m.SavedFromID == nil) {
+		m.Flags.Set(8)
+	}
+	if !(m.SavedFromName == "") {
+		m.Flags.Set(9)
+	}
+	if !(m.SavedDate == 0) {
+		m.Flags.Set(10)
+	}
 	if !(m.PsaType == "") {
 		m.Flags.Set(6)
 	}
@@ -285,7 +393,7 @@ func (m *MessageFwdHeader) SetFlags() {
 // Encode implements bin.Encoder.
 func (m *MessageFwdHeader) Encode(b *bin.Buffer) error {
 	if m == nil {
-		return fmt.Errorf("can't encode messageFwdHeader#5f777dce as nil")
+		return fmt.Errorf("can't encode messageFwdHeader#4e4df4bb as nil")
 	}
 	b.PutID(MessageFwdHeaderTypeID)
 	return m.EncodeBare(b)
@@ -294,18 +402,18 @@ func (m *MessageFwdHeader) Encode(b *bin.Buffer) error {
 // EncodeBare implements bin.BareEncoder.
 func (m *MessageFwdHeader) EncodeBare(b *bin.Buffer) error {
 	if m == nil {
-		return fmt.Errorf("can't encode messageFwdHeader#5f777dce as nil")
+		return fmt.Errorf("can't encode messageFwdHeader#4e4df4bb as nil")
 	}
 	m.SetFlags()
 	if err := m.Flags.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode messageFwdHeader#5f777dce: field flags: %w", err)
+		return fmt.Errorf("unable to encode messageFwdHeader#4e4df4bb: field flags: %w", err)
 	}
 	if m.Flags.Has(0) {
 		if m.FromID == nil {
-			return fmt.Errorf("unable to encode messageFwdHeader#5f777dce: field from_id is nil")
+			return fmt.Errorf("unable to encode messageFwdHeader#4e4df4bb: field from_id is nil")
 		}
 		if err := m.FromID.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode messageFwdHeader#5f777dce: field from_id: %w", err)
+			return fmt.Errorf("unable to encode messageFwdHeader#4e4df4bb: field from_id: %w", err)
 		}
 	}
 	if m.Flags.Has(5) {
@@ -320,14 +428,28 @@ func (m *MessageFwdHeader) EncodeBare(b *bin.Buffer) error {
 	}
 	if m.Flags.Has(4) {
 		if m.SavedFromPeer == nil {
-			return fmt.Errorf("unable to encode messageFwdHeader#5f777dce: field saved_from_peer is nil")
+			return fmt.Errorf("unable to encode messageFwdHeader#4e4df4bb: field saved_from_peer is nil")
 		}
 		if err := m.SavedFromPeer.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode messageFwdHeader#5f777dce: field saved_from_peer: %w", err)
+			return fmt.Errorf("unable to encode messageFwdHeader#4e4df4bb: field saved_from_peer: %w", err)
 		}
 	}
 	if m.Flags.Has(4) {
 		b.PutInt(m.SavedFromMsgID)
+	}
+	if m.Flags.Has(8) {
+		if m.SavedFromID == nil {
+			return fmt.Errorf("unable to encode messageFwdHeader#4e4df4bb: field saved_from_id is nil")
+		}
+		if err := m.SavedFromID.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode messageFwdHeader#4e4df4bb: field saved_from_id: %w", err)
+		}
+	}
+	if m.Flags.Has(9) {
+		b.PutString(m.SavedFromName)
+	}
+	if m.Flags.Has(10) {
+		b.PutInt(m.SavedDate)
 	}
 	if m.Flags.Has(6) {
 		b.PutString(m.PsaType)
@@ -338,10 +460,10 @@ func (m *MessageFwdHeader) EncodeBare(b *bin.Buffer) error {
 // Decode implements bin.Decoder.
 func (m *MessageFwdHeader) Decode(b *bin.Buffer) error {
 	if m == nil {
-		return fmt.Errorf("can't decode messageFwdHeader#5f777dce to nil")
+		return fmt.Errorf("can't decode messageFwdHeader#4e4df4bb to nil")
 	}
 	if err := b.ConsumeID(MessageFwdHeaderTypeID); err != nil {
-		return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: %w", err)
+		return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: %w", err)
 	}
 	return m.DecodeBare(b)
 }
@@ -349,67 +471,89 @@ func (m *MessageFwdHeader) Decode(b *bin.Buffer) error {
 // DecodeBare implements bin.BareDecoder.
 func (m *MessageFwdHeader) DecodeBare(b *bin.Buffer) error {
 	if m == nil {
-		return fmt.Errorf("can't decode messageFwdHeader#5f777dce to nil")
+		return fmt.Errorf("can't decode messageFwdHeader#4e4df4bb to nil")
 	}
 	{
 		if err := m.Flags.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field flags: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field flags: %w", err)
 		}
 	}
 	m.Imported = m.Flags.Has(7)
+	m.SavedOut = m.Flags.Has(11)
 	if m.Flags.Has(0) {
 		value, err := DecodePeer(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field from_id: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field from_id: %w", err)
 		}
 		m.FromID = value
 	}
 	if m.Flags.Has(5) {
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field from_name: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field from_name: %w", err)
 		}
 		m.FromName = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field date: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field date: %w", err)
 		}
 		m.Date = value
 	}
 	if m.Flags.Has(2) {
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field channel_post: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field channel_post: %w", err)
 		}
 		m.ChannelPost = value
 	}
 	if m.Flags.Has(3) {
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field post_author: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field post_author: %w", err)
 		}
 		m.PostAuthor = value
 	}
 	if m.Flags.Has(4) {
 		value, err := DecodePeer(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field saved_from_peer: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field saved_from_peer: %w", err)
 		}
 		m.SavedFromPeer = value
 	}
 	if m.Flags.Has(4) {
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field saved_from_msg_id: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field saved_from_msg_id: %w", err)
 		}
 		m.SavedFromMsgID = value
+	}
+	if m.Flags.Has(8) {
+		value, err := DecodePeer(b)
+		if err != nil {
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field saved_from_id: %w", err)
+		}
+		m.SavedFromID = value
+	}
+	if m.Flags.Has(9) {
+		value, err := b.String()
+		if err != nil {
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field saved_from_name: %w", err)
+		}
+		m.SavedFromName = value
+	}
+	if m.Flags.Has(10) {
+		value, err := b.Int()
+		if err != nil {
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field saved_date: %w", err)
+		}
+		m.SavedDate = value
 	}
 	if m.Flags.Has(6) {
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode messageFwdHeader#5f777dce: field psa_type: %w", err)
+			return fmt.Errorf("unable to decode messageFwdHeader#4e4df4bb: field psa_type: %w", err)
 		}
 		m.PsaType = value
 	}
@@ -433,6 +577,25 @@ func (m *MessageFwdHeader) GetImported() (value bool) {
 		return
 	}
 	return m.Flags.Has(7)
+}
+
+// SetSavedOut sets value of SavedOut conditional field.
+func (m *MessageFwdHeader) SetSavedOut(value bool) {
+	if value {
+		m.Flags.Set(11)
+		m.SavedOut = true
+	} else {
+		m.Flags.Unset(11)
+		m.SavedOut = false
+	}
+}
+
+// GetSavedOut returns value of SavedOut conditional field.
+func (m *MessageFwdHeader) GetSavedOut() (value bool) {
+	if m == nil {
+		return
+	}
+	return m.Flags.Has(11)
 }
 
 // SetFromID sets value of FromID conditional field.
@@ -549,6 +712,60 @@ func (m *MessageFwdHeader) GetSavedFromMsgID() (value int, ok bool) {
 		return value, false
 	}
 	return m.SavedFromMsgID, true
+}
+
+// SetSavedFromID sets value of SavedFromID conditional field.
+func (m *MessageFwdHeader) SetSavedFromID(value PeerClass) {
+	m.Flags.Set(8)
+	m.SavedFromID = value
+}
+
+// GetSavedFromID returns value of SavedFromID conditional field and
+// boolean which is true if field was set.
+func (m *MessageFwdHeader) GetSavedFromID() (value PeerClass, ok bool) {
+	if m == nil {
+		return
+	}
+	if !m.Flags.Has(8) {
+		return value, false
+	}
+	return m.SavedFromID, true
+}
+
+// SetSavedFromName sets value of SavedFromName conditional field.
+func (m *MessageFwdHeader) SetSavedFromName(value string) {
+	m.Flags.Set(9)
+	m.SavedFromName = value
+}
+
+// GetSavedFromName returns value of SavedFromName conditional field and
+// boolean which is true if field was set.
+func (m *MessageFwdHeader) GetSavedFromName() (value string, ok bool) {
+	if m == nil {
+		return
+	}
+	if !m.Flags.Has(9) {
+		return value, false
+	}
+	return m.SavedFromName, true
+}
+
+// SetSavedDate sets value of SavedDate conditional field.
+func (m *MessageFwdHeader) SetSavedDate(value int) {
+	m.Flags.Set(10)
+	m.SavedDate = value
+}
+
+// GetSavedDate returns value of SavedDate conditional field and
+// boolean which is true if field was set.
+func (m *MessageFwdHeader) GetSavedDate() (value int, ok bool) {
+	if m == nil {
+		return
+	}
+	if !m.Flags.Has(10) {
+		return value, false
+	}
+	return m.SavedDate, true
 }
 
 // SetPsaType sets value of PsaType conditional field.

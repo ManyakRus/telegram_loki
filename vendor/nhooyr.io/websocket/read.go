@@ -21,6 +21,8 @@ import (
 // Reader reads from the connection until there is a WebSocket
 // data message to be read. It will handle ping, pong and close frames as appropriate.
 //
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
+//
 // It returns the type of the message and an io.Reader to read it.
 // The passed context will also bound the reader.
 // Ensure you read to EOF otherwise the connection will hang.
@@ -39,6 +41,8 @@ func (c *Conn) Reader(ctx context.Context) (MessageType, io.Reader, error) {
 
 // Read is a convenience method around Reader to read a single message
 // from the connection.
+//
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
 func (c *Conn) Read(ctx context.Context) (MessageType, []byte, error) {
 	typ, r, err := c.Reader(ctx)
 	if err != nil {
@@ -52,6 +56,8 @@ func (c *Conn) Read(ctx context.Context) (MessageType, []byte, error) {
 // CloseRead starts a goroutine to read from the connection until it is closed
 // or a data message is received.
 //
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
+//
 // Once CloseRead is called you cannot read any messages from the connection.
 // The returned context will be cancelled when the connection is closed.
 //
@@ -60,14 +66,24 @@ func (c *Conn) Read(ctx context.Context) (MessageType, []byte, error) {
 // Call CloseRead when you do not expect to read any more messages.
 // Since it actively reads from the connection, it will ensure that ping, pong and close
 // frames are responded to. This means c.Ping and c.Close will still work as expected.
+//
+// This function is idempotent.
 func (c *Conn) CloseRead(ctx context.Context) context.Context {
+	c.closeReadMu.Lock()
+	ctx2 := c.closeReadCtx
+	if ctx2 != nil {
+		c.closeReadMu.Unlock()
+		return ctx2
+	}
 	ctx, cancel := context.WithCancel(ctx)
+	c.closeReadCtx = ctx
+	c.closeReadDone = make(chan struct{})
+	c.closeReadMu.Unlock()
 
-	c.wg.Add(1)
 	go func() {
-		defer c.CloseNow()
-		defer c.wg.Done()
+		defer close(c.closeReadDone)
 		defer cancel()
+		defer c.close()
 		_, _, err := c.Reader(ctx)
 		if err == nil {
 			c.Close(StatusPolicyViolation, "unexpected data message")
@@ -78,6 +94,8 @@ func (c *Conn) CloseRead(ctx context.Context) context.Context {
 
 // SetReadLimit sets the max number of bytes to read for a single message.
 // It applies to the Reader and Read methods.
+//
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
 //
 // By default, the connection has a message read limit of 32768 bytes.
 //
@@ -222,7 +240,6 @@ func (c *Conn) readFrameHeader(ctx context.Context) (header, error) {
 		case <-ctx.Done():
 			return header{}, ctx.Err()
 		default:
-			c.close(err)
 			return header{}, err
 		}
 	}
@@ -251,9 +268,7 @@ func (c *Conn) readFramePayload(ctx context.Context, p []byte) (int, error) {
 		case <-ctx.Done():
 			return n, ctx.Err()
 		default:
-			err = fmt.Errorf("failed to read frame payload: %w", err)
-			c.close(err)
-			return n, err
+			return n, fmt.Errorf("failed to read frame payload: %w", err)
 		}
 	}
 
@@ -289,7 +304,7 @@ func (c *Conn) handleControl(ctx context.Context, h header) (err error) {
 	}
 
 	if h.masked {
-		mask(h.maskKey, b)
+		mask(b, h.maskKey)
 	}
 
 	switch h.opcode {
@@ -308,9 +323,7 @@ func (c *Conn) handleControl(ctx context.Context, h header) (err error) {
 		return nil
 	}
 
-	defer func() {
-		c.readCloseFrameErr = err
-	}()
+	// opClose
 
 	ce, err := parseClosePayload(b)
 	if err != nil {
@@ -320,9 +333,9 @@ func (c *Conn) handleControl(ctx context.Context, h header) (err error) {
 	}
 
 	err = fmt.Errorf("received close frame: %w", ce)
-	c.setCloseErr(err)
 	c.writeClose(ce.Code, ce.Reason)
-	c.close(err)
+	c.readMu.unlock()
+	c.close()
 	return err
 }
 
@@ -336,9 +349,7 @@ func (c *Conn) reader(ctx context.Context) (_ MessageType, _ io.Reader, err erro
 	defer c.readMu.unlock()
 
 	if !c.msgReader.fin {
-		err = errors.New("previous message not read to completion")
-		c.close(fmt.Errorf("failed to get reader: %w", err))
-		return 0, nil, err
+		return 0, nil, errors.New("previous message not read to completion")
 	}
 
 	h, err := c.readLoop(ctx)
@@ -411,10 +422,9 @@ func (mr *msgReader) Read(p []byte) (n int, err error) {
 		return n, io.EOF
 	}
 	if err != nil {
-		err = fmt.Errorf("failed to read: %w", err)
-		mr.c.close(err)
+		return n, fmt.Errorf("failed to read: %w", err)
 	}
-	return n, err
+	return n, nil
 }
 
 func (mr *msgReader) read(p []byte) (int, error) {
@@ -453,7 +463,7 @@ func (mr *msgReader) read(p []byte) (int, error) {
 		mr.payloadLength -= int64(n)
 
 		if !mr.c.client {
-			mr.maskKey = mask(mr.maskKey, p)
+			mr.maskKey = mask(p, mr.maskKey)
 		}
 
 		return n, nil

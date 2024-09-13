@@ -6,7 +6,6 @@ package websocket
 import (
 	"bufio"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -18,6 +17,8 @@ import (
 
 // MessageType represents the type of a WebSocket message.
 // See https://tools.ietf.org/html/rfc6455#section-5.6
+//
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
 type MessageType int
 
 // MessageType constants.
@@ -30,6 +31,8 @@ const (
 
 // Conn represents a WebSocket connection.
 // All methods may be called concurrently except for Reader and Read.
+//
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
 //
 // You must always read from the connection. Otherwise control
 // frames will not be handled. See Reader and CloseRead.
@@ -53,15 +56,15 @@ type Conn struct {
 	br             *bufio.Reader
 	bw             *bufio.Writer
 
-	readTimeout  chan context.Context
-	writeTimeout chan context.Context
+	readTimeout     chan context.Context
+	writeTimeout    chan context.Context
+	timeoutLoopDone chan struct{}
 
 	// Read state.
-	readMu            *mu
-	readHeaderBuf     [8]byte
-	readControlBuf    [maxControlPayload]byte
-	msgReader         *msgReader
-	readCloseFrameErr error
+	readMu         *mu
+	readHeaderBuf  [8]byte
+	readControlBuf [maxControlPayload]byte
+	msgReader      *msgReader
 
 	// Write state.
 	msgWriter      *msgWriter
@@ -70,11 +73,13 @@ type Conn struct {
 	writeHeaderBuf [8]byte
 	writeHeader    header
 
-	wg         sync.WaitGroup
-	closed     chan struct{}
-	closeMu    sync.Mutex
-	closeErr   error
-	wroteClose bool
+	closeReadMu   sync.Mutex
+	closeReadCtx  context.Context
+	closeReadDone chan struct{}
+
+	closed  chan struct{}
+	closeMu sync.Mutex
+	closing bool
 
 	pingCounter   int32
 	activePingsMu sync.Mutex
@@ -103,8 +108,9 @@ func newConn(cfg connConfig) *Conn {
 		br: cfg.br,
 		bw: cfg.bw,
 
-		readTimeout:  make(chan context.Context),
-		writeTimeout: make(chan context.Context),
+		readTimeout:     make(chan context.Context),
+		writeTimeout:    make(chan context.Context),
+		timeoutLoopDone: make(chan struct{}),
 
 		closed:      make(chan struct{}),
 		activePings: make(map[string]chan<- struct{}),
@@ -128,53 +134,45 @@ func newConn(cfg connConfig) *Conn {
 	}
 
 	runtime.SetFinalizer(c, func(c *Conn) {
-		c.close(errors.New("connection garbage collected"))
+		c.close()
 	})
 
-	c.wg.Add(1)
-	go func() {
-		defer c.wg.Done()
-		c.timeoutLoop()
-	}()
+	go c.timeoutLoop()
 
 	return c
 }
 
 // Subprotocol returns the negotiated subprotocol.
 // An empty string means the default protocol.
+//
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
 func (c *Conn) Subprotocol() string {
 	return c.subprotocol
 }
 
-func (c *Conn) close(err error) {
+func (c *Conn) close() error {
 	c.closeMu.Lock()
 	defer c.closeMu.Unlock()
 
 	if c.isClosed() {
-		return
+		return net.ErrClosed
 	}
-	if err == nil {
-		err = c.rwc.Close()
-	}
-	c.setCloseErrLocked(err)
-
-	close(c.closed)
 	runtime.SetFinalizer(c, nil)
+	close(c.closed)
 
 	// Have to close after c.closed is closed to ensure any goroutine that wakes up
 	// from the connection being closed also sees that c.closed is closed and returns
 	// closeErr.
-	c.rwc.Close()
-
-	c.wg.Add(1)
-	go func() {
-		defer c.wg.Done()
-		c.msgWriter.close()
-		c.msgReader.close()
-	}()
+	err := c.rwc.Close()
+	// With the close of rwc, these become safe to close.
+	c.msgWriter.close()
+	c.msgReader.close()
+	return err
 }
 
 func (c *Conn) timeoutLoop() {
+	defer close(c.timeoutLoopDone)
+
 	readCtx := context.Background()
 	writeCtx := context.Background()
 
@@ -187,14 +185,10 @@ func (c *Conn) timeoutLoop() {
 		case readCtx = <-c.readTimeout:
 
 		case <-readCtx.Done():
-			c.setCloseErr(fmt.Errorf("read timed out: %w", readCtx.Err()))
-			c.wg.Add(1)
-			go func() {
-				defer c.wg.Done()
-				c.writeError(StatusPolicyViolation, errors.New("read timed out"))
-			}()
+			c.close()
+			return
 		case <-writeCtx.Done():
-			c.close(fmt.Errorf("write timed out: %w", writeCtx.Err()))
+			c.close()
 			return
 		}
 	}
@@ -209,6 +203,8 @@ func (c *Conn) flate() bool {
 // Ping must be called concurrently with Reader as it does
 // not read from the connection but instead waits for a Reader call
 // to read the pong.
+//
+// Deprecated: coder now maintains this library at https://github.com/coder/websocket.
 //
 // TCP Keepalives should suffice for most use cases.
 func (c *Conn) Ping(ctx context.Context) error {
@@ -243,9 +239,7 @@ func (c *Conn) ping(ctx context.Context, p string) error {
 	case <-c.closed:
 		return net.ErrClosed
 	case <-ctx.Done():
-		err := fmt.Errorf("failed to wait for pong: %w", ctx.Err())
-		c.close(err)
-		return err
+		return fmt.Errorf("failed to wait for pong: %w", ctx.Err())
 	case <-pong:
 		return nil
 	}
@@ -281,9 +275,7 @@ func (m *mu) lock(ctx context.Context) error {
 	case <-m.c.closed:
 		return net.ErrClosed
 	case <-ctx.Done():
-		err := fmt.Errorf("failed to acquire lock: %w", ctx.Err())
-		m.c.close(err)
-		return err
+		return fmt.Errorf("failed to acquire lock: %w", ctx.Err())
 	case m.ch <- struct{}{}:
 		// To make sure the connection is certainly alive.
 		// As it's possible the send on m.ch was selected

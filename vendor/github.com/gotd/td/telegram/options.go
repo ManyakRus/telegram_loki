@@ -10,10 +10,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/gotd/td/clock"
-	"github.com/gotd/td/internal/crypto"
-	"github.com/gotd/td/internal/exchange"
-	"github.com/gotd/td/internal/mtproto"
-	"github.com/gotd/td/internal/proto"
+	"github.com/gotd/td/crypto"
+	"github.com/gotd/td/exchange"
+	"github.com/gotd/td/mtproto"
+	"github.com/gotd/td/proto"
 	"github.com/gotd/td/telegram/dcs"
 	"github.com/gotd/td/tg"
 )
@@ -48,6 +48,8 @@ type Options struct {
 
 	// ReconnectionBackoff configures and returns reconnection backoff object.
 	ReconnectionBackoff func() backoff.BackOff
+	// OnDead will be called on connection dead.
+	OnDead func()
 	// MigrationTimeout configures migration timeout.
 	MigrationTimeout time.Duration
 
@@ -94,6 +96,10 @@ type Options struct {
 
 	// OpenTelemetry.
 	TracerProvider trace.TracerProvider
+
+	// OnTransfer is called during authorization transfer.
+	// See [AuthTransferHandler] for details.
+	OnTransfer AuthTransferHandler
 }
 
 func (opt *Options) setDefaults() {
@@ -139,6 +145,9 @@ func (opt *Options) setDefaults() {
 		opt.UpdateHandler = UpdateHandlerFunc(func(ctx context.Context, u tg.UpdatesClass) error {
 			return nil
 		})
+	}
+	if opt.OnTransfer == nil {
+		opt.OnTransfer = noopOnTransfer
 	}
 }
 

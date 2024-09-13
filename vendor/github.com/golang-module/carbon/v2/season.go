@@ -4,10 +4,27 @@ import (
 	"strings"
 )
 
+var seasons = []struct {
+	month, index int
+}{
+	{3, 0},  // spring
+	{4, 0},  // spring
+	{5, 0},  // spring
+	{6, 1},  // summer
+	{7, 1},  // summer
+	{8, 1},  // summer
+	{9, 2},  // autumn
+	{10, 2}, // autumn
+	{11, 2}, // autumn
+	{12, 3}, // winter
+	{1, 3},  // winter
+	{2, 3},  // winter
+}
+
 // Season gets season name according to the meteorological division method like "Spring", i18n is supported.
 // 获取当前季节(以气象划分)，支持i18n
 func (c Carbon) Season() string {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return ""
 	}
 	if len(c.lang.resources) == 0 {
@@ -15,19 +32,17 @@ func (c Carbon) Season() string {
 	}
 	index := -1
 	month := c.Month()
-	switch {
-	case month == 3 || month == 4 || month == 5:
-		index = 0
-	case month == 6 || month == 7 || month == 8:
-		index = 1
-	case month == 9 || month == 10 || month == 11:
-		index = 2
-	case month == 12 || month == 1 || month == 2:
-		index = 3
+	for i := 0; i < len(seasons); i++ {
+		season := seasons[i]
+		if month == season.month {
+			index = season.index
+		}
 	}
-	if seasons, ok := c.lang.resources["seasons"]; ok {
-		slice := strings.Split(seasons, "|")
-		if len(slice) == 4 {
+	c.lang.rw.Lock()
+	defer c.lang.rw.Unlock()
+	if resources, ok := c.lang.resources["seasons"]; ok {
+		slice := strings.Split(resources, "|")
+		if len(slice) == QuartersPerYear {
 			return slice[index]
 		}
 	}
@@ -37,7 +52,7 @@ func (c Carbon) Season() string {
 // StartOfSeason returns a Carbon instance for start of the season.
 // 本季节开始时间
 func (c Carbon) StartOfSeason() Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, _ := c.Date()
@@ -50,7 +65,7 @@ func (c Carbon) StartOfSeason() Carbon {
 // EndOfSeason returns a Carbon instance for end of the season.
 // 本季节结束时间
 func (c Carbon) EndOfSeason() Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, _ := c.Date()
@@ -66,7 +81,7 @@ func (c Carbon) EndOfSeason() Carbon {
 // IsSpring reports whether is spring.
 // 是否是春季
 func (c Carbon) IsSpring() bool {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return false
 	}
 	month := c.Month()
@@ -79,7 +94,7 @@ func (c Carbon) IsSpring() bool {
 // IsSummer reports whether is summer.
 // 是否是夏季
 func (c Carbon) IsSummer() bool {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return false
 	}
 	month := c.Month()
@@ -92,7 +107,7 @@ func (c Carbon) IsSummer() bool {
 // IsAutumn reports whether is autumn.
 // 是否是秋季
 func (c Carbon) IsAutumn() bool {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return false
 	}
 	month := c.Month()
@@ -105,7 +120,7 @@ func (c Carbon) IsAutumn() bool {
 // IsWinter reports whether is winter.
 // 是否是冬季
 func (c Carbon) IsWinter() bool {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return false
 	}
 	month := c.Month()

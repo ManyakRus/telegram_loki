@@ -49,3 +49,8 @@ graph:
 conn:
 	clear
 	image_connections ./internal docs/connections.graphml $(SERVICENAME)
+lines:
+	clear
+	go_lines_count ./ ./docs/lines_count.txt 10
+licenses:
+	golicense -out-xlsx=./docs/licenses.xlsx $(FILEAPP)

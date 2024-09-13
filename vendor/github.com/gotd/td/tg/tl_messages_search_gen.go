@@ -31,7 +31,7 @@ var (
 	_ = tdjson.Encoder{}
 )
 
-// MessagesSearchRequest represents TL type `messages.search#a0fda762`.
+// MessagesSearchRequest represents TL type `messages.search#29ee847a`.
 // Search for messages.
 //
 // See https://core.telegram.org/method/messages.search for reference.
@@ -56,6 +56,17 @@ type MessagesSearchRequest struct {
 	//
 	// Use SetFromID and GetFromID helpers.
 	FromID InputPeerClass
+	// Search within the saved message dialog »¹ with this ID.
+	//
+	// Links:
+	//  1) https://core.telegram.org/api/saved-messages
+	//
+	// Use SetSavedPeerID and GetSavedPeerID helpers.
+	SavedPeerID InputPeerClass
+	// SavedReaction field of MessagesSearchRequest.
+	//
+	// Use SetSavedReaction and GetSavedReaction helpers.
+	SavedReaction []ReactionClass
 	// Thread ID¹
 	//
 	// Links:
@@ -101,7 +112,7 @@ type MessagesSearchRequest struct {
 }
 
 // MessagesSearchRequestTypeID is TL type id of MessagesSearchRequest.
-const MessagesSearchRequestTypeID = 0xa0fda762
+const MessagesSearchRequestTypeID = 0x29ee847a
 
 // Ensuring interfaces in compile-time for MessagesSearchRequest.
 var (
@@ -125,6 +136,12 @@ func (s *MessagesSearchRequest) Zero() bool {
 		return false
 	}
 	if !(s.FromID == nil) {
+		return false
+	}
+	if !(s.SavedPeerID == nil) {
+		return false
+	}
+	if !(s.SavedReaction == nil) {
 		return false
 	}
 	if !(s.TopMsgID == 0) {
@@ -175,6 +192,8 @@ func (s *MessagesSearchRequest) FillFrom(from interface {
 	GetPeer() (value InputPeerClass)
 	GetQ() (value string)
 	GetFromID() (value InputPeerClass, ok bool)
+	GetSavedPeerID() (value InputPeerClass, ok bool)
+	GetSavedReaction() (value []ReactionClass, ok bool)
 	GetTopMsgID() (value int, ok bool)
 	GetFilter() (value MessagesFilterClass)
 	GetMinDate() (value int)
@@ -190,6 +209,14 @@ func (s *MessagesSearchRequest) FillFrom(from interface {
 	s.Q = from.GetQ()
 	if val, ok := from.GetFromID(); ok {
 		s.FromID = val
+	}
+
+	if val, ok := from.GetSavedPeerID(); ok {
+		s.SavedPeerID = val
+	}
+
+	if val, ok := from.GetSavedReaction(); ok {
+		s.SavedReaction = val
 	}
 
 	if val, ok := from.GetTopMsgID(); ok {
@@ -244,6 +271,16 @@ func (s *MessagesSearchRequest) TypeInfo() tdp.Type {
 			Null:       !s.Flags.Has(0),
 		},
 		{
+			Name:       "SavedPeerID",
+			SchemaName: "saved_peer_id",
+			Null:       !s.Flags.Has(2),
+		},
+		{
+			Name:       "SavedReaction",
+			SchemaName: "saved_reaction",
+			Null:       !s.Flags.Has(3),
+		},
+		{
 			Name:       "TopMsgID",
 			SchemaName: "top_msg_id",
 			Null:       !s.Flags.Has(1),
@@ -293,6 +330,12 @@ func (s *MessagesSearchRequest) SetFlags() {
 	if !(s.FromID == nil) {
 		s.Flags.Set(0)
 	}
+	if !(s.SavedPeerID == nil) {
+		s.Flags.Set(2)
+	}
+	if !(s.SavedReaction == nil) {
+		s.Flags.Set(3)
+	}
 	if !(s.TopMsgID == 0) {
 		s.Flags.Set(1)
 	}
@@ -301,7 +344,7 @@ func (s *MessagesSearchRequest) SetFlags() {
 // Encode implements bin.Encoder.
 func (s *MessagesSearchRequest) Encode(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't encode messages.search#a0fda762 as nil")
+		return fmt.Errorf("can't encode messages.search#29ee847a as nil")
 	}
 	b.PutID(MessagesSearchRequestTypeID)
 	return s.EncodeBare(b)
@@ -310,35 +353,54 @@ func (s *MessagesSearchRequest) Encode(b *bin.Buffer) error {
 // EncodeBare implements bin.BareEncoder.
 func (s *MessagesSearchRequest) EncodeBare(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't encode messages.search#a0fda762 as nil")
+		return fmt.Errorf("can't encode messages.search#29ee847a as nil")
 	}
 	s.SetFlags()
 	if err := s.Flags.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode messages.search#a0fda762: field flags: %w", err)
+		return fmt.Errorf("unable to encode messages.search#29ee847a: field flags: %w", err)
 	}
 	if s.Peer == nil {
-		return fmt.Errorf("unable to encode messages.search#a0fda762: field peer is nil")
+		return fmt.Errorf("unable to encode messages.search#29ee847a: field peer is nil")
 	}
 	if err := s.Peer.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode messages.search#a0fda762: field peer: %w", err)
+		return fmt.Errorf("unable to encode messages.search#29ee847a: field peer: %w", err)
 	}
 	b.PutString(s.Q)
 	if s.Flags.Has(0) {
 		if s.FromID == nil {
-			return fmt.Errorf("unable to encode messages.search#a0fda762: field from_id is nil")
+			return fmt.Errorf("unable to encode messages.search#29ee847a: field from_id is nil")
 		}
 		if err := s.FromID.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode messages.search#a0fda762: field from_id: %w", err)
+			return fmt.Errorf("unable to encode messages.search#29ee847a: field from_id: %w", err)
+		}
+	}
+	if s.Flags.Has(2) {
+		if s.SavedPeerID == nil {
+			return fmt.Errorf("unable to encode messages.search#29ee847a: field saved_peer_id is nil")
+		}
+		if err := s.SavedPeerID.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode messages.search#29ee847a: field saved_peer_id: %w", err)
+		}
+	}
+	if s.Flags.Has(3) {
+		b.PutVectorHeader(len(s.SavedReaction))
+		for idx, v := range s.SavedReaction {
+			if v == nil {
+				return fmt.Errorf("unable to encode messages.search#29ee847a: field saved_reaction element with index %d is nil", idx)
+			}
+			if err := v.Encode(b); err != nil {
+				return fmt.Errorf("unable to encode messages.search#29ee847a: field saved_reaction element with index %d: %w", idx, err)
+			}
 		}
 	}
 	if s.Flags.Has(1) {
 		b.PutInt(s.TopMsgID)
 	}
 	if s.Filter == nil {
-		return fmt.Errorf("unable to encode messages.search#a0fda762: field filter is nil")
+		return fmt.Errorf("unable to encode messages.search#29ee847a: field filter is nil")
 	}
 	if err := s.Filter.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode messages.search#a0fda762: field filter: %w", err)
+		return fmt.Errorf("unable to encode messages.search#29ee847a: field filter: %w", err)
 	}
 	b.PutInt(s.MinDate)
 	b.PutInt(s.MaxDate)
@@ -354,10 +416,10 @@ func (s *MessagesSearchRequest) EncodeBare(b *bin.Buffer) error {
 // Decode implements bin.Decoder.
 func (s *MessagesSearchRequest) Decode(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't decode messages.search#a0fda762 to nil")
+		return fmt.Errorf("can't decode messages.search#29ee847a to nil")
 	}
 	if err := b.ConsumeID(MessagesSearchRequestTypeID); err != nil {
-		return fmt.Errorf("unable to decode messages.search#a0fda762: %w", err)
+		return fmt.Errorf("unable to decode messages.search#29ee847a: %w", err)
 	}
 	return s.DecodeBare(b)
 }
@@ -365,101 +427,125 @@ func (s *MessagesSearchRequest) Decode(b *bin.Buffer) error {
 // DecodeBare implements bin.BareDecoder.
 func (s *MessagesSearchRequest) DecodeBare(b *bin.Buffer) error {
 	if s == nil {
-		return fmt.Errorf("can't decode messages.search#a0fda762 to nil")
+		return fmt.Errorf("can't decode messages.search#29ee847a to nil")
 	}
 	{
 		if err := s.Flags.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field flags: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field flags: %w", err)
 		}
 	}
 	{
 		value, err := DecodeInputPeer(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field peer: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field peer: %w", err)
 		}
 		s.Peer = value
 	}
 	{
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field q: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field q: %w", err)
 		}
 		s.Q = value
 	}
 	if s.Flags.Has(0) {
 		value, err := DecodeInputPeer(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field from_id: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field from_id: %w", err)
 		}
 		s.FromID = value
+	}
+	if s.Flags.Has(2) {
+		value, err := DecodeInputPeer(b)
+		if err != nil {
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field saved_peer_id: %w", err)
+		}
+		s.SavedPeerID = value
+	}
+	if s.Flags.Has(3) {
+		headerLen, err := b.VectorHeader()
+		if err != nil {
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field saved_reaction: %w", err)
+		}
+
+		if headerLen > 0 {
+			s.SavedReaction = make([]ReactionClass, 0, headerLen%bin.PreallocateLimit)
+		}
+		for idx := 0; idx < headerLen; idx++ {
+			value, err := DecodeReaction(b)
+			if err != nil {
+				return fmt.Errorf("unable to decode messages.search#29ee847a: field saved_reaction: %w", err)
+			}
+			s.SavedReaction = append(s.SavedReaction, value)
+		}
 	}
 	if s.Flags.Has(1) {
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field top_msg_id: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field top_msg_id: %w", err)
 		}
 		s.TopMsgID = value
 	}
 	{
 		value, err := DecodeMessagesFilter(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field filter: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field filter: %w", err)
 		}
 		s.Filter = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field min_date: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field min_date: %w", err)
 		}
 		s.MinDate = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field max_date: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field max_date: %w", err)
 		}
 		s.MaxDate = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field offset_id: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field offset_id: %w", err)
 		}
 		s.OffsetID = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field add_offset: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field add_offset: %w", err)
 		}
 		s.AddOffset = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field limit: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field limit: %w", err)
 		}
 		s.Limit = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field max_id: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field max_id: %w", err)
 		}
 		s.MaxID = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field min_id: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field min_id: %w", err)
 		}
 		s.MinID = value
 	}
 	{
 		value, err := b.Long()
 		if err != nil {
-			return fmt.Errorf("unable to decode messages.search#a0fda762: field hash: %w", err)
+			return fmt.Errorf("unable to decode messages.search#29ee847a: field hash: %w", err)
 		}
 		s.Hash = value
 	}
@@ -498,6 +584,42 @@ func (s *MessagesSearchRequest) GetFromID() (value InputPeerClass, ok bool) {
 		return value, false
 	}
 	return s.FromID, true
+}
+
+// SetSavedPeerID sets value of SavedPeerID conditional field.
+func (s *MessagesSearchRequest) SetSavedPeerID(value InputPeerClass) {
+	s.Flags.Set(2)
+	s.SavedPeerID = value
+}
+
+// GetSavedPeerID returns value of SavedPeerID conditional field and
+// boolean which is true if field was set.
+func (s *MessagesSearchRequest) GetSavedPeerID() (value InputPeerClass, ok bool) {
+	if s == nil {
+		return
+	}
+	if !s.Flags.Has(2) {
+		return value, false
+	}
+	return s.SavedPeerID, true
+}
+
+// SetSavedReaction sets value of SavedReaction conditional field.
+func (s *MessagesSearchRequest) SetSavedReaction(value []ReactionClass) {
+	s.Flags.Set(3)
+	s.SavedReaction = value
+}
+
+// GetSavedReaction returns value of SavedReaction conditional field and
+// boolean which is true if field was set.
+func (s *MessagesSearchRequest) GetSavedReaction() (value []ReactionClass, ok bool) {
+	if s == nil {
+		return
+	}
+	if !s.Flags.Has(3) {
+		return value, false
+	}
+	return s.SavedReaction, true
 }
 
 // SetTopMsgID sets value of TopMsgID conditional field.
@@ -590,7 +712,15 @@ func (s *MessagesSearchRequest) GetHash() (value int64) {
 	return s.Hash
 }
 
-// MessagesSearch invokes method messages.search#a0fda762 returning error if any.
+// MapSavedReaction returns field SavedReaction wrapped in ReactionClassArray helper.
+func (s *MessagesSearchRequest) MapSavedReaction() (value ReactionClassArray, ok bool) {
+	if !s.Flags.Has(3) {
+		return value, false
+	}
+	return ReactionClassArray(s.SavedReaction), true
+}
+
+// MessagesSearch invokes method messages.search#29ee847a returning error if any.
 // Search for messages.
 //
 // Possible errors:

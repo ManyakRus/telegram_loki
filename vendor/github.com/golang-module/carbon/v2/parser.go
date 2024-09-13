@@ -1,13 +1,15 @@
 package carbon
 
 import (
+	"strconv"
 	"time"
 )
 
 // Parse parses a standard time string as a Carbon instance.
 // 将标准格式时间字符串解析成 Carbon 实例
 func (c Carbon) Parse(value string, timezone ...string) Carbon {
-	if value == "" || value == "0" || value == "0000-00-00 00:00:00" || value == "0000-00-00" || value == "00:00:00" {
+	if value == "" {
+		c.Error = invalidValueError(value)
 		return c
 	}
 	if len(timezone) > 0 {
@@ -63,8 +65,24 @@ func (c Carbon) ParseByLayout(value, layout string, timezone ...string) Carbon {
 	if c.Error != nil {
 		return c
 	}
-	if value == "" || value == "0" || value == "0000-00-00 00:00:00" || value == "0000-00-00" || value == "00:00:00" {
+	if value == "" {
 		return c
+	}
+	if layout == "timestamp" {
+		timestamp, _ := strconv.ParseInt(value, 10, 64)
+		return c.CreateFromTimestamp(timestamp)
+	}
+	if layout == "timestampMilli" {
+		timestamp, _ := strconv.ParseInt(value, 10, 64)
+		return c.CreateFromTimestampMilli(timestamp)
+	}
+	if layout == "timestampMicro" {
+		timestamp, _ := strconv.ParseInt(value, 10, 64)
+		return c.CreateFromTimestampMicro(timestamp)
+	}
+	if layout == "timestampNano" {
+		timestamp, _ := strconv.ParseInt(value, 10, 64)
+		return c.CreateFromTimestampNano(timestamp)
 	}
 	tt, err := time.ParseInLocation(layout, value, c.loc)
 	if err != nil {

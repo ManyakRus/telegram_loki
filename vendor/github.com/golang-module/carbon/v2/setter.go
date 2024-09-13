@@ -4,6 +4,24 @@ import (
 	"time"
 )
 
+// SetWeekStartsAt sets start day of the week.
+// 设置一周的开始日期
+func (c Carbon) SetWeekStartsAt(day string) Carbon {
+	if c.Error != nil {
+		return c
+	}
+	if weekday, ok := weekdays[day]; ok {
+		c.weekStartsAt = weekday
+	}
+	return c
+}
+
+// SetWeekStartsAt sets start day of the week.
+// 设置一周的开始日期
+func SetWeekStartsAt(day string) Carbon {
+	return NewCarbon().SetWeekStartsAt(day)
+}
+
 // SetTimezone sets timezone.
 // 设置时区
 func (c Carbon) SetTimezone(name string) Carbon {
@@ -59,29 +77,10 @@ func SetLocale(locale string) Carbon {
 	return c
 }
 
-// SetLanguage sets language.
-// 设置语言对象
-func (c Carbon) SetLanguage(lang *Language) Carbon {
-	if c.Error != nil {
-		return c
-	}
-	c.lang, c.Error = lang, lang.Error
-	return c
-}
-
-// SetLanguage sets language.
-// 设置语言对象
-func SetLanguage(lang *Language) Carbon {
-	c := NewCarbon()
-	lang.SetLocale(lang.locale)
-	c.lang, c.Error = lang, lang.Error
-	return c
-}
-
 // SetDateTime sets year, month, day, hour, minute and second.
 // 设置年、月、日、时、分、秒
 func (c Carbon) SetDateTime(year, month, day, hour, minute, second int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	return c.create(year, month, day, hour, minute, second, c.Nanosecond())
@@ -90,7 +89,7 @@ func (c Carbon) SetDateTime(year, month, day, hour, minute, second int) Carbon {
 // SetDateTimeMilli sets year, month, day, hour, minute, second and millisecond.
 // 设置年、月、日、时、分、秒、毫秒
 func (c Carbon) SetDateTimeMilli(year, month, day, hour, minute, second, millisecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	return c.create(year, month, day, hour, minute, second, millisecond*1e6)
@@ -99,7 +98,7 @@ func (c Carbon) SetDateTimeMilli(year, month, day, hour, minute, second, millise
 // SetDateTimeMicro sets year, month, day, hour, minute, second and microsecond.
 // 设置年、月、日、时、分、秒、微秒
 func (c Carbon) SetDateTimeMicro(year, month, day, hour, minute, second, microsecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	return c.create(year, month, day, hour, minute, second, microsecond*1e3)
@@ -108,7 +107,7 @@ func (c Carbon) SetDateTimeMicro(year, month, day, hour, minute, second, microse
 // SetDateTimeNano sets year, month, day, hour, minute, second and nanosecond.
 // 设置年、月、日、时、分、秒、纳秒
 func (c Carbon) SetDateTimeNano(year, month, day, hour, minute, second, nanosecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	return c.create(year, month, day, hour, minute, second, nanosecond)
@@ -117,7 +116,7 @@ func (c Carbon) SetDateTimeNano(year, month, day, hour, minute, second, nanoseco
 // SetDate sets year, month and day.
 // 设置年、月、日
 func (c Carbon) SetDate(year, month, day int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	hour, minute, second := c.Time()
@@ -127,7 +126,7 @@ func (c Carbon) SetDate(year, month, day int) Carbon {
 // SetDateMilli sets year, month, day and millisecond.
 // 设置年、月、日、毫秒
 func (c Carbon) SetDateMilli(year, month, day, millisecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	hour, minute, second := c.Time()
@@ -137,7 +136,7 @@ func (c Carbon) SetDateMilli(year, month, day, millisecond int) Carbon {
 // SetDateMicro sets year, month, day and microsecond.
 // 设置年、月、日、微秒
 func (c Carbon) SetDateMicro(year, month, day, microsecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	hour, minute, second := c.Time()
@@ -147,7 +146,7 @@ func (c Carbon) SetDateMicro(year, month, day, microsecond int) Carbon {
 // SetDateNano sets year, month, day and nanosecond.
 // 设置年、月、日、纳秒
 func (c Carbon) SetDateNano(year, month, day, nanosecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	hour, minute, second := c.Time()
@@ -157,7 +156,7 @@ func (c Carbon) SetDateNano(year, month, day, nanosecond int) Carbon {
 // SetTime sets hour, minute and second.
 // 设置时、分、秒
 func (c Carbon) SetTime(hour, minute, second int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day := c.Date()
@@ -167,7 +166,7 @@ func (c Carbon) SetTime(hour, minute, second int) Carbon {
 // SetTimeMilli sets hour, minute, second and millisecond.
 // 设置时、分、秒、毫秒
 func (c Carbon) SetTimeMilli(hour, minute, second, millisecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day := c.Date()
@@ -177,7 +176,7 @@ func (c Carbon) SetTimeMilli(hour, minute, second, millisecond int) Carbon {
 // SetTimeMicro sets hour, minute, second and microsecond.
 // 设置时、分、秒、微秒
 func (c Carbon) SetTimeMicro(hour, minute, second, microsecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day := c.Date()
@@ -187,7 +186,7 @@ func (c Carbon) SetTimeMicro(hour, minute, second, microsecond int) Carbon {
 // SetTimeNano sets hour, minute, second and nanosecond.
 // 设置、时、分、秒、纳秒
 func (c Carbon) SetTimeNano(hour, minute, second, nanosecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day := c.Date()
@@ -197,7 +196,7 @@ func (c Carbon) SetTimeNano(hour, minute, second, nanosecond int) Carbon {
 // SetYear sets year.
 // 设置年份
 func (c Carbon) SetYear(year int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	_, month, day, hour, minute, second := c.DateTime()
@@ -207,7 +206,7 @@ func (c Carbon) SetYear(year int) Carbon {
 // SetYearNoOverflow sets year without overflowing month.
 // 设置年份(月份不溢出)
 func (c Carbon) SetYearNoOverflow(year int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	return c.AddYearsNoOverflow(year - c.Year())
@@ -216,7 +215,7 @@ func (c Carbon) SetYearNoOverflow(year int) Carbon {
 // SetMonth sets month.
 // 设置月份
 func (c Carbon) SetMonth(month int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, _, day, hour, minute, second := c.DateTime()
@@ -226,41 +225,16 @@ func (c Carbon) SetMonth(month int) Carbon {
 // SetMonthNoOverflow sets month without overflowing month.
 // 设置月份(月份不溢出)
 func (c Carbon) SetMonthNoOverflow(month int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	return c.AddMonthsNoOverflow(month - c.Month())
 }
 
-// SetWeekStartsAt sets start day of the week.
-// 设置一周的开始日期
-func (c Carbon) SetWeekStartsAt(day string) Carbon {
-	if c.IsInvalid() {
-		return c
-	}
-	switch day {
-	case Sunday:
-		c.weekStartsAt = time.Sunday
-	case Monday:
-		c.weekStartsAt = time.Monday
-	case Tuesday:
-		c.weekStartsAt = time.Tuesday
-	case Wednesday:
-		c.weekStartsAt = time.Wednesday
-	case Thursday:
-		c.weekStartsAt = time.Thursday
-	case Friday:
-		c.weekStartsAt = time.Friday
-	case Saturday:
-		c.weekStartsAt = time.Saturday
-	}
-	return c
-}
-
 // SetDay sets day.
 // 设置日期
 func (c Carbon) SetDay(day int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, _, hour, minute, second := c.DateTime()
@@ -270,7 +244,7 @@ func (c Carbon) SetDay(day int) Carbon {
 // SetHour sets hour.
 // 设置小时
 func (c Carbon) SetHour(hour int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day, _, minute, second := c.DateTime()
@@ -280,7 +254,7 @@ func (c Carbon) SetHour(hour int) Carbon {
 // SetMinute sets minute.
 // 设置分钟
 func (c Carbon) SetMinute(minute int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day, hour, _, second := c.DateTime()
@@ -290,7 +264,7 @@ func (c Carbon) SetMinute(minute int) Carbon {
 // SetSecond sets second.
 // 设置秒数
 func (c Carbon) SetSecond(second int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day, hour, minute, _ := c.DateTime()
@@ -300,7 +274,7 @@ func (c Carbon) SetSecond(second int) Carbon {
 // SetMillisecond sets millisecond.
 // 设置毫秒
 func (c Carbon) SetMillisecond(millisecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day, hour, minute, second := c.DateTime()
@@ -310,7 +284,7 @@ func (c Carbon) SetMillisecond(millisecond int) Carbon {
 // SetMicrosecond sets microsecond.
 // 设置微秒
 func (c Carbon) SetMicrosecond(microsecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day, hour, minute, second := c.DateTime()
@@ -320,7 +294,7 @@ func (c Carbon) SetMicrosecond(microsecond int) Carbon {
 // SetNanosecond sets nanosecond.
 // 设置纳秒
 func (c Carbon) SetNanosecond(nanosecond int) Carbon {
-	if c.IsInvalid() {
+	if c.Error != nil {
 		return c
 	}
 	year, month, day, hour, minute, second := c.DateTime()

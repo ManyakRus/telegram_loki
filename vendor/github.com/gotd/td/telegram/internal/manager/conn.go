@@ -11,9 +11,9 @@ import (
 
 	"github.com/gotd/td/bin"
 	"github.com/gotd/td/clock"
-	"github.com/gotd/td/internal/mtproto"
-	"github.com/gotd/td/internal/pool"
-	"github.com/gotd/td/internal/tdsync"
+	"github.com/gotd/td/mtproto"
+	"github.com/gotd/td/pool"
+	"github.com/gotd/td/tdsync"
 	"github.com/gotd/td/tg"
 	"github.com/gotd/td/tgerr"
 )
@@ -52,6 +52,9 @@ type Conn struct {
 	// setup is callback which called after initConnection, but before ready signaling.
 	// This is necessary to transfer auth from previous connection to another DC.
 	setup SetupCallback // nilable
+
+	// onDead is called on connection death.
+	onDead func()
 
 	// Wrappers for external world, like logs or PRNG.
 	// Should be immutable.
@@ -123,6 +126,9 @@ func (c *Conn) Run(ctx context.Context) (err error) {
 	defer func() {
 		if err != nil && ctx.Err() == nil {
 			c.log.Debug("Connection dead", zap.Error(err))
+			if c.onDead != nil {
+				c.onDead()
+			}
 		}
 	}()
 	return c.proto.Run(ctx, func(ctx context.Context) error {

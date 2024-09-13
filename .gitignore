@@ -12,3 +12,6 @@
 /settings/services_add.txt
 /settings/services_add2.txt
 /bin/session.txt
+/updates.bolt.db
+/log/log.jsonl
+/peers.pebble.db/

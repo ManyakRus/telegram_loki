@@ -31,7 +31,7 @@ var (
 	_ = tdjson.Encoder{}
 )
 
-// UserFull represents TL type `userFull#b9b12c6c`.
+// UserFull represents TL type `userFull#cc997720`.
 // Extended user info
 //
 // See https://core.telegram.org/constructor/userFull for reference.
@@ -79,8 +79,16 @@ type UserFull struct {
 	//
 	// Links:
 	//  1) https://core.telegram.org/method/messages.setChatWallPaper
-	//  2) https://core.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat
+	//  2) https://core.telegram.org/api/wallpapers#installing-wallpapers-in-a-specific-chat-or-channel
 	WallpaperOverridden bool
+	// ContactRequirePremium field of UserFull.
+	ContactRequirePremium bool
+	// ReadDatesPrivate field of UserFull.
+	ReadDatesPrivate bool
+	// Flags2 field of UserFull.
+	Flags2 bin.Fields
+	// SponsoredEnabled field of UserFull.
+	SponsoredEnabled bool
 	// User ID
 	ID int64
 	// Bio of the user
@@ -173,10 +181,42 @@ type UserFull struct {
 	//
 	// Use SetStories and GetStories helpers.
 	Stories PeerStories
+	// BusinessWorkHours field of UserFull.
+	//
+	// Use SetBusinessWorkHours and GetBusinessWorkHours helpers.
+	BusinessWorkHours BusinessWorkHours
+	// BusinessLocation field of UserFull.
+	//
+	// Use SetBusinessLocation and GetBusinessLocation helpers.
+	BusinessLocation BusinessLocation
+	// BusinessGreetingMessage field of UserFull.
+	//
+	// Use SetBusinessGreetingMessage and GetBusinessGreetingMessage helpers.
+	BusinessGreetingMessage BusinessGreetingMessage
+	// BusinessAwayMessage field of UserFull.
+	//
+	// Use SetBusinessAwayMessage and GetBusinessAwayMessage helpers.
+	BusinessAwayMessage BusinessAwayMessage
+	// BusinessIntro field of UserFull.
+	//
+	// Use SetBusinessIntro and GetBusinessIntro helpers.
+	BusinessIntro BusinessIntro
+	// Birthday field of UserFull.
+	//
+	// Use SetBirthday and GetBirthday helpers.
+	Birthday Birthday
+	// PersonalChannelID field of UserFull.
+	//
+	// Use SetPersonalChannelID and GetPersonalChannelID helpers.
+	PersonalChannelID int64
+	// PersonalChannelMessage field of UserFull.
+	//
+	// Use SetPersonalChannelMessage and GetPersonalChannelMessage helpers.
+	PersonalChannelMessage int
 }
 
 // UserFullTypeID is TL type id of UserFull.
-const UserFullTypeID = 0xb9b12c6c
+const UserFullTypeID = 0xcc997720
 
 // Ensuring interfaces in compile-time for UserFull.
 var (
@@ -224,6 +264,18 @@ func (u *UserFull) Zero() bool {
 		return false
 	}
 	if !(u.WallpaperOverridden == false) {
+		return false
+	}
+	if !(u.ContactRequirePremium == false) {
+		return false
+	}
+	if !(u.ReadDatesPrivate == false) {
+		return false
+	}
+	if !(u.Flags2.Zero()) {
+		return false
+	}
+	if !(u.SponsoredEnabled == false) {
 		return false
 	}
 	if !(u.ID == 0) {
@@ -283,6 +335,30 @@ func (u *UserFull) Zero() bool {
 	if !(u.Stories.Zero()) {
 		return false
 	}
+	if !(u.BusinessWorkHours.Zero()) {
+		return false
+	}
+	if !(u.BusinessLocation.Zero()) {
+		return false
+	}
+	if !(u.BusinessGreetingMessage.Zero()) {
+		return false
+	}
+	if !(u.BusinessAwayMessage.Zero()) {
+		return false
+	}
+	if !(u.BusinessIntro.Zero()) {
+		return false
+	}
+	if !(u.Birthday.Zero()) {
+		return false
+	}
+	if !(u.PersonalChannelID == 0) {
+		return false
+	}
+	if !(u.PersonalChannelMessage == 0) {
+		return false
+	}
 
 	return true
 }
@@ -309,6 +385,9 @@ func (u *UserFull) FillFrom(from interface {
 	GetStoriesPinnedAvailable() (value bool)
 	GetBlockedMyStoriesFrom() (value bool)
 	GetWallpaperOverridden() (value bool)
+	GetContactRequirePremium() (value bool)
+	GetReadDatesPrivate() (value bool)
+	GetSponsoredEnabled() (value bool)
 	GetID() (value int64)
 	GetAbout() (value string, ok bool)
 	GetSettings() (value PeerSettings)
@@ -328,6 +407,14 @@ func (u *UserFull) FillFrom(from interface {
 	GetPremiumGifts() (value []PremiumGiftOption, ok bool)
 	GetWallpaper() (value WallPaperClass, ok bool)
 	GetStories() (value PeerStories, ok bool)
+	GetBusinessWorkHours() (value BusinessWorkHours, ok bool)
+	GetBusinessLocation() (value BusinessLocation, ok bool)
+	GetBusinessGreetingMessage() (value BusinessGreetingMessage, ok bool)
+	GetBusinessAwayMessage() (value BusinessAwayMessage, ok bool)
+	GetBusinessIntro() (value BusinessIntro, ok bool)
+	GetBirthday() (value Birthday, ok bool)
+	GetPersonalChannelID() (value int64, ok bool)
+	GetPersonalChannelMessage() (value int, ok bool)
 }) {
 	u.Blocked = from.GetBlocked()
 	u.PhoneCallsAvailable = from.GetPhoneCallsAvailable()
@@ -340,6 +427,9 @@ func (u *UserFull) FillFrom(from interface {
 	u.StoriesPinnedAvailable = from.GetStoriesPinnedAvailable()
 	u.BlockedMyStoriesFrom = from.GetBlockedMyStoriesFrom()
 	u.WallpaperOverridden = from.GetWallpaperOverridden()
+	u.ContactRequirePremium = from.GetContactRequirePremium()
+	u.ReadDatesPrivate = from.GetReadDatesPrivate()
+	u.SponsoredEnabled = from.GetSponsoredEnabled()
 	u.ID = from.GetID()
 	if val, ok := from.GetAbout(); ok {
 		u.About = val
@@ -402,6 +492,38 @@ func (u *UserFull) FillFrom(from interface {
 
 	if val, ok := from.GetStories(); ok {
 		u.Stories = val
+	}
+
+	if val, ok := from.GetBusinessWorkHours(); ok {
+		u.BusinessWorkHours = val
+	}
+
+	if val, ok := from.GetBusinessLocation(); ok {
+		u.BusinessLocation = val
+	}
+
+	if val, ok := from.GetBusinessGreetingMessage(); ok {
+		u.BusinessGreetingMessage = val
+	}
+
+	if val, ok := from.GetBusinessAwayMessage(); ok {
+		u.BusinessAwayMessage = val
+	}
+
+	if val, ok := from.GetBusinessIntro(); ok {
+		u.BusinessIntro = val
+	}
+
+	if val, ok := from.GetBirthday(); ok {
+		u.Birthday = val
+	}
+
+	if val, ok := from.GetPersonalChannelID(); ok {
+		u.PersonalChannelID = val
+	}
+
+	if val, ok := from.GetPersonalChannelMessage(); ok {
+		u.PersonalChannelMessage = val
 	}
 
 }
@@ -483,6 +605,21 @@ func (u *UserFull) TypeInfo() tdp.Type {
 			Name:       "WallpaperOverridden",
 			SchemaName: "wallpaper_overridden",
 			Null:       !u.Flags.Has(28),
+		},
+		{
+			Name:       "ContactRequirePremium",
+			SchemaName: "contact_require_premium",
+			Null:       !u.Flags.Has(29),
+		},
+		{
+			Name:       "ReadDatesPrivate",
+			SchemaName: "read_dates_private",
+			Null:       !u.Flags.Has(30),
+		},
+		{
+			Name:       "SponsoredEnabled",
+			SchemaName: "sponsored_enabled",
+			Null:       !u.Flags2.Has(7),
 		},
 		{
 			Name:       "ID",
@@ -575,6 +712,46 @@ func (u *UserFull) TypeInfo() tdp.Type {
 			SchemaName: "stories",
 			Null:       !u.Flags.Has(25),
 		},
+		{
+			Name:       "BusinessWorkHours",
+			SchemaName: "business_work_hours",
+			Null:       !u.Flags2.Has(0),
+		},
+		{
+			Name:       "BusinessLocation",
+			SchemaName: "business_location",
+			Null:       !u.Flags2.Has(1),
+		},
+		{
+			Name:       "BusinessGreetingMessage",
+			SchemaName: "business_greeting_message",
+			Null:       !u.Flags2.Has(2),
+		},
+		{
+			Name:       "BusinessAwayMessage",
+			SchemaName: "business_away_message",
+			Null:       !u.Flags2.Has(3),
+		},
+		{
+			Name:       "BusinessIntro",
+			SchemaName: "business_intro",
+			Null:       !u.Flags2.Has(4),
+		},
+		{
+			Name:       "Birthday",
+			SchemaName: "birthday",
+			Null:       !u.Flags2.Has(5),
+		},
+		{
+			Name:       "PersonalChannelID",
+			SchemaName: "personal_channel_id",
+			Null:       !u.Flags2.Has(6),
+		},
+		{
+			Name:       "PersonalChannelMessage",
+			SchemaName: "personal_channel_message",
+			Null:       !u.Flags2.Has(6),
+		},
 	}
 	return typ
 }
@@ -613,6 +790,15 @@ func (u *UserFull) SetFlags() {
 	}
 	if !(u.WallpaperOverridden == false) {
 		u.Flags.Set(28)
+	}
+	if !(u.ContactRequirePremium == false) {
+		u.Flags.Set(29)
+	}
+	if !(u.ReadDatesPrivate == false) {
+		u.Flags.Set(30)
+	}
+	if !(u.SponsoredEnabled == false) {
+		u.Flags2.Set(7)
 	}
 	if !(u.About == "") {
 		u.Flags.Set(1)
@@ -659,12 +845,36 @@ func (u *UserFull) SetFlags() {
 	if !(u.Stories.Zero()) {
 		u.Flags.Set(25)
 	}
+	if !(u.BusinessWorkHours.Zero()) {
+		u.Flags2.Set(0)
+	}
+	if !(u.BusinessLocation.Zero()) {
+		u.Flags2.Set(1)
+	}
+	if !(u.BusinessGreetingMessage.Zero()) {
+		u.Flags2.Set(2)
+	}
+	if !(u.BusinessAwayMessage.Zero()) {
+		u.Flags2.Set(3)
+	}
+	if !(u.BusinessIntro.Zero()) {
+		u.Flags2.Set(4)
+	}
+	if !(u.Birthday.Zero()) {
+		u.Flags2.Set(5)
+	}
+	if !(u.PersonalChannelID == 0) {
+		u.Flags2.Set(6)
+	}
+	if !(u.PersonalChannelMessage == 0) {
+		u.Flags2.Set(6)
+	}
 }
 
 // Encode implements bin.Encoder.
 func (u *UserFull) Encode(b *bin.Buffer) error {
 	if u == nil {
-		return fmt.Errorf("can't encode userFull#b9b12c6c as nil")
+		return fmt.Errorf("can't encode userFull#cc997720 as nil")
 	}
 	b.PutID(UserFullTypeID)
 	return u.EncodeBare(b)
@@ -673,49 +883,52 @@ func (u *UserFull) Encode(b *bin.Buffer) error {
 // EncodeBare implements bin.BareEncoder.
 func (u *UserFull) EncodeBare(b *bin.Buffer) error {
 	if u == nil {
-		return fmt.Errorf("can't encode userFull#b9b12c6c as nil")
+		return fmt.Errorf("can't encode userFull#cc997720 as nil")
 	}
 	u.SetFlags()
 	if err := u.Flags.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode userFull#b9b12c6c: field flags: %w", err)
+		return fmt.Errorf("unable to encode userFull#cc997720: field flags: %w", err)
+	}
+	if err := u.Flags2.Encode(b); err != nil {
+		return fmt.Errorf("unable to encode userFull#cc997720: field flags2: %w", err)
 	}
 	b.PutLong(u.ID)
 	if u.Flags.Has(1) {
 		b.PutString(u.About)
 	}
 	if err := u.Settings.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode userFull#b9b12c6c: field settings: %w", err)
+		return fmt.Errorf("unable to encode userFull#cc997720: field settings: %w", err)
 	}
 	if u.Flags.Has(21) {
 		if u.PersonalPhoto == nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field personal_photo is nil")
+			return fmt.Errorf("unable to encode userFull#cc997720: field personal_photo is nil")
 		}
 		if err := u.PersonalPhoto.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field personal_photo: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field personal_photo: %w", err)
 		}
 	}
 	if u.Flags.Has(2) {
 		if u.ProfilePhoto == nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field profile_photo is nil")
+			return fmt.Errorf("unable to encode userFull#cc997720: field profile_photo is nil")
 		}
 		if err := u.ProfilePhoto.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field profile_photo: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field profile_photo: %w", err)
 		}
 	}
 	if u.Flags.Has(22) {
 		if u.FallbackPhoto == nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field fallback_photo is nil")
+			return fmt.Errorf("unable to encode userFull#cc997720: field fallback_photo is nil")
 		}
 		if err := u.FallbackPhoto.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field fallback_photo: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field fallback_photo: %w", err)
 		}
 	}
 	if err := u.NotifySettings.Encode(b); err != nil {
-		return fmt.Errorf("unable to encode userFull#b9b12c6c: field notify_settings: %w", err)
+		return fmt.Errorf("unable to encode userFull#cc997720: field notify_settings: %w", err)
 	}
 	if u.Flags.Has(3) {
 		if err := u.BotInfo.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field bot_info: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field bot_info: %w", err)
 		}
 	}
 	if u.Flags.Has(6) {
@@ -736,34 +949,70 @@ func (u *UserFull) EncodeBare(b *bin.Buffer) error {
 	}
 	if u.Flags.Has(17) {
 		if err := u.BotGroupAdminRights.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field bot_group_admin_rights: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field bot_group_admin_rights: %w", err)
 		}
 	}
 	if u.Flags.Has(18) {
 		if err := u.BotBroadcastAdminRights.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field bot_broadcast_admin_rights: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field bot_broadcast_admin_rights: %w", err)
 		}
 	}
 	if u.Flags.Has(19) {
 		b.PutVectorHeader(len(u.PremiumGifts))
 		for idx, v := range u.PremiumGifts {
 			if err := v.Encode(b); err != nil {
-				return fmt.Errorf("unable to encode userFull#b9b12c6c: field premium_gifts element with index %d: %w", idx, err)
+				return fmt.Errorf("unable to encode userFull#cc997720: field premium_gifts element with index %d: %w", idx, err)
 			}
 		}
 	}
 	if u.Flags.Has(24) {
 		if u.Wallpaper == nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field wallpaper is nil")
+			return fmt.Errorf("unable to encode userFull#cc997720: field wallpaper is nil")
 		}
 		if err := u.Wallpaper.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field wallpaper: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field wallpaper: %w", err)
 		}
 	}
 	if u.Flags.Has(25) {
 		if err := u.Stories.Encode(b); err != nil {
-			return fmt.Errorf("unable to encode userFull#b9b12c6c: field stories: %w", err)
+			return fmt.Errorf("unable to encode userFull#cc997720: field stories: %w", err)
 		}
+	}
+	if u.Flags2.Has(0) {
+		if err := u.BusinessWorkHours.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode userFull#cc997720: field business_work_hours: %w", err)
+		}
+	}
+	if u.Flags2.Has(1) {
+		if err := u.BusinessLocation.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode userFull#cc997720: field business_location: %w", err)
+		}
+	}
+	if u.Flags2.Has(2) {
+		if err := u.BusinessGreetingMessage.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode userFull#cc997720: field business_greeting_message: %w", err)
+		}
+	}
+	if u.Flags2.Has(3) {
+		if err := u.BusinessAwayMessage.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode userFull#cc997720: field business_away_message: %w", err)
+		}
+	}
+	if u.Flags2.Has(4) {
+		if err := u.BusinessIntro.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode userFull#cc997720: field business_intro: %w", err)
+		}
+	}
+	if u.Flags2.Has(5) {
+		if err := u.Birthday.Encode(b); err != nil {
+			return fmt.Errorf("unable to encode userFull#cc997720: field birthday: %w", err)
+		}
+	}
+	if u.Flags2.Has(6) {
+		b.PutLong(u.PersonalChannelID)
+	}
+	if u.Flags2.Has(6) {
+		b.PutInt(u.PersonalChannelMessage)
 	}
 	return nil
 }
@@ -771,10 +1020,10 @@ func (u *UserFull) EncodeBare(b *bin.Buffer) error {
 // Decode implements bin.Decoder.
 func (u *UserFull) Decode(b *bin.Buffer) error {
 	if u == nil {
-		return fmt.Errorf("can't decode userFull#b9b12c6c to nil")
+		return fmt.Errorf("can't decode userFull#cc997720 to nil")
 	}
 	if err := b.ConsumeID(UserFullTypeID); err != nil {
-		return fmt.Errorf("unable to decode userFull#b9b12c6c: %w", err)
+		return fmt.Errorf("unable to decode userFull#cc997720: %w", err)
 	}
 	return u.DecodeBare(b)
 }
@@ -782,11 +1031,11 @@ func (u *UserFull) Decode(b *bin.Buffer) error {
 // DecodeBare implements bin.BareDecoder.
 func (u *UserFull) DecodeBare(b *bin.Buffer) error {
 	if u == nil {
-		return fmt.Errorf("can't decode userFull#b9b12c6c to nil")
+		return fmt.Errorf("can't decode userFull#cc997720 to nil")
 	}
 	{
 		if err := u.Flags.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field flags: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field flags: %w", err)
 		}
 	}
 	u.Blocked = u.Flags.Has(0)
@@ -800,112 +1049,120 @@ func (u *UserFull) DecodeBare(b *bin.Buffer) error {
 	u.StoriesPinnedAvailable = u.Flags.Has(26)
 	u.BlockedMyStoriesFrom = u.Flags.Has(27)
 	u.WallpaperOverridden = u.Flags.Has(28)
+	u.ContactRequirePremium = u.Flags.Has(29)
+	u.ReadDatesPrivate = u.Flags.Has(30)
+	{
+		if err := u.Flags2.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field flags2: %w", err)
+		}
+	}
+	u.SponsoredEnabled = u.Flags2.Has(7)
 	{
 		value, err := b.Long()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field id: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field id: %w", err)
 		}
 		u.ID = value
 	}
 	if u.Flags.Has(1) {
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field about: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field about: %w", err)
 		}
 		u.About = value
 	}
 	{
 		if err := u.Settings.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field settings: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field settings: %w", err)
 		}
 	}
 	if u.Flags.Has(21) {
 		value, err := DecodePhoto(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field personal_photo: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field personal_photo: %w", err)
 		}
 		u.PersonalPhoto = value
 	}
 	if u.Flags.Has(2) {
 		value, err := DecodePhoto(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field profile_photo: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field profile_photo: %w", err)
 		}
 		u.ProfilePhoto = value
 	}
 	if u.Flags.Has(22) {
 		value, err := DecodePhoto(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field fallback_photo: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field fallback_photo: %w", err)
 		}
 		u.FallbackPhoto = value
 	}
 	{
 		if err := u.NotifySettings.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field notify_settings: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field notify_settings: %w", err)
 		}
 	}
 	if u.Flags.Has(3) {
 		if err := u.BotInfo.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field bot_info: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field bot_info: %w", err)
 		}
 	}
 	if u.Flags.Has(6) {
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field pinned_msg_id: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field pinned_msg_id: %w", err)
 		}
 		u.PinnedMsgID = value
 	}
 	{
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field common_chats_count: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field common_chats_count: %w", err)
 		}
 		u.CommonChatsCount = value
 	}
 	if u.Flags.Has(11) {
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field folder_id: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field folder_id: %w", err)
 		}
 		u.FolderID = value
 	}
 	if u.Flags.Has(14) {
 		value, err := b.Int()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field ttl_period: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field ttl_period: %w", err)
 		}
 		u.TTLPeriod = value
 	}
 	if u.Flags.Has(15) {
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field theme_emoticon: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field theme_emoticon: %w", err)
 		}
 		u.ThemeEmoticon = value
 	}
 	if u.Flags.Has(16) {
 		value, err := b.String()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field private_forward_name: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field private_forward_name: %w", err)
 		}
 		u.PrivateForwardName = value
 	}
 	if u.Flags.Has(17) {
 		if err := u.BotGroupAdminRights.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field bot_group_admin_rights: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field bot_group_admin_rights: %w", err)
 		}
 	}
 	if u.Flags.Has(18) {
 		if err := u.BotBroadcastAdminRights.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field bot_broadcast_admin_rights: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field bot_broadcast_admin_rights: %w", err)
 		}
 	}
 	if u.Flags.Has(19) {
 		headerLen, err := b.VectorHeader()
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field premium_gifts: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field premium_gifts: %w", err)
 		}
 
 		if headerLen > 0 {
@@ -914,7 +1171,7 @@ func (u *UserFull) DecodeBare(b *bin.Buffer) error {
 		for idx := 0; idx < headerLen; idx++ {
 			var value PremiumGiftOption
 			if err := value.Decode(b); err != nil {
-				return fmt.Errorf("unable to decode userFull#b9b12c6c: field premium_gifts: %w", err)
+				return fmt.Errorf("unable to decode userFull#cc997720: field premium_gifts: %w", err)
 			}
 			u.PremiumGifts = append(u.PremiumGifts, value)
 		}
@@ -922,14 +1179,58 @@ func (u *UserFull) DecodeBare(b *bin.Buffer) error {
 	if u.Flags.Has(24) {
 		value, err := DecodeWallPaper(b)
 		if err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field wallpaper: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field wallpaper: %w", err)
 		}
 		u.Wallpaper = value
 	}
 	if u.Flags.Has(25) {
 		if err := u.Stories.Decode(b); err != nil {
-			return fmt.Errorf("unable to decode userFull#b9b12c6c: field stories: %w", err)
+			return fmt.Errorf("unable to decode userFull#cc997720: field stories: %w", err)
 		}
+	}
+	if u.Flags2.Has(0) {
+		if err := u.BusinessWorkHours.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field business_work_hours: %w", err)
+		}
+	}
+	if u.Flags2.Has(1) {
+		if err := u.BusinessLocation.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field business_location: %w", err)
+		}
+	}
+	if u.Flags2.Has(2) {
+		if err := u.BusinessGreetingMessage.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field business_greeting_message: %w", err)
+		}
+	}
+	if u.Flags2.Has(3) {
+		if err := u.BusinessAwayMessage.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field business_away_message: %w", err)
+		}
+	}
+	if u.Flags2.Has(4) {
+		if err := u.BusinessIntro.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field business_intro: %w", err)
+		}
+	}
+	if u.Flags2.Has(5) {
+		if err := u.Birthday.Decode(b); err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field birthday: %w", err)
+		}
+	}
+	if u.Flags2.Has(6) {
+		value, err := b.Long()
+		if err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field personal_channel_id: %w", err)
+		}
+		u.PersonalChannelID = value
+	}
+	if u.Flags2.Has(6) {
+		value, err := b.Int()
+		if err != nil {
+			return fmt.Errorf("unable to decode userFull#cc997720: field personal_channel_message: %w", err)
+		}
+		u.PersonalChannelMessage = value
 	}
 	return nil
 }
@@ -1141,6 +1442,63 @@ func (u *UserFull) GetWallpaperOverridden() (value bool) {
 		return
 	}
 	return u.Flags.Has(28)
+}
+
+// SetContactRequirePremium sets value of ContactRequirePremium conditional field.
+func (u *UserFull) SetContactRequirePremium(value bool) {
+	if value {
+		u.Flags.Set(29)
+		u.ContactRequirePremium = true
+	} else {
+		u.Flags.Unset(29)
+		u.ContactRequirePremium = false
+	}
+}
+
+// GetContactRequirePremium returns value of ContactRequirePremium conditional field.
+func (u *UserFull) GetContactRequirePremium() (value bool) {
+	if u == nil {
+		return
+	}
+	return u.Flags.Has(29)
+}
+
+// SetReadDatesPrivate sets value of ReadDatesPrivate conditional field.
+func (u *UserFull) SetReadDatesPrivate(value bool) {
+	if value {
+		u.Flags.Set(30)
+		u.ReadDatesPrivate = true
+	} else {
+		u.Flags.Unset(30)
+		u.ReadDatesPrivate = false
+	}
+}
+
+// GetReadDatesPrivate returns value of ReadDatesPrivate conditional field.
+func (u *UserFull) GetReadDatesPrivate() (value bool) {
+	if u == nil {
+		return
+	}
+	return u.Flags.Has(30)
+}
+
+// SetSponsoredEnabled sets value of SponsoredEnabled conditional field.
+func (u *UserFull) SetSponsoredEnabled(value bool) {
+	if value {
+		u.Flags2.Set(7)
+		u.SponsoredEnabled = true
+	} else {
+		u.Flags2.Unset(7)
+		u.SponsoredEnabled = false
+	}
+}
+
+// GetSponsoredEnabled returns value of SponsoredEnabled conditional field.
+func (u *UserFull) GetSponsoredEnabled() (value bool) {
+	if u == nil {
+		return
+	}
+	return u.Flags2.Has(7)
 }
 
 // GetID returns value of ID field.
@@ -1443,6 +1801,150 @@ func (u *UserFull) GetStories() (value PeerStories, ok bool) {
 		return value, false
 	}
 	return u.Stories, true
+}
+
+// SetBusinessWorkHours sets value of BusinessWorkHours conditional field.
+func (u *UserFull) SetBusinessWorkHours(value BusinessWorkHours) {
+	u.Flags2.Set(0)
+	u.BusinessWorkHours = value
+}
+
+// GetBusinessWorkHours returns value of BusinessWorkHours conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetBusinessWorkHours() (value BusinessWorkHours, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(0) {
+		return value, false
+	}
+	return u.BusinessWorkHours, true
+}
+
+// SetBusinessLocation sets value of BusinessLocation conditional field.
+func (u *UserFull) SetBusinessLocation(value BusinessLocation) {
+	u.Flags2.Set(1)
+	u.BusinessLocation = value
+}
+
+// GetBusinessLocation returns value of BusinessLocation conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetBusinessLocation() (value BusinessLocation, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(1) {
+		return value, false
+	}
+	return u.BusinessLocation, true
+}
+
+// SetBusinessGreetingMessage sets value of BusinessGreetingMessage conditional field.
+func (u *UserFull) SetBusinessGreetingMessage(value BusinessGreetingMessage) {
+	u.Flags2.Set(2)
+	u.BusinessGreetingMessage = value
+}
+
+// GetBusinessGreetingMessage returns value of BusinessGreetingMessage conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetBusinessGreetingMessage() (value BusinessGreetingMessage, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(2) {
+		return value, false
+	}
+	return u.BusinessGreetingMessage, true
+}
+
+// SetBusinessAwayMessage sets value of BusinessAwayMessage conditional field.
+func (u *UserFull) SetBusinessAwayMessage(value BusinessAwayMessage) {
+	u.Flags2.Set(3)
+	u.BusinessAwayMessage = value
+}
+
+// GetBusinessAwayMessage returns value of BusinessAwayMessage conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetBusinessAwayMessage() (value BusinessAwayMessage, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(3) {
+		return value, false
+	}
+	return u.BusinessAwayMessage, true
+}
+
+// SetBusinessIntro sets value of BusinessIntro conditional field.
+func (u *UserFull) SetBusinessIntro(value BusinessIntro) {
+	u.Flags2.Set(4)
+	u.BusinessIntro = value
+}
+
+// GetBusinessIntro returns value of BusinessIntro conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetBusinessIntro() (value BusinessIntro, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(4) {
+		return value, false
+	}
+	return u.BusinessIntro, true
+}
+
+// SetBirthday sets value of Birthday conditional field.
+func (u *UserFull) SetBirthday(value Birthday) {
+	u.Flags2.Set(5)
+	u.Birthday = value
+}
+
+// GetBirthday returns value of Birthday conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetBirthday() (value Birthday, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(5) {
+		return value, false
+	}
+	return u.Birthday, true
+}
+
+// SetPersonalChannelID sets value of PersonalChannelID conditional field.
+func (u *UserFull) SetPersonalChannelID(value int64) {
+	u.Flags2.Set(6)
+	u.PersonalChannelID = value
+}
+
+// GetPersonalChannelID returns value of PersonalChannelID conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetPersonalChannelID() (value int64, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(6) {
+		return value, false
+	}
+	return u.PersonalChannelID, true
+}
+
+// SetPersonalChannelMessage sets value of PersonalChannelMessage conditional field.
+func (u *UserFull) SetPersonalChannelMessage(value int) {
+	u.Flags2.Set(6)
+	u.PersonalChannelMessage = value
+}
+
+// GetPersonalChannelMessage returns value of PersonalChannelMessage conditional field and
+// boolean which is true if field was set.
+func (u *UserFull) GetPersonalChannelMessage() (value int, ok bool) {
+	if u == nil {
+		return
+	}
+	if !u.Flags2.Has(6) {
+		return value, false
+	}
+	return u.PersonalChannelMessage, true
 }
 
 // GetPersonalPhotoAsNotEmpty returns mapped value of PersonalPhoto conditional field and
