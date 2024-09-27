@@ -91,6 +91,17 @@ func Pause(ms int) {
 	Sleep(ms)
 }
 
+// Pause_ctx - приостановка работы программы на нужное число миллисекунд, с учётом глобального контекста
+func Pause_ctx(ctx context.Context, ms int) {
+
+	Duration := time.Duration(ms) * time.Millisecond
+
+	select {
+	case <-ctx.Done():
+	case <-time.After(Duration):
+	}
+}
+
 // FindDirUp - возвращает строку с именем каталога на уровень выше
 func FindDirUp(dir string) string {
 	otvet := dir
@@ -960,4 +971,36 @@ func StringFromMassInt64(A []int64, delim string) string {
 	}
 
 	return buffer.String()
+}
+
+// IsInt - проверяет, является ли строка целым числом
+func IsInt(s string) bool {
+	Otvet := false
+	if s == "" {
+		return Otvet
+	}
+
+	for _, c := range s {
+		if !unicode.IsDigit(c) {
+			return Otvet
+		}
+	}
+
+	Otvet = true
+	return Otvet
+}
+
+// Int32FromString - возвращает int32 из строки
+func Int32FromString(s string) (int32, error) {
+	var Otvet int32
+	var err error
+
+	Otvet64, err := strconv.ParseInt(s, 10, 32)
+	if err != nil {
+		return Otvet, err
+	}
+
+	Otvet = int32(Otvet64)
+
+	return Otvet, err
 }

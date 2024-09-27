@@ -16,10 +16,10 @@ import (
 	"time"
 )
 
-//var MassTable []types.Table
-
+// LastReadTime - время последнего чтения логов
 var LastReadTime time.Time
 
+// Ticker - таймер, запускается каждые INTERVAL_SEND_MINUTES (10) минут
 var Ticker *time.Ticker
 
 // Start - старт работы логики программы
@@ -27,7 +27,7 @@ func Start() {
 	load_json.LoadJSON()
 
 	Date2 := time.Now()
-	Date1 := carbon.CreateFromStdTime(Date2).AddMinutes(-1 * config.Settings.INTERVAL_SEND_MINUTES).ToStdTime()
+	Date1 := carbon.CreateFromStdTime(Date2).AddMinutes(-1 * config.Settings.INTERVAL_SEND_MINUTES).StdTime()
 	Start_period(Date1, Date2)
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.INTERVAL_SEND_MINUTES) * time.Minute)
@@ -56,6 +56,9 @@ func Start_period(Date1, Date2 time.Time) {
 	IsOnlyErrors := true
 	var err1 error
 	var err error
+
+	ctxMain := contextmain.GetContext()
+
 loop_for:
 	for ServiceName, DeveloperName := range types.MapServiceDeveloper {
 		//проверка завершения программы
@@ -69,10 +72,10 @@ loop_for:
 		//запуск проверки логов одного сервиса
 		err1 = Start_period1(ServiceName, DeveloperName, Date1, Date2)
 		if err1 != nil {
-			micro.Pause(1000) //error: 502 Bad Gateway
+			micro.Pause_ctx(ctxMain, 1000) //error: 502 Bad Gateway
 		} else {
 			IsOnlyErrors = false
-			micro.Pause(100) //error: 429 Too Many Requests
+			micro.Pause_ctx(ctxMain, 100) //error: 429 Too Many Requests
 		}
 
 	}
@@ -87,7 +90,7 @@ loop_for:
 		if err != nil {
 			log.Error("telegram_client.SendMessage() error: ", err)
 		}
-		micro.Pause(60 * 60 * 1000) //пауза 1 час
+		micro.Pause_ctx(ctxMain, 60*60*1000) //пауза 1 час
 	}
 }
 
@@ -95,10 +98,12 @@ loop_for:
 func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time) error {
 	var err error
 
+	ctxMain := contextmain.GetContext()
+
 	LokiMessage, err := loki.DownloadJSON(ServiceName, DateFrom, DateTo)
 	if err != nil {
 		//log.Error("DownloadJSON() error: ", err)
-		micro.Pause(1000)
+		micro.Pause_ctx(ctxMain, 1000)
 		return err
 	}
 

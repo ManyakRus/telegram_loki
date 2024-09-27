@@ -4,7 +4,7 @@ github.com/DataDog/zstd
 # github.com/ManyakRus/logrus v0.0.0-20231019115155-9e6fede0d792
 ## explicit; go 1.13
 github.com/ManyakRus/logrus
-# github.com/ManyakRus/starter v1.0.53
+# github.com/ManyakRus/starter v1.0.57
 ## explicit; go 1.22
 github.com/ManyakRus/starter/config_main
 github.com/ManyakRus/starter/contextmain
@@ -149,7 +149,7 @@ github.com/gotd/ige
 # github.com/gotd/neo v0.1.5
 ## explicit; go 1.12
 github.com/gotd/neo
-# github.com/gotd/td v0.109.0
+# github.com/gotd/td v0.110.1
 ## explicit; go 1.21
 github.com/gotd/td/ascii
 github.com/gotd/td/bin
@@ -206,8 +206,8 @@ github.com/gotd/td/wsutil
 # github.com/joho/godotenv v1.5.1
 ## explicit; go 1.12
 github.com/joho/godotenv
-# github.com/klauspost/compress v1.17.9
-## explicit; go 1.20
+# github.com/klauspost/compress v1.17.10
+## explicit; go 1.21
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
@@ -229,7 +229,7 @@ github.com/munnerz/goautoneg
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/prometheus/client_golang v1.20.3
+# github.com/prometheus/client_golang v1.20.4
 ## explicit; go 1.20
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
@@ -245,8 +245,8 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
-# github.com/rogpeppe/go-internal v1.12.0
-## explicit; go 1.20
+# github.com/rogpeppe/go-internal v1.13.1
+## explicit; go 1.22
 github.com/rogpeppe/go-internal/fmtsort
 # github.com/segmentio/asm v1.2.0
 ## explicit; go 1.18

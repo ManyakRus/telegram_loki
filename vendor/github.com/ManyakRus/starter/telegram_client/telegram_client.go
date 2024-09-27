@@ -393,7 +393,7 @@ func (s *memorySession) StoreSession(ctx context.Context, data []byte) error {
 func CreateTelegramClient(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error) {
 	err := CreateTelegramClient_err(func_OnNewMessage)
 	if err != nil {
-		log.Panic("CreateTelegramClient_err() error: ", err)
+		log.Panic("CreateTelegramClient() error: ", err)
 	} else {
 		log.Info("CreateTelegramClient() ok, phone from: ", Settings.TELEGRAM_PHONE_FROM)
 	}
@@ -420,15 +420,20 @@ func CreateTelegramClient_err(func_OnNewMessage func(ctx context.Context, entiti
 	LogDir := filepath.Join(sessionDir, "log")
 	logFilePath := filepath.Join(LogDir, "log.jsonl")
 	ok, err := micro.FileExists(LogDir)
-	if err != nil {
-		err = fmt.Errorf("FileExists() error: %w", err)
-		log.Error(err)
-		return err
-	}
 	if ok == false {
 		err = fmt.Errorf("FileExists() error: need create folder: %v", LogDir)
 		log.Error(err)
-		//micro.CreateFolder(LogDir, 0666)
+		err := micro.CreateFolder(LogDir, 0600) //rw------- т.к. файл секретный
+		if err != nil {
+			log.Error("CreateFolder() error: ", err)
+			return err
+		}
+		//return err
+	}
+
+	if err != nil {
+		err = fmt.Errorf("FileExists() error: %w", err)
+		log.Debug(err)
 		return err
 	}
 
@@ -457,9 +462,6 @@ func CreateTelegramClient_err(func_OnNewMessage func(ctx context.Context, entiti
 		return errors.Wrap(err, "create pebble storage")
 	}
 	PeerDB = pebble.NewPeerStorage(db)
-	if err != nil {
-		return errors.Wrap(err, "create bolt storage")
-	}
 
 	// Setting up client.
 	//
@@ -598,7 +600,7 @@ func TimeLimit() {
 func Connect(func_OnNewMessage func(ctx context.Context, entities tg.Entities, u *tg.UpdateNewMessage, Peer1 storage.Peer) error) {
 	err := Connect_err(func_OnNewMessage)
 	if err != nil {
-		TextError := fmt.Sprint("Telegram connected: ", Settings.TELEGRAM_PHONE_FROM)
+		TextError := fmt.Sprint("Telegram connection: ", Settings.TELEGRAM_PHONE_FROM, ", error: ", err)
 		log.Panic(TextError)
 	} else {
 		log.Info("Telegram connected: ", Settings.TELEGRAM_PHONE_FROM)
