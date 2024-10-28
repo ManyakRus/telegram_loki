@@ -37,7 +37,8 @@ func FillSettings() {
 	if err != nil || Settings.TELEGRAM_MESSAGES_COUNT == 0 {
 		Settings.TELEGRAM_MESSAGES_COUNT = 1
 	}
-	Settings.LOKI_SEARCH_TEXT = os.Getenv("LOKI_SEARCH_TEXT")
+	s := os.Getenv("LOKI_SEARCH_TEXT")
+	Settings.LOKI_SEARCH_TEXT = s
 	if Settings.LOKI_SEARCH_TEXT == "" {
 		Settings.LOKI_SEARCH_TEXT = "error:|panic:|ERROR:|PANIC:"
 		//Settings.LOKI_SEARCH_TEXT = "error:%7Cpanic:%7CERROR:%7CPANIC:"
