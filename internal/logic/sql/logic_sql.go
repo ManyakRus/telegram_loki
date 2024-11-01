@@ -54,6 +54,10 @@ func RunSQL_and_Send() {
 
 // RunSQL - запускает все скрипты .sql
 func RunSQL() error {
+	var err error
+
+	log.Debug("Start run .sql scripts")
+
 	dir := micro.ProgramDir_bin()
 	DirFilename := dir + config.Settings.SQL_FILES_FOLDER
 	Files, err := os.ReadDir(DirFilename)
