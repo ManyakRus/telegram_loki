@@ -134,7 +134,7 @@ func RunSQL1(Filename string) error {
 
 	//запрос вернул число(строку)
 	FilenameShort := path.Base(Filename)
-	err = fmt.Errorf("скрипт %s вернул значение: %s", FilenameShort, ResultSQL)
+	err = fmt.Errorf("скрипт '%s' вернул значение: %s", FilenameShort, ResultSQL)
 
 	return err
 }
