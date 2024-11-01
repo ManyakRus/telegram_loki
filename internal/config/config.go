@@ -1,7 +1,8 @@
 package config
 
 import (
-	"log"
+	"github.com/ManyakRus/starter/log"
+	"github.com/ManyakRus/starter/micro"
 	"os"
 	"strconv"
 )
@@ -11,27 +12,33 @@ var Settings SettingsINI
 
 // SettingsINI - структура для хранения всех нужных переменных окружения
 type SettingsINI struct {
-	GRAFANA_LOGIN           string
-	GRAFANA_PASSWORD        string
-	LOKI_URL                string
-	LOKI_SEARCH_TEXT        string
-	TELEGRAM_CHAT_NAME      string
-	TELEGRAM_MESSAGES_COUNT int
-	INTERVAL_SEND_MINUTES   int
+	GRAFANA_LOGIN                     string
+	GRAFANA_PASSWORD                  string
+	LOKI_URL                          string
+	LOKI_SEARCH_TEXT                  string
+	TELEGRAM_CHAT_NAME                string
+	TELEGRAM_MESSAGES_COUNT           int
+	LOKI_CHECKER_INTERVAL_MINUTES     int
+	LOKI_CHECKER_ENABLED              bool
+	DATABASE_CHECKER_ENABLED          bool
+	DATABASE_CHECKER_INTERVAL_MINUTES int
+	SQL_FILES_FOLDER                  string
 }
 
 // FillSettings загружает переменные окружения в структуру из переменных окружения
 func FillSettings() {
 	var err error
 
+	Name := ""
+
 	Settings = SettingsINI{}
 	Settings.TELEGRAM_CHAT_NAME = os.Getenv("TELEGRAM_CHAT_NAME")
 	Settings.LOKI_URL = os.Getenv("LOKI_URL")
 	Settings.GRAFANA_LOGIN = os.Getenv("GRAFANA_LOGIN")
 	Settings.GRAFANA_PASSWORD = os.Getenv("GRAFANA_PASSWORD")
-	Settings.INTERVAL_SEND_MINUTES, err = strconv.Atoi(os.Getenv("INTERVAL_SEND_MINUTES"))
+	Settings.LOKI_CHECKER_INTERVAL_MINUTES, err = strconv.Atoi(os.Getenv("LOKI_CHECKER_INTERVAL_MINUTES"))
 	if err != nil {
-		Settings.INTERVAL_SEND_MINUTES = 10
+		Settings.LOKI_CHECKER_INTERVAL_MINUTES = 10
 	}
 	Settings.TELEGRAM_MESSAGES_COUNT, err = strconv.Atoi(os.Getenv("TELEGRAM_MESSAGES_COUNT"))
 	if err != nil || Settings.TELEGRAM_MESSAGES_COUNT == 0 {
@@ -61,6 +68,30 @@ func FillSettings() {
 	}
 
 	//
+	Name = "LOKI_CHECKER_ENABLED"
+	s = Getenv(Name, true)
+	Settings.LOKI_CHECKER_ENABLED = micro.BoolFromString(s)
+
+	//
+	Name = "DATABASE_CHECKER_ENABLED"
+	s = Getenv(Name, true)
+	Settings.DATABASE_CHECKER_ENABLED = micro.BoolFromString(s)
+
+	//
+	Name = "DATABASE_CHECKER_INTERVAL_MINUTES"
+	s = Getenv(Name, true)
+	x, err := strconv.Atoi(s)
+	if err != nil {
+		x = 60
+		log.Warn(Name+" error: ", err)
+	}
+	Settings.DATABASE_CHECKER_INTERVAL_MINUTES = x
+
+	//
+	Name = "SQL_FILES_FOLDER"
+	s = Getenv(Name, true)
+	Settings.SQL_FILES_FOLDER = s
+
 }
 
 // CurrentDirectory - возвращает текущую директорию ОС
@@ -68,6 +99,17 @@ func CurrentDirectory() string {
 	Otvet, err := os.Getwd()
 	if err != nil {
 		//log.Println(err)
+	}
+
+	return Otvet
+}
+
+// Getenv - возвращает переменную окружения
+func Getenv(Name string, IsRequired bool) string {
+	TextError := "Need fill OS environment variable: "
+	Otvet := os.Getenv(Name)
+	if IsRequired == true && Otvet == "" {
+		log.Error(TextError + Name)
 	}
 
 	return Otvet

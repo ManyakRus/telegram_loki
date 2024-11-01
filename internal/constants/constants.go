@@ -6,3 +6,6 @@ const TEXT_HELP = `
 Need create .env file
 anf fill variables there
 `
+
+// SERVICE_NAME - name of service
+const SERVICE_NAME = "telegram_loki"

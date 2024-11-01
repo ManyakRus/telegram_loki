@@ -18,18 +18,8 @@ make build
 в папке bin появится файл telegram_loki
 
 
-2. сделать файл .env с заполненными параметрами:
-TELEGRAM_APP_ID=
-TELEGRAM_APP_HASH=
-TELEGRAM_PHONE_FROM=
-TELEGRAM_PHONE_SEND_TEST=
-LOKI_URL=
-LOKI_SEARCH_TEXT="\\\\[ERROR\\\\]|\\\\[PANIC\\\\]|level=error|level=panic"
-GRAFANA_LOGIN=
-GRAFANA_PASSWORD=
-TELEGRAM_CHAT_NAME=
-TELEGRAM_MESSAGES_COUNT=
-
+2. заполнить файл settings.txt (или .env)
+с настройками LOKI URL, логин, пароль и др.
 
 3. Заполнить файл settings/services.txt
 В формате json написать имя сервиса в LOKI
