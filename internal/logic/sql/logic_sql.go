@@ -23,7 +23,6 @@ func Start() {
 	RunSQL_and_Send()
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.DATABASE_CHECKER_INTERVAL_MINUTES) * time.Minute)
-	defer Ticker.Stop()
 
 	go ReadTicker()
 }
@@ -38,6 +37,8 @@ func ReadTicker() {
 			RunSQL_and_Send()
 		}
 	}
+
+	Ticker.Stop()
 }
 
 func RunSQL_and_Send() {
@@ -116,7 +117,8 @@ func RunSQL1(Filename string) error {
 
 	//запустим запрос
 	ResultSQL := ""
-	err = db.QueryRow(ctx, TextSQL).Scan(&ResultSQL)
+	rows := db.QueryRow(ctx, TextSQL)
+	err = rows.Scan(&ResultSQL)
 
 	//нет строк - это хорошо
 	if err == pgx.ErrNoRows {

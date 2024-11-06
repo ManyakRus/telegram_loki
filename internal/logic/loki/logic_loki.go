@@ -31,7 +31,7 @@ func Start() {
 	Start_period(Date1, Date2)
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.LOKI_CHECKER_INTERVAL_MINUTES) * time.Minute)
-	defer Ticker.Stop()
+	//defer Ticker.Stop()
 
 	go ReadTicker()
 }
@@ -48,6 +48,8 @@ func ReadTicker() {
 			Start_period(Date1, Date2)
 		}
 	}
+
+	Ticker.Stop()
 }
 
 // Start_period - запускает чтение логов всех сервисов за период
