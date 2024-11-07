@@ -70,3 +70,6 @@ type Message struct {
 
 // MapServiceDeveloper - карта Имя сервиса - telegram логин программиста
 var MapServiceDeveloper = make(map[string]string)
+
+// MapSQLDeveloper - карта Имя сервиса - telegram логин программиста
+var MapSQLDeveloper = make(map[string]string)

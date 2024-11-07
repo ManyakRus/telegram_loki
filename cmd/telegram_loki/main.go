@@ -18,7 +18,7 @@ func main() {
 func StartApp() {
 	config_main.LoadENV_or_SettingsTXT()
 	config.FillSettings()
-	load_json.LoadJSON()
+	load_json.LoadJSON_All()
 
 	stopapp.StartWaitStop()
 

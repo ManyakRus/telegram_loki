@@ -20,6 +20,9 @@ import (
 // Ticker - таймер, запускается каждые INTERVAL_SEND_MINUTES (10) минут
 var Ticker *time.Ticker
 
+// MapLastErrors - хранит предыдущие ошибки
+var MapLastErrors = make(map[string]string)
+
 // Start - старт работы чтения логов LOKI
 func Start() {
 	RunSQL_and_Send()
@@ -91,6 +94,12 @@ func RunSQL() error {
 		Name1, ok := types.MapServiceDeveloper[FilenemeShort]
 		if ok {
 			DeveloperName = DeveloperName + Name1
+
+			//если такая же ошибка то не пишем имя разработчика
+			LastError, IsFind2 := MapLastErrors[FilenemeShort]
+			if IsFind2 == true && LastError == err.Error() {
+				DeveloperName = ""
+			}
 		}
 
 		//запускаем скрипт
@@ -148,6 +157,9 @@ func RunSQL1(Filename string) error {
 	//запрос вернул число(строку)
 	FilenameShort := path.Base(Filename)
 	err = fmt.Errorf(`скрипт "%s" вернул значение: %s`, FilenameShort, ResultSQL)
+
+	//запомним последнюю ошибку
+	MapLastErrors[FilenameShort] = err.Error()
 
 	return err
 }

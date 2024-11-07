@@ -18,7 +18,7 @@ func TestStart_period(t *testing.T) {
 
 	telegram_client.CreateTelegramClient(nil)
 	telegram_client.ConnectTelegram()
-	load_json.LoadJSON()
+	load_json.LoadJSON_All()
 
 	date2 := time.Now()
 	date1 := carbon.Time2Carbon(date2).AddDays(-2).Carbon2Time()

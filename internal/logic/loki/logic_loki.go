@@ -21,6 +21,9 @@ var LastReadTime time.Time
 // Ticker - таймер, запускается каждые INTERVAL_SEND_MINUTES (10) минут
 var Ticker *time.Ticker
 
+// MapLastErrors - хранит предыдущие ошибки
+var MapLastErrors = make(map[string]string)
+
 // Start - старт работы чтения логов LOKI
 func Start() {
 
@@ -95,7 +98,7 @@ loop_for:
 }
 
 // Start_period1 - запускает чтение логов одного сервиса за период
-func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time) error {
+func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Time) error {
 	var err error
 
 	ctxMain := contextmain.GetContext()
@@ -141,6 +144,19 @@ func Start_period1(ServiceName, DeveloperName string, DateFrom, DateTo time.Time
 			}
 			Date := time.Unix(0, iDate)
 			TextDate := Date.Format(constants.Layout)
+			DeveloperName := DeveloperName0
+
+			//если такая же ошибка то не пишем имя разработчика
+			TextLogWithoutTime := TextLogWithoutTime(TextLog)
+			LastError, IsFind2 := MapLastErrors[ServiceName]
+			if IsFind2 == true && LastError == TextLogWithoutTime {
+				DeveloperName = ""
+			}
+
+			//запомним последнюю ошибку
+			MapLastErrors[ServiceName] = TextLogWithoutTime
+
+			//
 			Text := ServiceName + " " + TextDate + " " + DeveloperName + "\n" + TextLog
 
 			_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, Text)
@@ -159,6 +175,18 @@ func FindURLLoki(ServiceName string, DateFrom, DateTo time.Time) string {
 	sTimeFrom := strconv.FormatInt(DateFrom.UnixMilli(), 10)
 	sTimeTo := strconv.FormatInt(DateTo.UnixMilli(), 10)
 	Otvet := config.Settings.LOKI_URL + "/explore?orgId=1&left=%5B%22" + sTimeFrom + "%22,%22" + sTimeTo + "%22,%22Loki%22,%7B%22refId%22:%22A%22,%22expr%22:%22%7Bapp%3D%5C%22" + ServiceName + "%5C%22%7D%22%7D%5D"
+
+	return Otvet
+}
+
+// TextLogWithoutTime - убирает время в логе, для этого берём текст после 2 пробела
+// time="2024-11-07 04:30:53.709" level=error msg="GetExtractEgripEgrul INN: 519300250706 Result: map[address: fullName: shortName: state:] Error: 404 Нет данных по данному ИНН: 519300250706" func="TakeMessageAsync()\t" file=" nats.go:194\t"
+// 2024/11/01 04:35:07.872721 [ERROR] syncMessage, contractId: 7802, error: NewBriefCase, initInvoices, error: there is no documents for this contract
+func TextLogWithoutTime(TextLog string) string {
+	Otvet := TextLog
+
+	Otvet = micro.StringAfter(Otvet, " ")
+	Otvet = micro.StringAfter(Otvet, " ")
 
 	return Otvet
 }

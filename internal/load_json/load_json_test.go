@@ -33,7 +33,7 @@ func TestLoadJSON_from_file(t *testing.T) {
 
 	//главный файл
 	FileName := dir + "settings" + micro.SeparatorFile() + "connections.txt"
-	err := LoadJSON_from_file(FileName)
+	err := LoadJSON_Services(FileName)
 	if err != nil {
 		t.Error("TestLoadJSON_from_file() error: ", err)
 	}
@@ -44,7 +44,7 @@ func TestLoadJSON_from_file(t *testing.T) {
 
 	//дополнительный файл
 	FileName = dir + "settings" + micro.SeparatorFile() + "connections_add.txt"
-	err = LoadJSON_from_file(FileName)
+	err = LoadJSON_Services(FileName)
 	if err != nil {
 		t.Error("TestLoadJSON_from_file() error: ", err)
 	}
