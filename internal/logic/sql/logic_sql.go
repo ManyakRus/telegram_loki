@@ -91,7 +91,7 @@ func RunSQL() error {
 
 		//
 		DeveloperName := ""
-		Name1, ok := types.MapServiceDeveloper[FilenemeShort]
+		Name1, ok := types.MapSQLDeveloper[FilenemeShort]
 		if ok {
 			DeveloperName = DeveloperName + Name1
 
