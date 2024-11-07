@@ -7,7 +7,8 @@ Therefore, it is necessary to automate the process of searching for errors in lo
 The application does:
 Search for errors in the LOKI logger
 1. Log in to grafana
-2. Takes a list of services from the services.txt file
+2. Takes a list of services from the services.txt file,
+including the name of the service and the name of the person responsible
 3. For each service, searches for LOKI logs with the text: error:, panic:, ERROR:, PANIC:
 4. Sends the found logs with errors to the Telegram messenger
 5. Repeats the search every 10 minutes
@@ -18,6 +19,9 @@ Search for errors in the database:
 if the script returns a value, a message about this will come to the Telegram messenger,
 if the script does not return lines, then everything is fine.
 3. Repeats requests every 60 minutes
+4. If you fill in the scripts.txt file (scripts_add.txt),
+including the .sql file name and the name of the person responsible,
+then the name of the person responsible will also be added.
 
 Installation procedure:
 1. Compile this repository
