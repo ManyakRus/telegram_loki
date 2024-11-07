@@ -16,3 +16,4 @@
 /log/log.jsonl
 /peers.pebble.db/
 /bin/sql_rapira/
+/bin/settings/services_add.txt
