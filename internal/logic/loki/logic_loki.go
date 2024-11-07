@@ -8,7 +8,6 @@ import (
 	"github.com/ManyakRus/starter/telegram_client"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/constants"
-	"github.com/ManyakRus/telegram_loki/internal/load_json"
 	"github.com/ManyakRus/telegram_loki/internal/loki"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/golang-module/carbon/v2"
@@ -24,7 +23,6 @@ var Ticker *time.Ticker
 
 // Start - старт работы чтения логов LOKI
 func Start() {
-	load_json.LoadJSON()
 
 	Date2 := time.Now()
 	Date1 := carbon.CreateFromStdTime(Date2).AddMinutes(-1 * config.Settings.LOKI_CHECKER_INTERVAL_MINUTES).StdTime()

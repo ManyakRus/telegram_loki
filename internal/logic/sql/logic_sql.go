@@ -9,9 +9,11 @@ import (
 	"github.com/ManyakRus/starter/postgres_pgx"
 	"github.com/ManyakRus/starter/telegram_client"
 	"github.com/ManyakRus/telegram_loki/internal/config"
+	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/jackc/pgx/v5"
 	"os"
 	"path"
+	"strings"
 	"time"
 )
 
@@ -78,14 +80,23 @@ func RunSQL() error {
 		//	return err
 		//}
 
-		Filename := DirFilename + micro.SeparatorFile() + file1.Name()
-		if file1.Type().IsRegular() == false || len(Filename) < 4 || Filename[len(Filename)-4:] != ".sql" {
+		FilenemeShort := file1.Name()
+		Filename := DirFilename + micro.SeparatorFile() + FilenemeShort
+		if file1.Type().IsRegular() == false || strings.HasSuffix(FilenemeShort, ".sql") == false {
 			continue
+		}
+
+		//
+		DeveloperName := ""
+		Name1, ok := types.MapServiceDeveloper[FilenemeShort]
+		if ok {
+			DeveloperName = DeveloperName + Name1
 		}
 
 		//запускаем скрипт
 		err = RunSQL1(Filename)
 		if err != nil {
+			err = fmt.Errorf("%w\n%s", err, DeveloperName)
 			log.Warn(err)
 			return err
 		}
@@ -136,7 +147,7 @@ func RunSQL1(Filename string) error {
 
 	//запрос вернул число(строку)
 	FilenameShort := path.Base(Filename)
-	err = fmt.Errorf("скрипт '%s' вернул значение: %s", FilenameShort, ResultSQL)
+	err = fmt.Errorf(`скрипт "%s" вернул значение: %s`, FilenameShort, ResultSQL)
 
 	return err
 }

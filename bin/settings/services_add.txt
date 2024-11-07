@@ -39,5 +39,9 @@
   "debtors-list": "@ManyakRus",
   "monitor-service": "@ManyakRus",
   "stack-exchange-postgres": "@ManyakRus",
-  "contract-checker-service": "@ManyakRus"
+  "contract-checker-service": "@ManyakRus",
+  "задвоенные строки balances.sql": "@ManyakRus",
+  "задвоенные строки document_links.sql": "@ManyakRus",
+  "задвоенные строки document_links_rapira.sql": "@ManyakRus",
+  "задвоенные строки documents.sql": "@ManyakRus"
 }

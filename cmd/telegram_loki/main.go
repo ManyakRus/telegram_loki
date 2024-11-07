@@ -7,6 +7,7 @@ import (
 	"github.com/ManyakRus/starter/telegram_client"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/constants"
+	"github.com/ManyakRus/telegram_loki/internal/load_json"
 	"github.com/ManyakRus/telegram_loki/internal/logic"
 )
 
@@ -17,6 +18,7 @@ func main() {
 func StartApp() {
 	config_main.LoadENV_or_SettingsTXT()
 	config.FillSettings()
+	load_json.LoadJSON()
 
 	stopapp.StartWaitStop()
 
