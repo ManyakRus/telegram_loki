@@ -89,22 +89,10 @@ func RunSQL() error {
 			continue
 		}
 
-		//
-		DeveloperName := ""
-		Name1, ok := types.MapSQLDeveloper[FilenemeShort]
-		if ok {
-			DeveloperName = DeveloperName + Name1
-
-			//если такая же ошибка то не пишем имя разработчика
-			LastError, IsFind2 := MapLastErrors[FilenemeShort]
-			if IsFind2 == true && LastError == err.Error() {
-				DeveloperName = ""
-			}
-		}
-
 		//запускаем скрипт
 		err = RunSQL1(Filename)
 		if err != nil {
+			DeveloperName := FindDeveloperName_if_err(FilenemeShort, err)
 			err = fmt.Errorf("%w\n%s", err, DeveloperName)
 			log.Warn(err)
 			return err
@@ -112,6 +100,24 @@ func RunSQL() error {
 	}
 
 	return err
+}
+
+// FindDeveloperName_if_err - возвращает имя разработчика, если ошибка другая
+func FindDeveloperName_if_err(FilenemeShort string, err error) string {
+	//
+	//DeveloperName := ""
+	DeveloperName, ok := types.MapSQLDeveloper[FilenemeShort]
+	if ok {
+		//DeveloperName = DeveloperName + Name1
+
+		//если такая же ошибка то не пишем имя разработчика
+		LastError, IsFind2 := MapLastErrors[FilenemeShort]
+		if IsFind2 == true && LastError == err.Error() {
+			DeveloperName = ""
+		}
+	}
+
+	return DeveloperName
 }
 
 // RunSQL1 - запускает 1 скрипт
