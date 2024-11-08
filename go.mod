@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.1
 
 require (
-	github.com/ManyakRus/starter v1.0.67
+	github.com/ManyakRus/starter v1.0.68
 	github.com/golang-module/carbon/v2 v2.4.1
 	github.com/jackc/pgx/v5 v5.7.1
 )

@@ -55,7 +55,9 @@ func ReadTicker() {
 
 // Start_period - запускает чтение логов всех сервисов за период
 func Start_period(Date1, Date2 time.Time) {
-	log.Debug("Start search errors from: ", Date1, " to: ", Date2)
+	sDate1 := micro.StringDateTime(Date1)
+	sDate2 := micro.StringDateTime(Date2)
+	log.Debug("Start search errors from: ", sDate1, " to: ", sDate2)
 	IsOnlyErrors := true
 	var err1 error
 	var err error
