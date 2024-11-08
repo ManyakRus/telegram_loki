@@ -113,14 +113,18 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 	for _, Result1 := range LokiMessage.Data.Result {
 
 		//отправим URL логгера в Telegram
-		if len(Result1.Values) > 0 {
-			URL := FindURLLoki(ServiceName, DateFrom, DateTo)
-			_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, URL)
-			if err != nil {
-				log.Error("SendMessage() error: ", err)
-				continue
-			}
+		if len(Result1.Values) == 0 {
+			//_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, Text)
+			//if err != nil {
+			//	log.Error("SendMessage() error: ", err)
+			//	continue
+			//}
+			continue
 		}
+
+		//
+		URL := FindURLLoki(ServiceName, DateFrom, DateTo)
+		TextServiceName := "<a href='" + URL + "'>" + ServiceName + "</a>"
 
 		//отправим ошибки в Telegram
 		for _, MassValues1 := range Result1.Values {
@@ -157,8 +161,9 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 			MapLastErrors[ServiceName] = TextLogWithoutTime
 
 			//
-			Text := ServiceName + " " + TextDate + " " + DeveloperName + "\n" + TextLog
+			Text := TextServiceName + " " + TextDate + " " + DeveloperName + "\n" + TextLog
 
+			//
 			_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, Text)
 			if err != nil {
 				log.Error("SendMessage() error: ", err)
