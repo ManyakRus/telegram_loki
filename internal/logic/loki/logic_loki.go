@@ -126,7 +126,7 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 
 		//
 		URL := FindURLLoki(ServiceName, DateFrom, DateTo)
-		TextServiceName := "<a href='" + URL + "'>" + ServiceName + "</a>"
+		TextServiceName := `<a href="` + URL + `">` + ServiceName + "</a>"
 
 		//отправим ошибки в Telegram
 		for _, MassValues1 := range Result1.Values {
