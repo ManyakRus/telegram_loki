@@ -24,6 +24,7 @@ build:
 	clear
 	./make_version.sh
 	go build -race -o $(FILEAPP) $(FILEMAIN)
+	cp $(FILEAPP) "./bin_prod/$(SERVICENAME)"
 	cd ./cmd && \
 	./VersionToFile.py
 
