@@ -1,0 +1,5 @@
+{
+  "test-service1": "@DeveloperTelegramName",
+  "test-service2": "FirstName SecondName",
+  "test-service3": "t.me/testservice_errors",
+}
