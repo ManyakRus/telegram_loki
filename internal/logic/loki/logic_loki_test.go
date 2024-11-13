@@ -10,7 +10,7 @@ import (
 )
 
 func TestStart_period(t *testing.T) {
-	config_main.LoadENV_or_SettingsTXT()
+	config_main.LoadEnvTest()
 	config.FillSettings()
 	load_json.LoadJSON_All()
 

@@ -5,11 +5,14 @@ LOKI_CHECKER_ENABLED=true
 DATABASE_CHECKER_ENABLED=false
 
 
+#TELEGRAM_API_KEY - API KEY from Telegram messenger
+TELEGRAM_API_KEY=
+
 #TELEGRAM_APP_ID - APP ID from Telegram
-TELEGRAM_APP_ID=
+#TELEGRAM_APP_ID=
 
 #TELEGRAM_APP_HASH - APP HASH from Telegram
-TELEGRAM_APP_HASH=
+#TELEGRAM_APP_HASH=
 
 #TELEGRAM_PHONE_FROM - your phone number, from messages will be sent
 TELEGRAM_PHONE_FROM=
@@ -52,3 +55,7 @@ DB_PORT="5432"
 DB_USER=
 DB_PASSWORD=
 
+
+# TELEGRAM_USERS_FILENAME - имя файла для хранения списка телеграм пользователей
+# этот файл заполняется автоматически, вручную заполнять не надо
+TELEGRAM_USERS_FILENAME="telegram_users.json"

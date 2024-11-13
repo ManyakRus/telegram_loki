@@ -4,11 +4,12 @@ import (
 	"github.com/ManyakRus/starter/config_main"
 	"github.com/ManyakRus/starter/postgres_pgx"
 	"github.com/ManyakRus/starter/stopapp"
-	"github.com/ManyakRus/starter/telegram_client"
+	"github.com/ManyakRus/starter/telegram_bot"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/constants"
 	"github.com/ManyakRus/telegram_loki/internal/load_json"
 	"github.com/ManyakRus/telegram_loki/internal/logic"
+	"github.com/ManyakRus/telegram_loki/internal/telegram"
 )
 
 func main() {
@@ -26,9 +27,16 @@ func StartApp() {
 		postgres_pgx.Start(constants.SERVICE_NAME)
 	}
 
-	telegram_client.Connect(nil)
+	//telegram_client.Connect(nil)
+
+	telegram_bot.Start()
+
+	telegram.StartReadMessages()
 
 	logic.Start()
 
 	stopapp.GetWaitGroup_Main().Wait()
+
+	//
+	//load_json.SaveMapTelegramUsers()
 }

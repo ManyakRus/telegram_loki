@@ -9,3 +9,6 @@ anf fill variables there
 
 // SERVICE_NAME - name of service
 const SERVICE_NAME = "telegram_loki"
+
+// #FILE_PERMISSIONS - linux file permissions, integer 438 = octal 0666
+const FILE_PERMISSIONS = 438

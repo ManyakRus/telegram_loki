@@ -5,10 +5,10 @@ import (
 	"github.com/ManyakRus/starter/contextmain"
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/micro"
-	"github.com/ManyakRus/starter/telegram_client"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/constants"
 	"github.com/ManyakRus/telegram_loki/internal/loki"
+	"github.com/ManyakRus/telegram_loki/internal/telegram"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/golang-module/carbon/v2"
 	"strconv"
@@ -29,7 +29,7 @@ func Start() {
 
 	Date2 := time.Now()
 	Date1 := carbon.CreateFromStdTime(Date2).AddMinutes(-1 * config.Settings.LOKI_CHECKER_INTERVAL_MINUTES).StdTime()
-	Start_period(Date1, Date2)
+	go Start_period(Date1, Date2)
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.LOKI_CHECKER_INTERVAL_MINUTES) * time.Minute)
 	//defer Ticker.Stop()
@@ -91,9 +91,9 @@ loop_for:
 	if IsOnlyErrors == true {
 		TextError := fmt.Sprint("Search errors: only errors. Last error: ", err1)
 		log.Debug(TextError)
-		_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, TextError)
+		err = telegram.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, TextError)
 		if err != nil {
-			log.Error("telegram_client.SendMessage() error: ", err)
+			log.Error("telegram.SendMessage() error: ", err)
 		}
 		micro.Pause_ctx(ctxMain, 60*60*1000) //пауза 1 час
 	}
@@ -166,7 +166,7 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 			Text := TextServiceName + " " + TextDate + " " + DeveloperName + "\n" + TextLog
 
 			//
-			_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, Text)
+			err = telegram.SendMessage(DeveloperName, Text)
 			if err != nil {
 				log.Error("SendMessage() error: ", err)
 				continue

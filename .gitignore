@@ -17,3 +17,5 @@
 /peers.pebble.db/
 /bin/sql_rapira/
 /bin/settings/services_add.txt
+/telegram_users_rapira.json
+/bin/telegram_users_rapira.json

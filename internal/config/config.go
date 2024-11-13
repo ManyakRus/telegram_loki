@@ -23,6 +23,7 @@ type SettingsINI struct {
 	DATABASE_CHECKER_ENABLED          bool
 	DATABASE_CHECKER_INTERVAL_MINUTES int
 	SQL_FILES_FOLDER                  string
+	TELEGRAM_USERS_FILENAME           string
 }
 
 // FillSettings загружает переменные окружения в структуру из переменных окружения
@@ -91,6 +92,11 @@ func FillSettings() {
 	Name = "SQL_FILES_FOLDER"
 	s = Getenv(Name, true)
 	Settings.SQL_FILES_FOLDER = s
+
+	//
+	Name = "TELEGRAM_USERS_FILENAME"
+	s = Getenv(Name, true)
+	Settings.TELEGRAM_USERS_FILENAME = s
 
 }
 

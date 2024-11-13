@@ -73,3 +73,6 @@ var MapServiceDeveloper = make(map[string]string)
 
 // MapSQLDeveloper - карта Имя сервиса - telegram логин программиста
 var MapSQLDeveloper = make(map[string]string)
+
+// MapTelegramUsers - карта имя в телеграм - id чата в телеграм
+var MapTelegramUsers = make(map[string]int64)

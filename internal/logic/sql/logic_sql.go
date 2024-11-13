@@ -7,8 +7,8 @@ import (
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/micro"
 	"github.com/ManyakRus/starter/postgres_pgx"
-	"github.com/ManyakRus/starter/telegram_client"
 	"github.com/ManyakRus/telegram_loki/internal/config"
+	"github.com/ManyakRus/telegram_loki/internal/telegram"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/jackc/pgx/v5"
 	"os"
@@ -46,11 +46,12 @@ func ReadTicker() {
 	Ticker.Stop()
 }
 
+// RunSQL_and_Send - запускает все скрипты .sql, и отправляет ошибки в Телеграм
 func RunSQL_and_Send() {
-	err := RunSQL()
+	DeveloperName, err := RunSQL()
 	if err != nil {
 		//отправим в Telegram
-		_, err = telegram_client.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, err.Error())
+		err = telegram.SendMessage(DeveloperName, err.Error())
 		if err != nil {
 			log.Error("SendMessage() error: ", err)
 		}
@@ -59,7 +60,8 @@ func RunSQL_and_Send() {
 }
 
 // RunSQL - запускает все скрипты .sql
-func RunSQL() error {
+func RunSQL() (string, error) {
+	DeveloperName := ""
 	var err error
 
 	log.Debug("Start run .sql scripts")
@@ -70,7 +72,7 @@ func RunSQL() error {
 	if err != nil {
 		err = fmt.Errorf("os.ReadDir() error: %w", err)
 		log.Error(err)
-		return err
+		return DeveloperName, err
 	}
 
 	//пройдемся по всем файлам
@@ -83,23 +85,24 @@ func RunSQL() error {
 		//	return err
 		//}
 
-		FilenemeShort := file1.Name()
-		Filename := DirFilename + micro.SeparatorFile() + FilenemeShort
-		if file1.Type().IsRegular() == false || strings.HasSuffix(FilenemeShort, ".sql") == false {
+		FilenameShort := path.Base(file1.Name())
+		Filename := DirFilename + micro.SeparatorFile() + FilenameShort
+		if file1.Type().IsRegular() == false || strings.HasSuffix(FilenameShort, ".sql") == false {
 			continue
 		}
 
 		//запускаем скрипт
 		err = RunSQL1(Filename)
 		if err != nil {
-			DeveloperName := FindDeveloperName_if_err(FilenemeShort, err)
-			err = fmt.Errorf("%w\n%s", err, DeveloperName)
+			DeveloperName, _ = types.MapSQLDeveloper[FilenameShort]
+			DeveloperNameTrim := FindDeveloperName_if_err(FilenameShort, err)
+			err = fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
 			log.Warn(err)
-			return err
+			return DeveloperName, err
 		}
 	}
 
-	return err
+	return "", err
 }
 
 // FindDeveloperName_if_err - возвращает имя разработчика, если ошибка другая
@@ -146,6 +149,14 @@ func RunSQL1(Filename string) error {
 	rows := db.QueryRow(ctx, TextSQL)
 	err = rows.Scan(&ResultSQL)
 
+	//запомним последнюю ошибку
+	FilenameShort := path.Base(Filename)
+	TextError := ""
+	if err != nil {
+		TextError = err.Error()
+	}
+	MapLastErrors[FilenameShort] = TextError
+
 	//нет строк - это хорошо
 	if err == pgx.ErrNoRows {
 		err = nil
@@ -161,11 +172,7 @@ func RunSQL1(Filename string) error {
 	}
 
 	//запрос вернул число(строку)
-	FilenameShort := path.Base(Filename)
 	err = fmt.Errorf(`скрипт "%s" вернул значение: %s`, FilenameShort, ResultSQL)
-
-	//запомним последнюю ошибку
-	MapLastErrors[FilenameShort] = err.Error()
 
 	return err
 }
