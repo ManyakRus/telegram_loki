@@ -7,6 +7,11 @@ DATABASE_CHECKER_ENABLED=false
 
 
 #LOKI_URL - URL of your grafana LOKI service
+#in Grafana version 8.3.5 i filled:
+#LOKI_URL="http://GrafanaURL.ru/api/datasources/proxy/1"
+#in Grafana version 11.2.0 i filled:
+#LokiURL i take from menu buttons: grafana browser - home - Administration - Go to connections - loki - URL*
+#LOKI_URL="http://LokiURL.ru"
 LOKI_URL=
 
 #LOKI_SEARCH_TEXT - regilar expression, which text need to find in LOKI. Need escape characters, "[" = "\\\\["
