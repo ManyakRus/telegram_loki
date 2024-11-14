@@ -99,7 +99,7 @@ func RunSQL() (string, error) {
 			DeveloperNameTrim := FindDeveloperName_if_err(FilenameShort, err)
 			err = fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
 			log.Warn(err)
-			return DeveloperNameTrim, err
+			return DeveloperName, err
 		}
 	}
 
