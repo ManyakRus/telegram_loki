@@ -5,20 +5,6 @@ LOKI_CHECKER_ENABLED=true
 DATABASE_CHECKER_ENABLED=false
 
 
-#TELEGRAM_API_KEY - API KEY from Telegram messenger
-TELEGRAM_API_KEY=
-
-#TELEGRAM_APP_ID - APP ID from Telegram
-#TELEGRAM_APP_ID=
-
-#TELEGRAM_APP_HASH - APP HASH from Telegram
-#TELEGRAM_APP_HASH=
-
-#TELEGRAM_PHONE_FROM - your phone number, from messages will be sent
-TELEGRAM_PHONE_FROM=
-
-#TELEGRAM_PHONE_SEND_TEST - phone number for test messages (not need)
-TELEGRAM_PHONE_SEND_TEST=
 
 #LOKI_URL - URL of your grafana LOKI service
 LOKI_URL=
@@ -26,11 +12,16 @@ LOKI_URL=
 #LOKI_SEARCH_TEXT - regilar expression, which text need to find in LOKI. Need escape characters, "[" = "\\\\["
 LOKI_SEARCH_TEXT="\\\\[ERROR\\\\]|\\\\[PANIC\\\\]|level=error|level=panic|panic:|(\\\\n\\\\t, )error:"
 
+#LOKI_CHECKER_INTERVAL_MINUTES - interval minutes, for check LOKI log errors
+LOKI_CHECKER_INTERVAL_MINUTES=10
+
 #GRAFANA_LOGIN - login name for Grafana website
 GRAFANA_LOGIN=
 
 #GRAFANA_PASSWORD - password for Grafana website
 GRAFANA_PASSWORD=
+
+
 
 #TELEGRAM_CHAT_NAME - telegram chat name, or phone number
 TELEGRAM_CHAT_NAME=
@@ -38,16 +29,28 @@ TELEGRAM_CHAT_NAME=
 #TELEGRAM_MESSAGES_COUNT - count of messages need to send to telegram, for every service
 TELEGRAM_MESSAGES_COUNT=2
 
+#TELEGRAM_API_KEY - API KEY from Telegram messenger
+TELEGRAM_API_KEY=
+
+#TELEGRAM_PHONE_FROM - your phone number, from messages will be sent
+TELEGRAM_PHONE_FROM=
+
+#TELEGRAM_PHONE_SEND_TEST - phone number for test messages (not need)
+TELEGRAM_PHONE_SEND_TEST=
+
+#TELEGRAM_USERS_FILENAME - имя файла для хранения списка телеграм пользователей
+#not need to change this file, automatic filling.
+TELEGRAM_USERS_FILENAME="telegram_users.json"
+
+
+
 #DATABASE_CHECKER_INTERVAL_MINUTES - interval minutes, for execute sql scripts
 DATABASE_CHECKER_INTERVAL_MINUTES=60
-
-#LOKI_CHECKER_INTERVAL_MINUTES - interval minutes, for check LOKI log errors
-LOKI_CHECKER_INTERVAL_MINUTES=10
 
 #SQL_FILES_FOLDER - folder short filename for keep .sql files = "sql"
 SQL_FILES_FOLDER="sql"
 
-#Database settings - need to execute sql scripts every
+#Database settings - need to execute sql scripts every interval
 DB_HOST=
 DB_NAME=
 DB_SCHEME=
@@ -56,6 +59,3 @@ DB_USER=
 DB_PASSWORD=
 
 
-# TELEGRAM_USERS_FILENAME - имя файла для хранения списка телеграм пользователей
-# этот файл заполняется автоматически, вручную заполнять не надо
-TELEGRAM_USERS_FILENAME="telegram_users.json"
