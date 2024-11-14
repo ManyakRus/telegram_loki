@@ -3,7 +3,8 @@ module github.com/ManyakRus/telegram_loki
 go 1.22.1
 
 require (
-	github.com/ManyakRus/starter v1.0.78
+	github.com/ManyakRus/starter v1.0.79
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/golang-module/carbon/v2 v2.4.1
 	github.com/jackc/pgx/v5 v5.7.1
 )
@@ -24,7 +25,6 @@ require (
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-faster/jx v1.1.0 // indirect
 	github.com/go-faster/xor v1.0.0 // indirect
-	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect

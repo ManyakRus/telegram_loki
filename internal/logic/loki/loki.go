@@ -7,7 +7,7 @@ import (
 	"github.com/ManyakRus/starter/micro"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/constants"
-	"github.com/ManyakRus/telegram_loki/internal/loki"
+	"github.com/ManyakRus/telegram_loki/internal/loki_http"
 	"github.com/ManyakRus/telegram_loki/internal/telegram"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/golang-module/carbon/v2"
@@ -64,6 +64,7 @@ func Start_period(Date1, Date2 time.Time) {
 
 	ctxMain := contextmain.GetContext()
 
+	CountText := 0
 loop_for:
 	for ServiceName, DeveloperName := range types.MapServiceDeveloper {
 		//проверка завершения программы
@@ -75,10 +76,13 @@ loop_for:
 		}
 
 		//запуск проверки логов одного сервиса
-		err1 = Start_period1(ServiceName, DeveloperName, Date1, Date2)
+		Text, err1 := Start_period1(ServiceName, DeveloperName, Date1, Date2)
 		if err1 != nil {
 			micro.Pause_ctx(ctxMain, 1000) //error: 502 Bad Gateway
 		} else {
+			if Text != "" {
+				CountText = CountText + 1
+			}
 			IsOnlyErrors = false
 			micro.Pause_ctx(ctxMain, 100) //error: 429 Too Many Requests
 		}
@@ -86,6 +90,10 @@ loop_for:
 	}
 
 	LastReadTime = Date2
+
+	if CountText == 0 {
+		log.Debug(`No text "error" found in LOKI`)
+	}
 
 	// если только ошибки - то напишем в телеграм
 	if IsOnlyErrors == true {
@@ -100,16 +108,18 @@ loop_for:
 }
 
 // Start_period1 - запускает чтение логов одного сервиса за период
-func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Time) error {
+// возвращает Текст отправленного сообщения, и ошибку
+func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Time) (string, error) {
 	var err error
+	Text := ""
 
 	ctxMain := contextmain.GetContext()
 
-	LokiMessage, err := loki.DownloadJSON(ServiceName, DateFrom, DateTo)
+	LokiMessage, err := loki_http.DownloadJSON(ServiceName, DateFrom, DateTo)
 	if err != nil {
 		//log.Error("DownloadJSON() error: ", err)
 		micro.Pause_ctx(ctxMain, 1000)
-		return err
+		return Text, err
 	}
 
 	for _, Result1 := range LokiMessage.Data.Result {
@@ -163,7 +173,7 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 			MapLastErrors[ServiceName] = TextLogWithoutTime
 
 			//
-			Text := TextServiceName + " " + TextDate + " " + DeveloperName + "\n" + TextLog
+			Text = TextServiceName + " " + TextDate + " " + DeveloperName + "\n" + TextLog
 
 			//
 			err = telegram.SendMessage(DeveloperName, Text)
@@ -174,7 +184,7 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 		}
 	}
 
-	return err
+	return Text, err
 }
 
 // FindURLLoki - находит URL ссылку в LOKI на которую можно кликнуть в телеграмме

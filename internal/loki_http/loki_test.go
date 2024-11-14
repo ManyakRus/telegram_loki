@@ -1,4 +1,4 @@
-package loki
+package loki_http
 
 import (
 	ConfigMain "github.com/ManyakRus/starter/config_main"

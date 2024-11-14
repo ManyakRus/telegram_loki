@@ -60,6 +60,7 @@ func RunSQL_and_Send() {
 }
 
 // RunSQL - запускает все скрипты .sql
+// возвращает DeveloperName, error
 func RunSQL() (string, error) {
 	DeveloperName := ""
 	var err error
@@ -98,7 +99,7 @@ func RunSQL() (string, error) {
 			DeveloperNameTrim := FindDeveloperName_if_err(FilenameShort, err)
 			err = fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
 			log.Warn(err)
-			return DeveloperName, err
+			return DeveloperNameTrim, err
 		}
 	}
 

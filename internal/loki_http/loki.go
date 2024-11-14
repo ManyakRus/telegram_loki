@@ -1,7 +1,8 @@
-package loki
+package loki_http
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,13 +11,14 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 )
 
-var Client = &http.Client{}
+var Client *http.Client // &http.Client{}
 
 func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) string {
 	Otvet := ""
@@ -31,7 +33,7 @@ func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) str
 
 	sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
 	sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
-	Otvet = config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=" + slimit + "&query=" + query
+	Otvet = config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki_http/api/v1/query_range?direction=BACKWARD&limit=" + slimit + "&query=" + query
 	Otvet += "&start=" + sTime1 + "&end=" + sTime2
 
 	return Otvet
@@ -40,6 +42,10 @@ func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) str
 func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message, error) {
 	Otvet := types.Message{}
 	var err error
+
+	if Client == nil {
+		CreateClient()
+	}
 
 	Filter := config.Settings.LOKI_SEARCH_TEXT
 	URL := QueryApp(ServiceName, DateFrom, DateTo, Filter)
@@ -123,4 +129,30 @@ func Authentication() error {
 
 	//
 	return err
+}
+
+// CreateClient - создаёт клиент http
+// для работы без ошибки сертификатов
+func CreateClient() {
+	Client = &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+			DialContext: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+				DualStack: true,
+			}).DialContext,
+			ForceAttemptHTTP2:     true,
+			MaxIdleConns:          100,
+			IdleConnTimeout:       90 * time.Second,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+			TLSClientConfig: &tls.Config{
+				// See comment above.
+				// UNSAFE!
+				// DON'T USE IN PRODUCTION!
+				InsecureSkipVerify: true,
+			},
+		},
+	}
 }
