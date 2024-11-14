@@ -23,7 +23,7 @@ GRAFANA_PASSWORD=
 
 
 
-#TELEGRAM_CHAT_NAME - telegram chat name, or phone number
+#TELEGRAM_CHAT_NAME - telegram chat ID (or name or phone number), for send all found log errors
 TELEGRAM_CHAT_NAME=
 
 #TELEGRAM_MESSAGES_COUNT - count of messages need to send to telegram, for every service
