@@ -39,7 +39,7 @@ func LoadJSON_All() {
 	FileName = dir + config.Settings.SQL_FILES_FOLDER + micro.SeparatorFile() + "scripts.txt"
 	err = LoadJSON_SQL(FileName)
 	if err != nil {
-		log.Panic("LoadJSON_Services() error: ", err)
+		//log.Panic("LoadJSON_Services() error: ", err)
 	}
 
 	//scripts_add.txt, дополнительный файл, необязательный
@@ -96,7 +96,7 @@ func LoadJSON_SQL(FileName string) error {
 	//чтение файла
 	bytes, err := os.ReadFile(FileName)
 	if err != nil {
-		log.Error("ReadFile() error: ", err)
+		log.Warn("ReadFile() error: ", err)
 		return err
 	}
 

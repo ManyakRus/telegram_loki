@@ -97,9 +97,13 @@ func RunSQL() (string, error) {
 		if err != nil {
 			DeveloperName, _ = types.MapSQLDeveloper[FilenameShort]
 			DeveloperNameTrim := FindDeveloperName_if_err(FilenameShort, err)
-			err = fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
-			log.Warn(err)
-			return DeveloperName, err
+			err2 := fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
+			log.Warn(err2)
+
+			//запомним ошибку
+			MapLastErrors[FilenameShort] = err.Error()
+
+			return DeveloperName, err2
 		}
 	}
 
@@ -109,6 +113,10 @@ func RunSQL() (string, error) {
 // FindDeveloperName_if_err - возвращает имя разработчика, если ошибка другая
 func FindDeveloperName_if_err(FilenemeShort string, err error) string {
 	//
+	if err == nil {
+		return ""
+	}
+
 	//DeveloperName := ""
 	DeveloperName, ok := types.MapSQLDeveloper[FilenemeShort]
 	if ok {
@@ -152,11 +160,6 @@ func RunSQL1(Filename string) error {
 
 	//запомним последнюю ошибку
 	FilenameShort := path.Base(Filename)
-	TextError := ""
-	if err != nil {
-		TextError = err.Error()
-	}
-	MapLastErrors[FilenameShort] = TextError
 
 	//нет строк - это хорошо
 	if err == pgx.ErrNoRows {
