@@ -23,6 +23,9 @@ func SendMessage(ChatName string, Text string) error {
 		return err1
 	}
 
+	//
+	ChatName = strings.TrimSpace(ChatName)
+
 	//отправка в общую группу
 	if config.Settings.TELEGRAM_CHAT_NAME != "" {
 		_, err = telegram_bot.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, Text)
@@ -48,6 +51,7 @@ func SendMessage(ChatName string, Text string) error {
 		if err1 != nil {
 			return err1
 		}
+		ChatName1 = strings.TrimSpace(ChatName1)
 
 		//найдём ИД по имени в телеграм
 		ID, ok := types.MapTelegramUsers[ChatName1]

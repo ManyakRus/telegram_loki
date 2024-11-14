@@ -4,6 +4,8 @@ github.com/ManyakRus/logrus v0.0.0-20231019115155-9e6fede0d792 h1:bxwxD0H3kSUAH3
 github.com/ManyakRus/logrus v0.0.0-20231019115155-9e6fede0d792/go.mod h1:OUyxCVbPW/2lC1e6cM7Am941SJiC88BhNnb24x2R3a8=
 github.com/ManyakRus/starter v1.0.79 h1:1DuSwYt2TkOnkgzmhEj3cC4JOqvyyhNl7Vpzd9ndlGs=
 github.com/ManyakRus/starter v1.0.79/go.mod h1:fvTy6+PHRIDeNXvXAAkYBSJl1kkupiNe/CpCgcB0mZM=
+github.com/ManyakRus/starter v1.0.80 h1:aIY8WyfhdcGXKr3SvLx2BETfR5XRK+qv7hqwO05W/Fg=
+github.com/ManyakRus/starter v1.0.80/go.mod h1:fvTy6+PHRIDeNXvXAAkYBSJl1kkupiNe/CpCgcB0mZM=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK343L8=

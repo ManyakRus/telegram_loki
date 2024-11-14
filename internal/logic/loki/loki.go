@@ -12,6 +12,7 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/golang-module/carbon/v2"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -136,6 +137,7 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 
 		//
 		URL := FindURLLoki(ServiceName, DateFrom, DateTo)
+		//TextServiceName := ServiceName + "[inline URL](" + URL + ")"
 		TextServiceName := `<a href="` + URL + `">` + ServiceName + "</a>"
 
 		//отправим ошибки в Telegram
@@ -160,6 +162,12 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 			}
 			Date := time.Unix(0, iDate)
 			TextDate := Date.Format(constants.Layout)
+			TextDate2 := micro.SubstringLeft(TextDate, 10)
+			if strings.Contains(TextLog, TextDate2) == true {
+				TextDate = ""
+			} else {
+				TextDate = TextDate + " "
+			}
 			DeveloperName := DeveloperName0
 
 			//если такая же ошибка то не пишем имя разработчика
@@ -173,7 +181,7 @@ func Start_period1(ServiceName, DeveloperName0 string, DateFrom, DateTo time.Tim
 			MapLastErrors[ServiceName] = TextLogWithoutTime
 
 			//
-			Text = TextServiceName + " " + TextDate + " " + DeveloperName + "\n" + TextLog
+			Text = TextServiceName + " " + TextDate + DeveloperName + "\n" + TextLog
 
 			//
 			err = telegram.SendMessage(DeveloperName, Text)
