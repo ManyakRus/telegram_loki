@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/ManyakRus/starter/config_main"
+	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/micro"
 	"github.com/ManyakRus/starter/postgres_pgx"
 	"github.com/ManyakRus/starter/stopapp"
@@ -42,5 +43,5 @@ func StartApp() {
 	stopapp.GetWaitGroup_Main().Wait()
 
 	//
-	//load_json.SaveMapTelegramUsers()
+	log.Info("Application stopped.")
 }
