@@ -45,6 +45,12 @@ func SendMessage(Message1 types.Message) error {
 	if Message1.LokiURL != "" {
 		TextServiceName = `<a href="` + Message1.LokiURL + `">` + Message1.ServiceName + "</a>"
 	}
+
+	//
+	if Message1.IsSameLastText == true {
+		DeveloperName = ""
+	}
+
 	Text = TextServiceName + " " + DeveloperName + " " + TextDate + "\n" + Text
 
 	//отправка в общую группу

@@ -25,7 +25,7 @@ var MapLastErrors = make(map[string]string)
 
 // Start - старт работы чтения логов LOKI
 func Start() {
-	RunSQL_all_and_Send()
+	RunSQL_all()
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.DATABASE_CHECKER_INTERVAL_MINUTES) * time.Minute)
 
@@ -39,7 +39,7 @@ func ReadTicker() {
 		case <-contextmain.GetContext().Done():
 			return
 		case <-Ticker.C:
-			RunSQL_all_and_Send()
+			RunSQL_all()
 		}
 	}
 
@@ -47,21 +47,14 @@ func ReadTicker() {
 }
 
 // RunSQL_all_and_Send - запускает все скрипты .sql, и отправляет ошибки в Телеграм
-func RunSQL_all_and_Send() {
-	Message1, err := RunSQL_all()
-	if Message1.Text != "" {
-		//отправим в Telegram
-		err = telegram.SendMessage(Message1)
-		if err != nil {
-			log.Error("SendMessage() error: ", err)
-		}
-	}
-
-}
+//func RunSQL_all_and_Send() {
+//	Message1, err := RunSQL_all()
+//
+//}
 
 // RunSQL_all - запускает все скрипты .sql
 // возвращает DeveloperName, error
-func RunSQL_all() (types.Message, error) {
+func RunSQL_all() {
 	Otvet := types.Message{}
 	var err error
 
@@ -74,7 +67,14 @@ func RunSQL_all() (types.Message, error) {
 		err = fmt.Errorf("os.ReadDir() error: %w", err)
 		log.Error(err)
 		Otvet.Text = err.Error()
-		return Otvet, err
+
+		//отправим в телеграм
+		err = telegram.SendMessage(Otvet)
+		if err != nil {
+			log.Error("SendMessage() error: ", err)
+		}
+
+		return
 	}
 
 	//пройдемся по всем файлам
@@ -99,9 +99,19 @@ func RunSQL_all() (types.Message, error) {
 		//запускаем скрипт
 		Text := RunSQL1(Filename)
 		if Text != "" {
+			//проверим что ошибка такая же
+			IsSameLastText := false
+			LastText, _ := MapLastErrors[FilenameShort]
+			if Text == LastText {
+				IsSameLastText = true
+			}
+
+			//
 			DeveloperName, _ := types.MapSQLDeveloper[FilenameShort]
 			Otvet.DeveloperName = DeveloperName
 			Otvet.Text = Text
+			Otvet.IsSameLastText = IsSameLastText
+
 			//DeveloperNameTrim := FindDeveloperName_if_err(FilenameShort, err)
 			//err2 := fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
 			//log.Warn(err2)
@@ -109,11 +119,18 @@ func RunSQL_all() (types.Message, error) {
 			//запомним ошибку
 			MapLastErrors[FilenameShort] = Text
 
-			return Otvet, nil
+			//отправим в телеграм
+			if Otvet.Text != "" {
+				err = telegram.SendMessage(Otvet)
+				if err != nil {
+					log.Error("SendMessage() error: ", err)
+				}
+			}
+
 		}
 	}
 
-	return Otvet, err
+	return
 }
 
 // FindDeveloperName_if_err - возвращает имя разработчика, если ошибка другая

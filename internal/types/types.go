@@ -83,9 +83,10 @@ var MapTelegramUsers = make(map[string]int64)
 
 // Message - структура сообщения для отправки в Телеграм
 type Message struct {
-	ServiceName   string
-	DeveloperName string
-	LokiURL       string
-	Date          time.Time
-	Text          string
+	ServiceName    string
+	DeveloperName  string
+	LokiURL        string
+	Date           time.Time
+	Text           string
+	IsSameLastText bool
 }

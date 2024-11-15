@@ -115,7 +115,7 @@ loop_for:
 // возвращает Текст отправленного сообщения, и ошибку
 func Start_period1(Message1 *types.Message, DateFrom, DateTo time.Time) error {
 	var err error
-	Text := ""
+	//Text := ""
 
 	ctxMain := contextmain.GetContext()
 	DeveloperName0 := Message1.DeveloperName
@@ -174,22 +174,26 @@ func Start_period1(Message1 *types.Message, DateFrom, DateTo time.Time) error {
 			DeveloperName := DeveloperName0
 
 			//если такая же ошибка то не пишем имя разработчика
-			TextLogWithoutTime := TextLogWithoutTime(TextLog)
-			LastError, IsFind2 := MapLastErrors[Message1.ServiceName]
-			if IsFind2 == true && LastError == TextLogWithoutTime {
-				DeveloperName = ""
+			IsSameLastText := false
+			LastText := ""
+			LastText, _ = MapLastErrors[Message1.ServiceName]
+			TextLogWithoutTime := FindTextWithoutTime(TextLog)
+			TextLastLogWithoutTime := FindTextWithoutTime(LastText)
+			if TextLogWithoutTime == TextLastLogWithoutTime {
+				IsSameLastText = true
 			}
 
 			//запомним последнюю ошибку
-			MapLastErrors[Message1.ServiceName] = TextLogWithoutTime
+			MapLastErrors[Message1.ServiceName] = TextLog
 
 			//
 			//Text = TextServiceName + " " + TextDate + DeveloperName + "\n" + TextLog
-			Text = TextLog
-			Message1.Text = Text
+			//Text = TextLog
+			Message1.Text = TextLog
 			Message1.DeveloperName = DeveloperName
 			Message1.Date = Date
 			Message1.LokiURL = URL
+			Message1.IsSameLastText = IsSameLastText
 
 			//
 			err = telegram.SendMessage(*Message1)
@@ -212,10 +216,10 @@ func FindURLLoki(ServiceName string, DateFrom, DateTo time.Time) string {
 	return Otvet
 }
 
-// TextLogWithoutTime - убирает время в логе, для этого берём текст после 2 пробела
+// FindTextWithoutTime - убирает время в логе, для этого берём текст после 2 пробела
 // time="2024-11-07 04:30:53.709" level=error msg="GetExtractEgripEgrul INN: 519300250706 Result: map[address: fullName: shortName: state:] Error: 404 Нет данных по данному ИНН: 519300250706" func="TakeMessageAsync()\t" file=" nats.go:194\t"
 // 2024/11/01 04:35:07.872721 [ERROR] syncMessage, contractId: 7802, error: NewBriefCase, initInvoices, error: there is no documents for this contract
-func TextLogWithoutTime(TextLog string) string {
+func FindTextWithoutTime(TextLog string) string {
 	Otvet := TextLog
 
 	Otvet = micro.StringAfter(Otvet, " ")
