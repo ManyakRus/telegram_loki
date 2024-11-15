@@ -40,8 +40,8 @@ func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) str
 	return Otvet
 }
 
-func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message, error) {
-	Otvet := types.Message{}
+func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.MessageLoki, error) {
+	Otvet := types.MessageLoki{}
 	var err error
 
 	if Client == nil {

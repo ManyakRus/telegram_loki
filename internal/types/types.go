@@ -1,6 +1,10 @@
 package types
 
-type Message struct {
+import (
+	"time"
+)
+
+type MessageLoki struct {
 	Status string `json:"status"`
 	Data   struct {
 		ResultType string `json:"resultType"`
@@ -76,3 +80,12 @@ var MapSQLDeveloper = make(map[string]string)
 
 // MapTelegramUsers - карта имя в телеграм - id чата в телеграм
 var MapTelegramUsers = make(map[string]int64)
+
+// Message - структура сообщения для отправки в Телеграм
+type Message struct {
+	ServiceName   string
+	DeveloperName string
+	LokiURL       string
+	Date          time.Time
+	Text          string
+}

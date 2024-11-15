@@ -25,7 +25,7 @@ var MapLastErrors = make(map[string]string)
 
 // Start - старт работы чтения логов LOKI
 func Start() {
-	RunSQL_and_Send()
+	RunSQL_all_and_Send()
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.DATABASE_CHECKER_INTERVAL_MINUTES) * time.Minute)
 
@@ -39,19 +39,19 @@ func ReadTicker() {
 		case <-contextmain.GetContext().Done():
 			return
 		case <-Ticker.C:
-			RunSQL_and_Send()
+			RunSQL_all_and_Send()
 		}
 	}
 
 	Ticker.Stop()
 }
 
-// RunSQL_and_Send - запускает все скрипты .sql, и отправляет ошибки в Телеграм
-func RunSQL_and_Send() {
-	DeveloperName, err := RunSQL()
-	if err != nil {
+// RunSQL_all_and_Send - запускает все скрипты .sql, и отправляет ошибки в Телеграм
+func RunSQL_all_and_Send() {
+	Message1, err := RunSQL_all()
+	if Message1.Text != "" {
 		//отправим в Telegram
-		err = telegram.SendMessage(DeveloperName, err.Error())
+		err = telegram.SendMessage(Message1)
 		if err != nil {
 			log.Error("SendMessage() error: ", err)
 		}
@@ -59,10 +59,10 @@ func RunSQL_and_Send() {
 
 }
 
-// RunSQL - запускает все скрипты .sql
+// RunSQL_all - запускает все скрипты .sql
 // возвращает DeveloperName, error
-func RunSQL() (string, error) {
-	DeveloperName := ""
+func RunSQL_all() (types.Message, error) {
+	Otvet := types.Message{}
 	var err error
 
 	log.Debug("Start run .sql scripts")
@@ -73,7 +73,8 @@ func RunSQL() (string, error) {
 	if err != nil {
 		err = fmt.Errorf("os.ReadDir() error: %w", err)
 		log.Error(err)
-		return DeveloperName, err
+		Otvet.Text = err.Error()
+		return Otvet, err
 	}
 
 	//пройдемся по всем файлам
@@ -92,22 +93,27 @@ func RunSQL() (string, error) {
 			continue
 		}
 
+		Otvet = types.Message{}
+		//Otvet.ServiceName = FilenameShort
+
 		//запускаем скрипт
-		err = RunSQL1(Filename)
-		if err != nil {
-			DeveloperName, _ = types.MapSQLDeveloper[FilenameShort]
-			DeveloperNameTrim := FindDeveloperName_if_err(FilenameShort, err)
-			err2 := fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
-			log.Warn(err2)
+		Text := RunSQL1(Filename)
+		if Text != "" {
+			DeveloperName, _ := types.MapSQLDeveloper[FilenameShort]
+			Otvet.DeveloperName = DeveloperName
+			Otvet.Text = Text
+			//DeveloperNameTrim := FindDeveloperName_if_err(FilenameShort, err)
+			//err2 := fmt.Errorf("%w\n%s", err, DeveloperNameTrim)
+			//log.Warn(err2)
 
 			//запомним ошибку
-			MapLastErrors[FilenameShort] = err.Error()
+			MapLastErrors[FilenameShort] = Text
 
-			return DeveloperName, err2
+			return Otvet, nil
 		}
 	}
 
-	return "", err
+	return Otvet, err
 }
 
 // FindDeveloperName_if_err - возвращает имя разработчика, если ошибка другая
@@ -133,7 +139,8 @@ func FindDeveloperName_if_err(FilenemeShort string, err error) string {
 }
 
 // RunSQL1 - запускает 1 скрипт
-func RunSQL1(Filename string) error {
+func RunSQL1(Filename string) string {
+	Otvet := ""
 	var err error
 
 	//подключимся к БД
@@ -146,10 +153,10 @@ func RunSQL1(Filename string) error {
 	//прочитаем файл
 	bytes, err := os.ReadFile(Filename)
 	if err != nil {
-		err = fmt.Errorf("ReadFile() Filename: %s error: %w", Filename, err)
-		log.Error(err)
+		Otvet = fmt.Sprintf("ReadFile() Filename: %s error: %v", Filename, err)
+		log.Error(Otvet)
 
-		return err
+		return Otvet
 	}
 	TextSQL := string(bytes)
 
@@ -163,20 +170,19 @@ func RunSQL1(Filename string) error {
 
 	//нет строк - это хорошо
 	if err == pgx.ErrNoRows {
-		err = nil
-		return err
+		return Otvet
 	}
 
 	//ошибки не должно быть
 	if err != nil {
-		err = fmt.Errorf("db.Exec() Filename: %s, error: %w", Filename, err)
-		log.Error(err)
+		Otvet = fmt.Sprintf("db.Exec() Filename: %s, error: %v", Filename, err)
+		log.Error(Otvet)
 
-		return err
+		return Otvet
 	}
 
 	//запрос вернул число(строку)
-	err = fmt.Errorf(`скрипт "%s" вернул значение: %s`, FilenameShort, ResultSQL)
+	Otvet = fmt.Sprintf(`скрипт "%s" вернул значение: %s`, FilenameShort, ResultSQL)
 
-	return err
+	return Otvet
 }

@@ -3,9 +3,11 @@ package telegram
 import (
 	"github.com/ManyakRus/starter/contextmain"
 	"github.com/ManyakRus/starter/log"
+	"github.com/ManyakRus/starter/micro"
 	"github.com/ManyakRus/starter/stopapp"
 	"github.com/ManyakRus/starter/telegram_bot"
 	"github.com/ManyakRus/telegram_loki/internal/config"
+	"github.com/ManyakRus/telegram_loki/internal/constants"
 	"github.com/ManyakRus/telegram_loki/internal/load_json"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -14,7 +16,7 @@ import (
 
 // SendMessage - отправляет сообщения в Telegram, в общий чат, многим разрабочикам
 // ChatName - в формате "@Имя1,@Имя2"
-func SendMessage(ChatName string, Text string) error {
+func SendMessage(Message1 types.Message) error {
 	var err error
 
 	//проверка отмены контекста
@@ -24,7 +26,26 @@ func SendMessage(ChatName string, Text string) error {
 	}
 
 	//
-	ChatName = strings.TrimSpace(ChatName)
+	ChatName := strings.TrimSpace(Message1.DeveloperName)
+	//TextDate := Message1.Date.String()
+	TextDate := Message1.Date.Format(constants.Layout)
+	TextDate2 := micro.SubstringLeft(TextDate, 10)
+	if strings.Contains(Message1.Text, TextDate2) == true {
+		TextDate = ""
+	} else {
+		TextDate = "\n" + TextDate
+	}
+	if Message1.Date.IsZero() == true {
+		TextDate = ""
+	}
+	DeveloperName := Message1.DeveloperName
+	Text := Message1.Text
+
+	TextServiceName := Message1.ServiceName
+	if Message1.LokiURL != "" {
+		TextServiceName = `<a href="` + Message1.LokiURL + `">` + Message1.ServiceName + "</a>"
+	}
+	Text = TextServiceName + " " + DeveloperName + " " + TextDate + "\n" + Text
 
 	//отправка в общую группу
 	if config.Settings.TELEGRAM_CHAT_NAME != "" {
@@ -41,6 +62,11 @@ func SendMessage(ChatName string, Text string) error {
 	}
 	if ChatName == config.Settings.TELEGRAM_CHAT_NAME {
 		return err
+	}
+
+	Text = Message1.Text
+	if TextServiceName != "" {
+		Text = TextServiceName + "\n" + Text
 	}
 
 	//
