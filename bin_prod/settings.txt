@@ -8,12 +8,6 @@ DATABASE_CHECKER_ENABLED=false
 #TELEGRAM_API_KEY - API KEY from Telegram messenger
 TELEGRAM_API_KEY=
 
-#TELEGRAM_APP_ID - APP ID from Telegram
-#TELEGRAM_APP_ID=
-
-#TELEGRAM_APP_HASH - APP HASH from Telegram
-#TELEGRAM_APP_HASH=
-
 #TELEGRAM_PHONE_FROM - your phone number, from messages will be sent
 TELEGRAM_PHONE_FROM=
 

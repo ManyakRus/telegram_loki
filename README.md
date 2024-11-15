@@ -23,6 +23,14 @@ if the script does not return lines, then everything is fine.
 including the .sql file name and the name of the person responsible,
 then the name of the person responsible will also be added.
 
+The bot sends error logs to Telegram groups:
+1. General group with all errors, all programmers.
+Group ID is filled in settings.txt, TELEGRAM_CHAT_NAME=
+In the Telegram group settings, you need to set the rights Group type = "Public"
+2. Each programmer separately, only logs that apply to him.
+Filled in the files services.txt, scripts.txt
+Each programmer must add this telegram bot to his Telegram
+
 Installation procedure:
 1. Compile this repository
 >make build
