@@ -160,13 +160,6 @@ func RunSQL1(Filename string) string {
 	Otvet := ""
 	var err error
 
-	//подключимся к БД
-	db := postgres_pgx.GetConnection()
-
-	ctxMain := contextmain.GetContext()
-	ctx, cancel := context.WithTimeout(ctxMain, 10*time.Minute)
-	defer cancel()
-
 	//прочитаем файл
 	bytes, err := os.ReadFile(Filename)
 	if err != nil {
@@ -176,6 +169,12 @@ func RunSQL1(Filename string) string {
 		return Otvet
 	}
 	TextSQL := string(bytes)
+
+	//подключимся к БД
+	db := postgres_pgx.GetConnection()
+	ctxMain := contextmain.GetContext()
+	ctx, cancel := context.WithTimeout(ctxMain, 10*time.Minute)
+	defer cancel()
 
 	//запустим запрос
 	ResultSQL := ""

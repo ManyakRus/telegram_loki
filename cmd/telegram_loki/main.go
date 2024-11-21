@@ -29,7 +29,8 @@ func StartApp() {
 	stopapp.StartWaitStop()
 
 	if config.Settings.DATABASE_CHECKER_ENABLED == true {
-		postgres_pgx.Start(constants.SERVICE_NAME)
+		postgres_pgx.GetConnection_WithApplicationName(constants.SERVICE_NAME)
+		defer postgres_pgx.CloseConnection()
 	}
 
 	//telegram_client.Connect(nil)
