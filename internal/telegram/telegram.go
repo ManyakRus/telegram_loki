@@ -11,6 +11,7 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/load_json"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"html"
 	"strings"
 )
 
@@ -39,8 +40,12 @@ func SendMessage(Message1 types.Message) error {
 		TextDate = ""
 	}
 	DeveloperName := Message1.DeveloperName
-	Text := Message1.Text
 
+	//экранируем запрещённые символы
+	Text := Message1.Text
+	Text = html.EscapeString(Text)
+
+	//
 	TextServiceName := Message1.ServiceName
 	if Message1.LokiURL != "" {
 		TextServiceName = `<a href="` + Message1.LokiURL + `">` + Message1.ServiceName + "</a>"
@@ -70,7 +75,11 @@ func SendMessage(Message1 types.Message) error {
 		return err
 	}
 
+	//экранируем запрещённые символы
 	Text = Message1.Text
+	Text = html.EscapeString(Text)
+
+	//
 	if TextServiceName != "" {
 		Text = TextServiceName + "\n" + Text
 	}
