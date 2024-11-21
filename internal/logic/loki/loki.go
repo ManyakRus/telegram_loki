@@ -26,6 +26,10 @@ var MapLastErrors = make(map[string]string)
 // Start - старт работы чтения логов LOKI
 func Start() {
 
+	//
+	log.Info("Start read LOKI, URL: ", config.Settings.LOKI_URL)
+
+	//
 	Date2 := time.Now()
 	Date1 := carbon.CreateFromStdTime(Date2).AddMinutes(-1 * config.Settings.LOKI_CHECKER_INTERVAL_MINUTES).StdTime()
 	go Start_period(Date1, Date2)
@@ -78,7 +82,7 @@ loop_for:
 		Message1 := types.Message{}
 		Message1.ServiceName = ServiceName
 		Message1.DeveloperName = DeveloperName
-		err1 := Start_period1(&Message1, Date1, Date2)
+		err1 = Start_period1(&Message1, Date1, Date2)
 		if err1 != nil {
 			micro.Pause_ctx(ctxMain, 1000) //error: 502 Bad Gateway
 		} else {
