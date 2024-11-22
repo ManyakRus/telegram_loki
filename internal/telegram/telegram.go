@@ -103,7 +103,7 @@ func SendMessage(Message1 types.Message) error {
 		//отправка
 		_, err = telegram_bot.SendMessageChatID(ID, Text)
 		if err != nil {
-			log.Error("SendMessage() error: ", err)
+			log.Warn("SendMessage() warning: ", err)
 			continue
 			//return err
 		}
