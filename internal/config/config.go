@@ -102,7 +102,7 @@ func FillSettings() {
 
 	//
 	Name = "LOKI_API_PATH"
-	microl.Set_FieldFromEnv_String(&Settings, Name, true)
+	microl.Set_FieldFromEnv_String(&Settings, Name, false)
 
 }
 
