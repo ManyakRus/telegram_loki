@@ -7,7 +7,6 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/constants"
 	"github.com/ManyakRus/telegram_loki/internal/load_json"
 	"github.com/ManyakRus/telegram_loki/internal/logic/loki"
-	"github.com/golang-module/carbon/v2"
 	"testing"
 	"time"
 )

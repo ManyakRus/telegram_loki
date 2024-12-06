@@ -33,7 +33,7 @@ func QueryApp(ServiceName string, DateFrom, DateTo time.Time, Filter string) str
 
 	sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
 	sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
-	Otvet = config.Settings.LOKI_URL + "/loki/api/v1/query_range?direction=BACKWARD&limit=" + slimit + "&query=" + query
+	Otvet = config.Settings.LOKI_URL + config.Settings.LOKI_API_PATH + "/loki/api/v1/query_range?direction=BACKWARD&limit=" + slimit + "&query=" + query
 	//Otvet = config.Settings.LOKI_URL + "/api/datasources/proxy/1/loki/api/v1/query_range?direction=BACKWARD&limit=" + slimit + "&query=" + query
 	Otvet += "&start=" + sTime1 + "&end=" + sTime2
 
@@ -104,7 +104,7 @@ func DownloadJSON(ServiceName string, DateFrom, DateTo time.Time) (types.Message
 func Authentication() error {
 	var err error
 
-	URL := config.Settings.LOKI_URL //+ "/login"
+	URL := config.Settings.LOKI_URL + config.Settings.LOKI_API_PATH //+ "/login"
 
 	//client := http.Client{Timeout: 60 * time.Second}
 

@@ -9,7 +9,7 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/loki_http"
 	"github.com/ManyakRus/telegram_loki/internal/telegram"
 	"github.com/ManyakRus/telegram_loki/internal/types"
-	"github.com/golang-module/carbon/v2"
+	carbon "github.com/dromara/carbon/v2"
 	"strconv"
 	"time"
 )
@@ -27,7 +27,7 @@ var MapLastErrors = make(map[string]string)
 func Start() {
 
 	//
-	log.Info("Start read LOKI, URL: ", config.Settings.LOKI_URL)
+	log.Info("Start read LOKI, URL: ", config.Settings.LOKI_URL+config.Settings.LOKI_API_PATH)
 
 	//
 	Date2 := time.Now()

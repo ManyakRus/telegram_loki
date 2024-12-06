@@ -4,7 +4,6 @@ import (
 	"github.com/ManyakRus/starter/config_main"
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/load_json"
-	"github.com/golang-module/carbon/v2"
 	"testing"
 	"time"
 )

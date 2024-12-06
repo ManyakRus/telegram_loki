@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/micro"
+	"github.com/ManyakRus/starter/microl"
 	"os"
 	"strconv"
 )
@@ -24,6 +25,7 @@ type SettingsINI struct {
 	DATABASE_CHECKER_INTERVAL_MINUTES int
 	SQL_FILES_FOLDER                  string
 	TELEGRAM_USERS_FILENAME           string
+	LOKI_API_PATH                     string
 }
 
 // FillSettings загружает переменные окружения в структуру из переменных окружения
@@ -97,6 +99,10 @@ func FillSettings() {
 	Name = "TELEGRAM_USERS_FILENAME"
 	s = Getenv(Name, true)
 	Settings.TELEGRAM_USERS_FILENAME = s
+
+	//
+	Name = "LOKI_API_PATH"
+	microl.Set_FieldFromEnv_String(&Settings, Name, true)
 
 }
 
