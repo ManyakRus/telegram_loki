@@ -4,7 +4,7 @@ github.com/DataDog/zstd
 # github.com/ManyakRus/logrus v0.0.0-20231019115155-9e6fede0d792
 ## explicit; go 1.13
 github.com/ManyakRus/logrus
-# github.com/ManyakRus/starter v1.0.98
+# github.com/ManyakRus/starter v1.0.113
 ## explicit; go 1.22.1
 github.com/ManyakRus/starter/config_main
 github.com/ManyakRus/starter/constants
@@ -217,7 +217,7 @@ github.com/jackc/pgpassfile
 # github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761
 ## explicit; go 1.14
 github.com/jackc/pgservicefile
-# github.com/jackc/pgx/v5 v5.7.1
+# github.com/jackc/pgx/v5 v5.7.2
 ## explicit; go 1.21
 github.com/jackc/pgx/v5
 github.com/jackc/pgx/v5/internal/iobufpool
@@ -313,11 +313,11 @@ go.uber.org/zap/internal/exit
 go.uber.org/zap/internal/pool
 go.uber.org/zap/internal/stacktrace
 go.uber.org/zap/zapcore
-# golang.org/x/crypto v0.30.0
+# golang.org/x/crypto v0.32.0
 ## explicit; go 1.20
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/ssh/terminal
-# golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d
+# golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 ## explicit; go 1.22.0
 golang.org/x/exp/constraints
 golang.org/x/exp/rand
@@ -330,14 +330,14 @@ golang.org/x/net/proxy
 ## explicit; go 1.18
 golang.org/x/sync/errgroup
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.28.0
+# golang.org/x/sys v0.29.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/term v0.27.0
+# golang.org/x/term v0.28.0
 ## explicit; go 1.18
 golang.org/x/term
 # golang.org/x/text v0.21.0
@@ -355,7 +355,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/protobuf v1.35.2
+# google.golang.org/protobuf v1.36.4
 ## explicit; go 1.21
 google.golang.org/protobuf/encoding/protodelim
 google.golang.org/protobuf/encoding/prototext
@@ -376,6 +376,7 @@ google.golang.org/protobuf/internal/genid
 google.golang.org/protobuf/internal/impl
 google.golang.org/protobuf/internal/order
 google.golang.org/protobuf/internal/pragma
+google.golang.org/protobuf/internal/protolazy
 google.golang.org/protobuf/internal/set
 google.golang.org/protobuf/internal/strs
 google.golang.org/protobuf/internal/version

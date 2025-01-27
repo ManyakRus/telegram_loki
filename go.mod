@@ -3,10 +3,10 @@ module github.com/ManyakRus/telegram_loki
 go 1.22.1
 
 require (
-	github.com/ManyakRus/starter v1.0.98
+	github.com/ManyakRus/starter v1.0.113
 	github.com/dromara/carbon/v2 v2.5.2
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
-	github.com/jackc/pgx/v5 v5.7.1
+	github.com/jackc/pgx/v5 v5.7.2
 )
 
 require (
@@ -52,14 +52,14 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.30.0 // indirect
-	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d // indirect
+	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
 	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/term v0.27.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/term v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/protobuf v1.35.2 // indirect
+	google.golang.org/protobuf v1.36.4 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 	rsc.io/qr v0.2.0 // indirect
