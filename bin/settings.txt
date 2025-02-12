@@ -20,7 +20,7 @@ LOKI_API_PATH=""
 
 
 #LOKI_SEARCH_TEXT - regilar expression, which text need to find in LOKI. Need escape characters, "[" = "\\\\["
-LOKI_SEARCH_TEXT="\\\\[ERROR\\\\]|\\\\[PANIC\\\\]|level=error|level=panic|panic:|(\\\\n\\\\t, )error:"
+LOKI_SEARCH_TEXT="\\\\[ERROR\\\\]|\\\\[PANIC\\\\]|level=error|level=panic|panic:|(\\\\n|\\\\t|,| )error:"
 
 #LOKI_CHECKER_INTERVAL_MINUTES - interval minutes, for check LOKI log errors
 LOKI_CHECKER_INTERVAL_MINUTES=10
