@@ -191,9 +191,8 @@ func RunSQL1(Filename string) string {
 
 	//ошибки не должно быть
 	if err != nil {
-		Otvet = fmt.Sprintf("db.Exec() Filename: %s, error: %v", Filename, err)
+		Otvet = fmt.Sprintf("db.QueryRow() Filename: %s, error: %v", FilenameShort, err)
 		log.Error(Otvet)
-
 		return Otvet
 	}
 
