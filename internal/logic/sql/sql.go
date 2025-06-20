@@ -198,7 +198,7 @@ func RunSQL1(Filename string) string {
 
 	//запрос вернул число(строку)
 	sDate := micro.StringDateTime(time.Now())
-	Otvet = fmt.Sprintf(`скрипт "%s" вернул значение: %s\nДата: %s`, FilenameShort, ResultSQL, sDate)
+	Otvet = fmt.Sprintf(`скрипт "%s" вернул значение: %s`+"\n"+`Дата: %s`, FilenameShort, ResultSQL, sDate)
 
 	return Otvet
 }
