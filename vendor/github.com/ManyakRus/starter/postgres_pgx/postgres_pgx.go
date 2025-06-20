@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ManyakRus/starter/constants"
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/port_checker"
 	"github.com/jackc/pgx/v5"
@@ -31,8 +32,11 @@ import (
 // Conn - соединение к базе данных
 var Conn *pgx.Conn
 
-// mutexReconnect - защита от многопоточности Reconnect()
-var mutexReconnect = &sync.Mutex{}
+// mutex_Connect - защита от многопоточности Connect()
+var mutex_Connect = &sync.RWMutex{}
+
+// mutex_ReConnect - защита от многопоточности ReConnect()
+var mutex_ReConnect = &sync.RWMutex{}
 
 // Settings хранит все нужные переменные окружения
 var Settings SettingsINI
@@ -49,6 +53,12 @@ type SettingsINI struct {
 	DB_USER     string
 	DB_PASSWORD string
 }
+
+// TextConnBusy - текст ошибки "conn busy"
+const TextConnBusy = "conn busy"
+
+// timeOutSeconds - время ожидания для Ping()
+const timeOutSeconds = 60
 
 // Connect_err - подключается к базе данных
 func Connect() {
@@ -80,6 +90,12 @@ func Connect_err() error {
 	err = Connect_WithApplicationName_err("")
 
 	return err
+}
+
+// Connect_WithApplicationName - подключается к базе данных, с указанием имени приложения
+func Connect_WithApplicationName(ApplicationName string) {
+	err := Connect_WithApplicationName_err(ApplicationName)
+	LogInfo_Connected(err)
 }
 
 // Connect_WithApplicationName_err - подключается к базе данных, с указанием имени приложения
@@ -132,7 +148,7 @@ func GetConnectionString(ApplicationName string) string {
 	dsn += "user=" + Settings.DB_USER + " "
 	dsn += "password=" + Settings.DB_PASSWORD + " "
 	dsn += "dbname=" + Settings.DB_NAME + " "
-	dsn += "port=" + Settings.DB_PORT + " sslmode=disable TimeZone=UTC "
+	dsn += "port=" + Settings.DB_PORT + " sslmode=disable TimeZone=" + constants.TIME_ZONE + " "
 	dsn += "application_name=" + ApplicationName
 
 	return dsn
@@ -146,7 +162,7 @@ func IsClosed() bool {
 	}
 
 	ctx := contextmain.GetContext()
-	err := Conn.Ping(ctx)
+	err := GetConnection().Ping(ctx)
 	if err != nil {
 		otvet = true
 	}
@@ -156,8 +172,8 @@ func IsClosed() bool {
 // Reconnect повторное подключение к базе данных, если оно отключено
 // или полная остановка программы
 func Reconnect(err error) {
-	mutexReconnect.Lock()
-	defer mutexReconnect.Unlock()
+	mutex_ReConnect.Lock()
+	defer mutex_ReConnect.Unlock()
 
 	if err == nil {
 		return
@@ -227,6 +243,10 @@ func CloseConnection_err() error {
 	ctxMain := contextmain.GetContext()
 	ctx, cancel := context.WithTimeout(ctxMain, 60*time.Second)
 	defer cancel()
+
+	mutex_Connect.Lock()
+	defer mutex_Connect.Unlock()
+
 	err := Conn.Close(ctx)
 
 	return err
@@ -234,18 +254,18 @@ func CloseConnection_err() error {
 
 // WaitStop - ожидает отмену глобального контекста
 func WaitStop() {
+	defer stopapp.GetWaitGroup_Main().Done()
 
 	select {
 	case <-contextmain.GetContext().Done():
-		log.Warn("Context app is canceled.")
+		log.Warn("Context app is canceled. postgres_pgx")
 	}
 
 	//
-	stopapp.WaitTotalMessagesSendingNow("Postgres pgx")
+	stopapp.WaitTotalMessagesSendingNow("postgres_pgx")
 
 	//
 	CloseConnection()
-	stopapp.GetWaitGroup_Main().Done()
 }
 
 // StartDB - делает соединение с БД, отключение и др.
@@ -266,7 +286,10 @@ func Start_ctx(ctx *context.Context, WaitGroup *sync.WaitGroup) error {
 	var err error
 
 	//запомним к себе контекст
-	contextmain.Ctx = ctx
+	if contextmain.Ctx != ctx {
+		contextmain.SetContext(ctx)
+	}
+	//contextmain.Ctx = ctx
 	if ctx == nil {
 		contextmain.GetContext()
 	}
@@ -343,21 +366,55 @@ func FillSettings() {
 
 // ping_go - делает пинг каждые 60 секунд, и реконнект
 func ping_go() {
+	var err error
+
+	defer stopapp.GetWaitGroup_Main().Done()
 
 	ticker := time.NewTicker(60 * time.Second)
+	defer ticker.Stop()
 
 	addr := Settings.DB_HOST + ":" + Settings.DB_PORT
 
+	var ctx context.Context
 	//бесконечный цикл
 loop:
 	for {
+		ctx = contextmain.GetContext()
+
 		select {
-		case <-contextmain.GetContext().Done():
+		case <-ctx.Done():
 			log.Warn("Context app is canceled. postgres_pgx.ping")
 			break loop
 		case <-ticker.C:
-			err := port_checker.CheckPort_err(Settings.DB_HOST, Settings.DB_PORT)
-			//log.Debug("ticker, ping err: ", err) //удалить
+
+			////ping в базе данных
+			//mutex_Connect.RLock() //race
+			////err = GetConnection().Ping(ctx) //ping делать нельзя т.к. data race
+			//err = Ping_err(ctx)
+			//mutex_Connect.RUnlock()
+			//if err != nil {
+			//	switch err.Error() {
+			//	case TextConnBusy:
+			//		{
+			//			log.Warn("postgres_pgx Ping() warning: ", err)
+			//		}
+			//	default:
+			//		{
+			//			NeedReconnect = true
+			//			log.Error("postgres_pgx Ping() error: ", err)
+			//		}
+			//	}
+			//
+			//} else {
+			//	//IsClosed
+			//	if GetConnection().IsClosed() == true {
+			//		NeedReconnect = true
+			//		log.Error("postgres_pgx error: IsClosed() = true")
+			//	}
+			//}
+
+			//ping порта
+			err = port_checker.CheckPort_err(Settings.DB_HOST, Settings.DB_PORT)
 			if err != nil {
 				NeedReconnect = true
 				log.Warn("postgres_pgx CheckPort(", addr, ") error: ", err)
@@ -373,11 +430,15 @@ loop:
 		}
 	}
 
-	stopapp.GetWaitGroup_Main().Done()
 }
 
 // GetConnection - возвращает соединение к нужной базе данных
 func GetConnection() *pgx.Conn {
+	//мьютекс чтоб не подключаться одновременно
+	mutex_Connect.RLock()
+	defer mutex_Connect.RUnlock()
+
+	//
 	if Conn == nil || Conn.IsClosed() {
 		err := Connect_err()
 		if err != nil {
@@ -393,29 +454,35 @@ func GetConnection() *pgx.Conn {
 // GetConnection_WithApplicationName - возвращает соединение к нужной базе данных, с указанием имени приложения
 func GetConnection_WithApplicationName(ApplicationName string) *pgx.Conn {
 	if Conn == nil {
-		Connect_WithApplicationName_err(ApplicationName)
+		err := Connect_WithApplicationName_err(ApplicationName)
+		LogInfo_Connected(err)
 	}
 
 	return Conn
 }
 
 // RawMultipleSQL - выполняет текст запроса, отдельно для каждого запроса
+// после вызова, в конце необходимо закрыть rows!
+// if err != nil {
+// }
+// defer rows.Close()
+
 func RawMultipleSQL(tx pgx.Tx, TextSQL string) (pgx.Rows, error) {
-	var Rows pgx.Rows
+	var rows pgx.Rows
 	var err error
 
 	if tx == nil {
 		TextError := "RawMultipleSQL() error: tx =nil"
 		log.Error(TextError)
 		err = errors.New(TextError)
-		return Rows, err
+		return rows, err
 	}
 
 	//if tx.IsClosed() {
 	//	TextError := "RawMultipleSQL() error: tx is closed"
 	//	log.Error(TextError)
 	//	err = errors.New(TextError)
-	//	return Rows, err
+	//	return rows, err
 	//}
 
 	ctx := contextmain.GetContext()
@@ -424,7 +491,7 @@ func RawMultipleSQL(tx pgx.Tx, TextSQL string) (pgx.Rows, error) {
 	//tx, err := tx.Begin(ctx)
 	//if err != nil {
 	//	log.Error(err)
-	//	return Rows, err
+	//	return rows, err
 	//}
 	//defer tx.Commit()
 
@@ -442,17 +509,33 @@ func RawMultipleSQL(tx pgx.Tx, TextSQL string) (pgx.Rows, error) {
 			TextError := fmt.Sprint("tx.Exec() error: ", err, ", TextSQL: \n", TextSQL1)
 			err = errors.New(TextError)
 			log.Error(err)
-			return Rows, err
+			return rows, err
 		}
 	}
 
 	//запустим последний запрос, с возвратом результата
-	Rows, err = tx.Query(ctx, TextSQL2)
+	rows, err = tx.Query(ctx, TextSQL2)
 	if err != nil {
 		TextError := fmt.Sprint("tx.Raw() error: ", err, ", TextSQL: \n", TextSQL2)
 		err = errors.New(TextError)
-		return Rows, err
+		return rows, err
 	}
+	//defer rows.Close()
 
-	return Rows, err
+	return rows, err
+}
+
+// Ping_err - выполняет пустой запрос для теста соединения
+func Ping_err(ctxMain context.Context) error {
+	var err error
+
+	//ctx, cancelFunc := context.WithTimeout(ctxMain, timeOutSeconds*time.Second)
+	ctx, cancelFunc := context.WithTimeout(ctxMain, 1*time.Second)
+	defer cancelFunc()
+
+	//mutex_Connect.Lock() //убрал т.к. зависает всё
+	//defer mutex_Connect.Unlock()
+
+	_, err = Conn.Exec(ctx, ";")
+	return err
 }

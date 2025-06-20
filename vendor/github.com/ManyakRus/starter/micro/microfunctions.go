@@ -8,10 +8,13 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
+	"github.com/ManyakRus/starter/constants"
+	"github.com/dromara/carbon/v2"
 	"github.com/google/uuid"
 	"golang.org/x/exp/constraints"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"hash/fnv"
+	"math"
 	"os/exec"
 	"reflect"
 	"runtime"
@@ -26,7 +29,15 @@ import (
 	"time"
 )
 
+//// Time - тип для хранения времени
+//type Time time.Time
+
 //var log = logger.GetLog()
+
+func init() {
+	//время всегда московское (из константы)
+	carbon.SetLocation(constants.Loc)
+}
 
 // IsTestApp - возвращает true если это тестовая среда выполнения приложения
 func IsTestApp() bool {
@@ -102,6 +113,20 @@ func Pause_ctx(ctx context.Context, ms int) {
 	select {
 	case <-ctx.Done():
 	case <-time.After(Duration):
+	}
+}
+
+// Pause_duration - приостановка работы программы на время duration
+func Pause_duration(duration time.Duration) {
+	time.Sleep(duration)
+}
+
+// Pause_duration_ctx - приостановка работы программы на время duration, с учётом глобального контекста
+func Pause_duration_ctx(ctx context.Context, duration time.Duration) {
+
+	select {
+	case <-ctx.Done():
+	case <-time.After(duration):
 	}
 }
 
@@ -415,6 +440,86 @@ func MinInt64(Mass ...int64) int64 {
 	return Otvet
 }
 
+// MaxInt returns the largest value
+func MaxInt(Mass ...int) int {
+	var Otvet int
+
+	//
+	if len(Mass) == 0 {
+		return Otvet
+	}
+
+	//
+	Otvet = Mass[0]
+	for _, val := range Mass {
+		if val > Otvet {
+			Otvet = val
+		}
+	}
+
+	return Otvet
+}
+
+// MinInt returns the smallest value
+func MinInt(Mass ...int) int {
+	var Otvet int
+
+	//
+	if len(Mass) == 0 {
+		return Otvet
+	}
+
+	//
+	Otvet = Mass[0]
+	for _, val := range Mass {
+		if val < Otvet {
+			Otvet = val
+		}
+	}
+
+	return Otvet
+}
+
+// MaxFloat64 returns the largest value
+func MaxFloat64(Mass ...float64) float64 {
+	var Otvet float64
+
+	//
+	if len(Mass) == 0 {
+		return Otvet
+	}
+
+	//
+	Otvet = Mass[0]
+	for _, val := range Mass {
+		if val > Otvet {
+			Otvet = val
+		}
+	}
+
+	return Otvet
+}
+
+// MinFloat64 returns the smallest value
+func MinFloat64(Mass ...float64) float64 {
+	var Otvet float64
+
+	//
+	if len(Mass) == 0 {
+		return Otvet
+	}
+
+	//
+	Otvet = Mass[0]
+	for _, val := range Mass {
+		if val < Otvet {
+			Otvet = val
+		}
+	}
+
+	return Otvet
+}
+
 // MaxDate returns the largest of x or y.
 func MaxDate(x, y time.Time) time.Time {
 	if x.Before(y) == true {
@@ -642,7 +747,7 @@ func StringDateTime(t time.Time) string {
 	return Otvet
 }
 
-// ProgramDir_bin - возвращает каталог "bin" или каталог программы
+// ProgramDir_bin - возвращает каталог "bin" или каталог программы, в конце "/" (или "\")
 func ProgramDir_bin() string {
 	Otvet := ""
 
@@ -844,7 +949,12 @@ func StringFromUpperCase(s string) string {
 		return Otvet
 	}
 
-	Otvet = strings.ToUpper(Otvet[:1]) + Otvet[1:]
+	//преобразуем в руны т.к. есть русские буквы
+	MassRunes := []rune(Otvet)
+	MassRunes[0] = unicode.ToUpper(MassRunes[0])
+	Otvet = string(MassRunes)
+
+	//Otvet = strings.ToUpper(Otvet[:1]) + Otvet[1:]
 
 	return Otvet
 }
@@ -893,16 +1003,44 @@ func FindLastPos(s, TextFind string) int {
 	return Otvet
 }
 
-// StringFloat64_Dimension2 - возвращает строку с 2 знака после запятой
-func StringFloat64_Dimension2(f float64) string {
+// StringFromFloat64_Dimension2 - возвращает строку с 2 знака после запятой
+func StringFromFloat64_Dimension2(f float64) string {
 	Otvet := fmt.Sprintf("%.2f", f)
 
 	return Otvet
 }
 
-// StringFloat32_Dimension2 - возвращает строку с 2 знака после запятой
-func StringFloat32_Dimension2(f float32) string {
+// StringFromFloat32_Dimension2 - возвращает строку с 2 знака после запятой
+func StringFromFloat32_Dimension2(f float32) string {
 	Otvet := fmt.Sprintf("%.2f", f)
+
+	return Otvet
+}
+
+// StringFromFloat64_Dimension0 - возвращает строку с 0 знаков после запятой
+func StringFromFloat64_Dimension0(f float64) string {
+	Otvet := fmt.Sprintf("%.0f", f)
+
+	return Otvet
+}
+
+// StringFromFloat32_Dimension0 - возвращает строку с 0 знаков после запятой
+func StringFromFloat32_Dimension0(f float32) string {
+	Otvet := fmt.Sprintf("%.0f", f)
+
+	return Otvet
+}
+
+// StringFromFloat64_Dimension - возвращает строку с Dimension знаков после запятой
+func StringFromFloat64_Dimension(f float64, Dimension int) string {
+	Otvet := fmt.Sprintf("%."+strconv.Itoa(Dimension)+"f", f)
+
+	return Otvet
+}
+
+// StringFromFloat32_Dimension - возвращает строку с Dimension знаков после запятой
+func StringFromFloat32_Dimension(f float32, Dimension int) string {
+	Otvet := fmt.Sprintf("%."+strconv.Itoa(Dimension)+"f", f)
 
 	return Otvet
 }
@@ -1436,4 +1574,297 @@ func Abs[T constraints.Integer](x T) T {
 		return -x
 	}
 	return x
+}
+
+// StringFromBool - возвращает строку из булевского значения
+func StringFromBool(value bool) string {
+	Otvet := "true"
+
+	if value == false {
+		Otvet = "false"
+	}
+
+	return Otvet
+}
+
+// StringFromBool_Rus - возвращает строку из булевского значения, Да/Нет
+func StringFromBool_Rus(value bool) string {
+	Otvet := "Да"
+
+	if value == false {
+		Otvet = "Нет"
+	}
+
+	return Otvet
+}
+
+// StringFromBool_Rus_lower - возвращает строку из булевского значения, да/нет
+func StringFromBool_Rus_lower(value bool) string {
+	Otvet := "да"
+
+	if value == false {
+		Otvet = "нет"
+	}
+
+	return Otvet
+}
+
+//// UnmarshalJSON - преобразует строку время в time.Time
+//func (d *Time) UnmarshalJSON(b []byte) error {
+//	str := string(b)
+//	if str != "" && str[0] == '"' && str[len(str)-1] == '"' {
+//		str = str[1 : len(str)-1]
+//	}
+//
+//	// parse string
+//	t, err := time.ParseInLocation(constants.LayoutTime, str, constants.Loc)
+//	if err != nil {
+//		err = fmt.Errorf("invalid time string: %s, error: %w", b, err)
+//		return err
+//	}
+//
+//	//
+//	*d = Time(t)
+//	return nil
+//}
+
+//// UnmarshalString - преобразует строку время в time.Time
+//func (d *Time) UnmarshalString(str string) error {
+//	if str != "" && str[0] == '"' && str[len(str)-1] == '"' {
+//		str = str[1 : len(str)-1]
+//	}
+//
+//	// parse string
+//	t, err := time.Parse(constants.LayoutTime, str)
+//	if err != nil {
+//		err = fmt.Errorf("invalid time string: %s, error: %w", str, err)
+//		return err
+//	}
+//
+//	//
+//	*d = Time(t)
+//	return nil
+//}
+
+// IsFalseString - возвращает true если строка = false, или =0
+func IsFalseString(s string) bool {
+	Otvet := false
+
+	s = strings.Trim(s, " ")
+	s = strings.Trim(s, "\n")
+	s = strings.ToLower(s)
+
+	switch s {
+	case "0", "нет", "no", "off", "false":
+		Otvet = true
+	}
+
+	return Otvet
+}
+
+// IsTrueString - возвращает true если строка = true, или =1
+func IsTrueString(s string) bool {
+	Otvet := false
+
+	s = strings.Trim(s, " ")
+	s = strings.Trim(s, "\n")
+	s = strings.ToLower(s)
+
+	switch s {
+	case "1", "да", "yes", "on", "true":
+		Otvet = true
+	}
+
+	return Otvet
+}
+
+// DateTimeFromString_rus - возвращает дату из строки, из формата "02.01.2006 15:04:05"
+func DateTimeFromString_rus(s string) (time.Time, error) {
+	t, err := time.ParseInLocation(constants.LayoutDateTimeRus, s, constants.Loc)
+	return t, err
+}
+
+// DateFromString_rus - возвращает дату из строки, из формата "02.01.2006"
+func DateFromString_rus(s string) (time.Time, error) {
+
+	//
+	if len(s) > 10 {
+		s = s[:10]
+	}
+
+	//
+	t, err := time.ParseInLocation(constants.LayoutDateRus, s, constants.Loc)
+	return t, err
+}
+
+// DateFromToToday_rus - возвращает дату начала и конца дня
+func DateFromToToday_rus() (time.Time, time.Time) {
+	//carbon.SetLocation(constants.Loc)
+	Date1 := carbon.Now().StartOfDay().StdTime()
+	Date2 := carbon.CreateFromStdTime(Date1).EndOfDay().StdTime()
+
+	return Date1, Date2
+}
+
+// StringDateSPo_rus - возвращает строку с периодом дат
+func StringDateSPo_rus(Date1, Date2 time.Time) string {
+	Otvet := ""
+
+	Date1_00 := carbon.CreateFromStdTime(Date1).StartOfDay().StdTime()
+	Date2_00 := carbon.CreateFromStdTime(Date2).StartOfDay().StdTime()
+	if Date1_00 == Date2_00 {
+		Otvet = "на дату: " + StringDate(Date1_00)
+	} else {
+		Otvet = fmt.Sprintf("с %s по %s", StringDate(Date1_00), StringDate(Date2_00))
+	}
+
+	return Otvet
+}
+
+// StringDatePeriod_rus - возвращает строку с периодом дат
+func StringDatePeriod_rus(Date1, Date2 time.Time) string {
+	Otvet := ""
+
+	Date1_00 := carbon.CreateFromStdTime(Date1).StartOfDay().StdTime()
+	Date2_00 := carbon.CreateFromStdTime(Date2).StartOfDay().StdTime()
+	if Date1_00 == Date2_00 {
+		Otvet = "на дату: " + StringDate(Date1_00)
+	} else {
+		Otvet = fmt.Sprintf("%s - %s", StringDate(Date1_00), StringDate(Date2_00))
+	}
+
+	return Otvet
+}
+
+// StringIntWithSeparator - возвращает строку с разделителем по 3 разрядам
+// пример:
+// s := StringIntWithSeparator(1222333, '_')
+// Ответ: "1_222_333"
+func StringIntWithSeparator(n int, separator rune) string {
+
+	s := strconv.Itoa(n)
+
+	startOffset := 0
+	var buff bytes.Buffer
+
+	if n < 0 {
+		startOffset = 1
+		buff.WriteByte('-')
+	}
+
+	l := len(s)
+
+	commaIndex := 3 - ((l - startOffset) % 3)
+
+	if commaIndex == 3 {
+		commaIndex = 0
+	}
+
+	for i := startOffset; i < l; i++ {
+
+		if commaIndex == 3 {
+			buff.WriteRune(separator)
+			commaIndex = 0
+		}
+		commaIndex++
+
+		buff.WriteByte(s[i])
+	}
+
+	return buff.String()
+}
+
+// RoundFloat64 - округляет float64 до precision цифр после запятой
+// пример:
+// RoundFloat64(123.456, 2) = 123.46
+// RoundFloat64(123.456, 1) = 123.5
+func RoundFloat64(value float64, precision int) float64 {
+	ratio := math.Pow(10, float64(precision))
+	return math.Round(value*ratio) / ratio
+}
+
+// StringSplitBylength - разбивает строку на подстроки по n символов, с учётом рун
+func StringSplitBylength(s string, n int) []string {
+	sub := ""
+	subs := []string{}
+
+	//весь текст меньше n
+	if len(s) <= n {
+		subs = append(subs, s)
+		return subs
+	}
+
+	//
+	runes := bytes.Runes([]byte(s))
+	l := len(runes)
+	for i, r := range runes {
+		sub = sub + string(r)
+		if (i+1)%n == 0 {
+			subs = append(subs, sub)
+			sub = ""
+		} else if (i + 1) == l {
+			subs = append(subs, sub)
+		}
+	}
+
+	return subs
+}
+
+// StringSplitBylength_WithLastWord - разбивает строку на подстроки по n символов, с учётом рун
+func StringSplitBylength_WithLastWord(s string, n int, LastWord rune) []string {
+	Otvet := make([]string, 0)
+
+	runes := bytes.Runes([]byte(s))
+	for {
+		Otvet1, pos1 := stringSplitBylength_WithLastWord1(runes, n, LastWord)
+		Otvet = append(Otvet, string(Otvet1))
+		if len(runes) >= pos1 {
+			runes = runes[pos1:]
+		} else {
+			break
+		}
+
+		if len(runes) <= 0 {
+			break
+		}
+	}
+
+	return Otvet
+}
+
+// stringSplitBylength_WithLastWord1 - возвращает первые n строк, заканчивая на LastWord
+func stringSplitBylength_WithLastWord1(s []rune, n int, LastWord rune) ([]rune, int) {
+	Otvet := make([]rune, 0)
+	pos1 := 0
+	runes := s
+	length1 := len(runes)
+	length := MinInt(n, length1)
+	Otvet = runes[:length]
+
+	//весь текст меньше n
+	if len(s) <= n {
+		return Otvet, len(s)
+	}
+
+	//
+	for i := length; i > 0; i-- {
+		if runes[i-1] == LastWord {
+			pos1 = i
+			Otvet = Otvet[:pos1]
+			break
+		}
+	}
+
+	if pos1 == 0 {
+		pos1 = len(Otvet)
+	}
+
+	return Otvet, pos1
+}
+
+// Round_Float64_WithPrecision округляет float64 до указанного количества знаков после запятой
+func Round_Float64_WithPrecision(x float64, precision int) float64 {
+	pow := math.Pow(10, float64(precision))
+	Otvet := math.Round(x*pow) / pow
+	return Otvet
 }

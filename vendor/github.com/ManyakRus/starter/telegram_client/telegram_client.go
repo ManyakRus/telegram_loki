@@ -389,6 +389,7 @@ func (s *memorySession) StoreSession(ctx context.Context, data []byte) error {
 	}
 
 	s.mux.Lock()
+	defer s.mux.Unlock()
 	//s.data = data
 
 	// write the whole body at once
@@ -396,8 +397,6 @@ func (s *memorySession) StoreSession(ctx context.Context, data []byte) error {
 	if err != nil {
 		panic(err)
 	}
-
-	s.mux.Unlock()
 
 	return nil
 }
@@ -755,20 +754,19 @@ func FindMessageByID(ctx context.Context, id int) (*tg.Message, error) {
 
 // WaitStop - ожидает отмену глобального контекста
 func WaitStop() {
-	//stopapp.GetWaitGroup_Main().Add(1)
+	defer stopapp.GetWaitGroup_Main().Done()
+
 	select {
 	case <-contextmain.GetContext().Done():
-		log.Warn("Context app is canceled.")
+		log.Warn("Context app is canceled. telegram_client")
 	}
 
 	//
-	stopapp.WaitTotalMessagesSendingNow("telegram")
+	stopapp.WaitTotalMessagesSendingNow("telegram_client")
 
 	//
 	CloseConnection()
 
-	//
-	stopapp.GetWaitGroup_Main().Done()
 }
 
 // CloseConnection - остановка работы клиента Телеграм
@@ -854,7 +852,10 @@ func Start_ctx(ctx *context.Context, WaitGroup *sync.WaitGroup, func_OnNewMessag
 	var err error
 
 	//запомним к себе контекст
-	contextmain.Ctx = ctx
+	if contextmain.Ctx != ctx {
+		contextmain.SetContext(ctx)
+	}
+	//contextmain.Ctx = ctx
 	if ctx == nil {
 		contextmain.GetContext()
 	}

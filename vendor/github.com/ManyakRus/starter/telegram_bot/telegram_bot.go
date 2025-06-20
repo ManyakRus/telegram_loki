@@ -160,6 +160,7 @@ func SendMessage(UserName string, Text string) (int, error) {
 	//
 	msg := botapi.NewMessageToChannel(UserName, Text)
 	msg.ParseMode = "HTML"
+	msg.DisableWebPagePreview = true
 
 	Message, err := Client.Send(msg)
 	if err != nil {
@@ -241,6 +242,7 @@ func CloseConnection_err() error {
 
 // WaitStop - ожидает отмену глобального контекста
 func WaitStop() {
+	defer stopapp.GetWaitGroup_Main().Done()
 
 	select {
 	case <-contextmain.GetContext().Done():
@@ -253,7 +255,6 @@ func WaitStop() {
 	//
 	CloseConnection()
 
-	stopapp.GetWaitGroup_Main().Done()
 }
 
 // Start_ctx - необходимые процедуры для подключения к серверу Telegram
@@ -263,7 +264,10 @@ func Start_ctx(ctx *context.Context, WaitGroup *sync.WaitGroup) error {
 	var err error
 
 	//запомним к себе контекст
-	contextmain.Ctx = ctx
+	if contextmain.Ctx != ctx {
+		contextmain.SetContext(ctx)
+	}
+	//contextmain.Ctx = ctx
 	if ctx == nil {
 		contextmain.GetContext()
 	}
