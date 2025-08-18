@@ -8,6 +8,7 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/loggers/interfaces"
 	"github.com/ManyakRus/telegram_loki/internal/loggers/loki_http"
+	"github.com/ManyakRus/telegram_loki/internal/loggers/victoria_http"
 	"github.com/ManyakRus/telegram_loki/internal/telegram"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/dromara/carbon/v2"
@@ -31,9 +32,9 @@ func Start() {
 	if config.Settings.LOKI_URL != "" {
 		LoggerAPI = loki_http.LokiAPI_struct{}
 	} else if config.Settings.VICTORIA_METRICS_URL != "" {
-		//LoggerAPI = victoria_http.VictoriaAPI{}
+		LoggerAPI = victoria_http.VictoriaAPI_struct{}
 	} else {
-		err = fmt.Errorf("no LOKI_URL or VICTORIA_METRICS_URL")
+		err = fmt.Errorf("error: no LOKI_URL or VICTORIA_METRICS_URL")
 		log.Error(err)
 		log.Panic(err)
 	}

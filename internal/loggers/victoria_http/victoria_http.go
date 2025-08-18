@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,22 +22,25 @@ type VictoriaAPI_struct struct {
 }
 
 // LayoutDateTimeRus - формат даты
-const LayoutDateTimeRus = "02.01.2006T15:04:05%%2B03:00"
+const LayoutDateTimeRus = "02.01.2006T15:04:05"
 
 // FindURL - формирует URL для запроса
 func FindURL(ServiceName string, DateFrom, DateTo time.Time, Filter string) string {
 	Otvet := ""
 
+	ServiceName = "monitor-service" //удалить
+
 	sLimit := strconv.Itoa(config.Settings.TELEGRAM_MESSAGES_COUNT)
 	Filter = url.QueryEscape(Filter)
-	sTime1 := fmt.Sprintf(LayoutDateTimeRus, DateFrom)
-	sTime2 := fmt.Sprintf(LayoutDateTimeRus, DateTo)
-	//sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
-	//sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
-	query := "query={kubernetes.container_name=%22" + ServiceName + "%22}AND%20%22" + Filter + "%22&limit=" + sLimit + "&start=2025-08-18T10:00:00%2B03:00&end=2025-08-18T10:10:00%2B03:00"
+	//sTime1 := DateFrom.Format(LayoutDateTimeRus)
+	//sTime1 = sTime1 + "%2B03:00"
+	//sTime2 := DateTo.Format(LayoutDateTimeRus)
+	//sTime2 = sTime2 + "%2B03:00"
+	sTime1 := strconv.FormatInt(DateFrom.UnixNano(), 10)
+	sTime2 := strconv.FormatInt(DateTo.UnixNano(), 10)
+	query := "query={kubernetes.container_name=%22" + ServiceName + "%22}AND%20~%22" + Filter + "%22&limit=" + sLimit + "&start=" + sTime1 + "&end=" + sTime2
 
 	Otvet = config.Settings.VICTORIA_METRICS_URL + "/select/logsql/query?" + query
-	Otvet = Otvet + "&start=" + sTime1 + "&end=" + sTime2
 
 	return Otvet
 }
@@ -123,12 +127,34 @@ func DownloadLogs_full(ServiceName string, DateFrom, DateTo time.Time) ([]types.
 
 	//
 	TextJson, err := io.ReadAll(response.Body)
-	err = json.Unmarshal(TextJson, &Otvet)
 	if err != nil {
-		err = fmt.Errorf("json.Unmarshal(), ошибка десериализации JSON, URL: %s, error: %w", URL, err)
+		err = fmt.Errorf("io.ReadAll(), ошибка чтения тела ответа, URL: %s, error: %w", URL, err)
 		log.Error(err)
 		return Otvet, err
 	}
+
+	MassStrings := strings.Split(string(TextJson), "\n")
+	for _, Line1 := range MassStrings {
+		if Line1 == "" {
+			continue
+		}
+		VictoriaLog1 := types.MessageVictoriaMetrics{}
+		err = json.Unmarshal([]byte(Line1), &VictoriaLog1)
+		if err != nil {
+			err = fmt.Errorf("json.Unmarshal(), ошибка десериализации JSON, URL: %s, error: %w", URL, err)
+			log.Error(err)
+			return Otvet, err
+		}
+
+		Otvet = append(Otvet, VictoriaLog1)
+	}
+
+	//err = json.Unmarshal(TextJson, &Otvet)
+	//if err != nil {
+	//	err = fmt.Errorf("json.Unmarshal(), ошибка десериализации JSON, URL: %s, error: %w", URL, err)
+	//	log.Error(err)
+	//	return Otvet, err
+	//}
 
 	return Otvet, err
 }

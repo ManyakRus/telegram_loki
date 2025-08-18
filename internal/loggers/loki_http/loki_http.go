@@ -143,6 +143,12 @@ func DownloadLogs_full(ServiceName string, DateFrom, DateTo time.Time) (types.Me
 
 	//
 	TextJson, err := io.ReadAll(response.Body)
+	if err != nil {
+		err = fmt.Errorf("io.ReadAll(), ошибка чтения тела ответа, URL: %s, error: %w", URL, err)
+		log.Error(err)
+		return Otvet, err
+	}
+
 	err = json.Unmarshal(TextJson, &Otvet)
 	if err != nil {
 		err = fmt.Errorf("json.Unmarshal(), ошибка десериализации JSON, URL: %s, error: %w", URL, err)

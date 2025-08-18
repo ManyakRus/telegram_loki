@@ -62,17 +62,17 @@ func FillSettings() {
 		log.Panic("Error: Need fill TELEGRAM_CHAT_NAME")
 	}
 
-	if Settings.LOKI_URL == "" {
-		log.Panic("Error: Need fill LOKI_URL")
-	}
-
-	if Settings.LOKI_LOGIN == "" {
-		log.Panic("Error: Need fill LOKI_LOGIN")
-	}
-
-	if Settings.LOKI_PASSWORD == "" {
-		log.Panic("Error: Need fill LOKI_PASSWORD")
-	}
+	//if Settings.LOKI_URL == "" {
+	//	log.Panic("Error: Need fill LOKI_URL")
+	//}
+	//
+	//if Settings.LOKI_LOGIN == "" {
+	//	log.Panic("Error: Need fill LOKI_LOGIN")
+	//}
+	//
+	//if Settings.LOKI_PASSWORD == "" {
+	//	log.Panic("Error: Need fill LOKI_PASSWORD")
+	//}
 
 	//
 	Name = "LOKI_CHECKER_ENABLED"
