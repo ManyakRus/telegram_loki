@@ -90,3 +90,39 @@ type Message struct {
 	Text           string
 	IsSameLastText bool
 }
+
+// MessageVictoriaMetrics - структура лога VictoriaMetrics
+type MessageVictoriaMetrics struct {
+	Time                                              time.Time `json:"_time"`
+	StreamID                                          string    `json:"_stream_id"`
+	_Stream                                           string    `json:"_stream"`
+	Msg                                               string    `json:"_msg"`
+	File                                              string    `json:"file"`
+	KubernetesContainerID                             string    `json:"kubernetes.container_id"`
+	KubernetesContainerImage                          string    `json:"kubernetes.container_image"`
+	KubernetesContainerImageID                        string    `json:"kubernetes.container_image_id"`
+	KubernetesContainerName                           string    `json:"kubernetes.container_name"`
+	KubernetesNamespaceLabelsKubernetesIoMetadataName string    `json:"kubernetes.namespace_labels.kubernetes.io/metadata.name"`
+	KubernetesNodeLabelsBetaKubernetesIoArch          string    `json:"kubernetes.node_labels.beta.kubernetes.io/arch"`
+	KubernetesNodeLabelsBetaKubernetesIoOs            string    `json:"kubernetes.node_labels.beta.kubernetes.io/os"`
+	KubernetesNodeLabelsKubernetesIoArch              string    `json:"kubernetes.node_labels.kubernetes.io/arch"`
+	KubernetesNodeLabelsKubernetesIoHostname          string    `json:"kubernetes.node_labels.kubernetes.io/hostname"`
+	KubernetesNodeLabelsKubernetesIoOs                string    `json:"kubernetes.node_labels.kubernetes.io/os"`
+	KubernetesPodIP                                   string    `json:"kubernetes.pod_ip"`
+	KubernetesPodIps                                  string    `json:"kubernetes.pod_ips"`
+	KubernetesPodLabelsApp                            string    `json:"kubernetes.pod_labels.app"`
+	KubernetesPodLabelsPodTemplateHash                string    `json:"kubernetes.pod_labels.pod-template-hash"`
+	KubernetesPodName                                 string    `json:"kubernetes.pod_name"`
+	KubernetesPodNamespace                            string    `json:"kubernetes.pod_namespace"`
+	KubernetesPodNodeName                             string    `json:"kubernetes.pod_node_name"`
+	KubernetesPodOwner                                string    `json:"kubernetes.pod_owner"`
+	KubernetesPodUID                                  string    `json:"kubernetes.pod_uid"`
+	SourceType                                        string    `json:"source_type"`
+	Stream                                            string    `json:"stream"`
+}
+
+// MessageLog - структура лога, с нужными колонками
+type MessageLog struct {
+	Date time.Time
+	Text string
+}

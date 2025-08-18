@@ -8,7 +8,7 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
-	"github.com/ManyakRus/starter/constants"
+	"github.com/ManyakRus/starter/constants_starter"
 	"github.com/dromara/carbon/v2"
 	"github.com/google/uuid"
 	"golang.org/x/exp/constraints"
@@ -36,7 +36,7 @@ import (
 
 func init() {
 	//время всегда московское (из константы)
-	carbon.SetLocation(constants.Loc)
+	carbon.SetLocation(constants_starter.Loc)
 }
 
 // IsTestApp - возвращает true если это тестовая среда выполнения приложения
@@ -272,7 +272,9 @@ func ProgramDir_Common() string {
 		//Windows
 		substr = "\\temp\\"
 		pos1 = strings.Index(sdir, substr)
-		if pos1 >= 0 {
+		substr = "\\tmp\\"
+		pos2 := strings.Index(sdir, substr)
+		if pos1 >= 0 || pos2 >= 0 {
 			filename = CurrentFilename()
 			dir = filepath.Dir(filename)
 
@@ -1680,7 +1682,7 @@ func IsTrueString(s string) bool {
 
 // DateTimeFromString_rus - возвращает дату из строки, из формата "02.01.2006 15:04:05"
 func DateTimeFromString_rus(s string) (time.Time, error) {
-	t, err := time.ParseInLocation(constants.LayoutDateTimeRus, s, constants.Loc)
+	t, err := time.ParseInLocation(constants_starter.LayoutDateTimeRus, s, constants_starter.Loc)
 	return t, err
 }
 
@@ -1693,7 +1695,7 @@ func DateFromString_rus(s string) (time.Time, error) {
 	}
 
 	//
-	t, err := time.ParseInLocation(constants.LayoutDateRus, s, constants.Loc)
+	t, err := time.ParseInLocation(constants_starter.LayoutDateRus, s, constants_starter.Loc)
 	return t, err
 }
 
@@ -1867,4 +1869,221 @@ func Round_Float64_WithPrecision(x float64, precision int) float64 {
 	pow := math.Pow(10, float64(precision))
 	Otvet := math.Round(x*pow) / pow
 	return Otvet
+}
+
+// Find_Tag_JSON - возвращает тег json для полей структуры
+func Find_Tag_JSON(Struct1 any, FieldName string) (string, error) {
+	var Otvet string
+	var err error
+
+	field, ok := reflect.TypeOf(Struct1).Elem().FieldByName(FieldName)
+	if !ok {
+		err = fmt.Errorf("Field %s not found in type %T", FieldName, Struct1)
+		return Otvet, err
+	}
+
+	Otvet = field.Tag.Get("json")
+
+	return Otvet, err
+}
+
+// GetStructValue - возвращает значение 1 поля структуры по его имени
+func GetStructValue(Struct1 any, FieldName string) (any, error) {
+	// Проверяем, что переданный аргумент является структурой
+	val := reflect.ValueOf(Struct1)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	if val.Kind() != reflect.Struct {
+		return nil, errors.New("переданный аргумент не является структурой")
+	}
+
+	// Получаем поле структуры по имени
+	field := val.FieldByName(FieldName)
+	if !field.IsValid() {
+		return nil, errors.New("поле не найдено")
+	}
+
+	// Возвращаем значение поля как interface{}
+	return field.Interface(), nil
+}
+
+// String_DefaultNil - возвращает *string, если пустая строка то nil
+func String_DefaultNil(Value string) *string {
+	var Otvet *string
+
+	if Value != "" {
+		Otvet = &Value
+	}
+
+	return Otvet
+}
+
+// Int64_DefaultNil - возвращает *int64, если пустая строка то nil
+func Int64_DefaultNil(Value int64) *int64 {
+	var Otvet *int64
+
+	if Value != 0 {
+		Otvet = &Value
+	}
+
+	return Otvet
+}
+
+// Int_DefaultNil - возвращает *int, если значение 0 - возвращает nil
+func Int_DefaultNil(Value int) *int {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Int8_DefaultNil - возвращает *int8, если значение 0 - возвращает nil
+func Int8_DefaultNil(Value int8) *int8 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Int16_DefaultNil - возвращает *int16, если значение 0 - возвращает nil
+func Int16_DefaultNil(Value int16) *int16 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Int32_DefaultNil - возвращает *int32, если значение 0 - возвращает nil
+func Int32_DefaultNil(Value int32) *int32 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Uint_DefaultNil - возвращает *uint, если значение 0 - возвращает nil
+func Uint_DefaultNil(Value uint) *uint {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Uint8_DefaultNil - возвращает *uint8, если значение 0 - возвращает nil
+func Uint8_DefaultNil(Value uint8) *uint8 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Uint16_DefaultNil - возвращает *uint16, если значение 0 - возвращает nil
+func Uint16_DefaultNil(Value uint16) *uint16 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Uint32_DefaultNil - возвращает *uint32, если значение 0 - возвращает nil
+func Uint32_DefaultNil(Value uint32) *uint32 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Uint64_DefaultNil - возвращает *uint64, если значение 0 - возвращает nil
+func Uint64_DefaultNil(Value uint64) *uint64 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Float32_DefaultNil - возвращает *float32, если значение 0 - возвращает nil
+func Float32_DefaultNil(Value float32) *float32 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Float64_DefaultNil - возвращает *float64, если значение 0 - возвращает nil
+func Float64_DefaultNil(Value float64) *float64 {
+	if Value == 0 {
+		return nil
+	}
+	return &Value
+}
+
+// Bool_DefaultNil - возвращает *bool, если значение false - возвращает nil
+func Bool_DefaultNil(Value bool) *bool {
+	if !Value {
+		return nil
+	}
+	return &Value
+}
+
+// Time_DefaultNil - возвращает *time.Time, если значение IsZero() - возвращает nil
+func Time_DefaultNil(Value time.Time) *time.Time {
+	if Value.IsZero() {
+		return nil
+	}
+	return &Value
+}
+
+// IsWindows - возвращает true если операционная система = windows
+func IsWindows() bool {
+	Otvet := false
+
+	if runtime.GOOS == "windows" {
+		Otvet = true
+	}
+
+	return Otvet
+}
+
+// Path_Linux_to_Windows - заменяет / на \, для правильных путей файлов
+func Path_Linux_to_Windows(s string) string {
+	Otvet := s
+
+	if IsWindows() == true {
+		Otvet = strings.ReplaceAll(Otvet, `/`, `\`)
+	}
+
+	return Otvet
+}
+
+// FindPos - находит наименьший индекс вхождения подстроки
+func FindPos(Text string, MassFind ...string) int {
+	Otvet := -1
+
+	PosMin := math.MaxInt
+
+	for _, s1 := range MassFind {
+		pos1 := strings.Index(Text, s1)
+		if pos1 < PosMin && pos1 > 0 {
+			PosMin = pos1
+		}
+	}
+
+	if PosMin != math.MaxInt {
+		Otvet = PosMin
+	}
+
+	return Otvet
+}
+
+// ReadFile_Linux_Windows - читаем файл и удаляет "\r"
+func ReadFile_Linux_Windows(Filename string) ([]byte, error) {
+	MassBytes, err := os.ReadFile(Filename)
+
+	if err == nil {
+		MassBytes = bytes.ReplaceAll(MassBytes, []byte("\r"), []byte(""))
+	}
+
+	return MassBytes, err
 }

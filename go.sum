@@ -8,6 +8,8 @@ github.com/ManyakRus/starter v1.0.113 h1:eR6mdEWZy38ebhJ0/kNYYVBOYXHCfE1mIeK8KA3
 github.com/ManyakRus/starter v1.0.113/go.mod h1:RXB23RTlquUR7zPrmF6FM/mKIfKBDxhzMuZDCV6MBSM=
 github.com/ManyakRus/starter v1.0.188 h1:+XokL7vJS/fMoUiAAryeDcblHFeg3PVq2Bn+lYJL5iI=
 github.com/ManyakRus/starter v1.0.188/go.mod h1:oiuVXo5a3Bmk1J1y8Bg5CoTgBlfR8bdWEY3uXx7vkxo=
+github.com/ManyakRus/starter v1.0.217 h1:TwdEbpdeHjSTK3VFIBLvmXUrmR7PkXMsQ6Y6ks+uwIM=
+github.com/ManyakRus/starter v1.0.217/go.mod h1:MTJCd/YbLBnnI3iS6DuVbdunqrLgrOM/os4HzSSyhxA=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK343L8=

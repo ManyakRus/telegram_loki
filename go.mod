@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.10
 
 require (
-	github.com/ManyakRus/starter v1.0.188
+	github.com/ManyakRus/starter v1.0.217
 	github.com/dromara/carbon/v2 v2.6.8
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/jackc/pgx/v5 v5.7.5

@@ -19,17 +19,28 @@ LOKI_URL=
 LOKI_API_PATH=""
 
 
-#LOKI_SEARCH_TEXT - regilar expression, which text need to find in LOKI. Need escape characters, "[" = "\\\\["
-LOKI_SEARCH_TEXT="\\\\[ERROR\\\\]|\\\\[PANIC\\\\]|level=error|level=panic|panic:|(\\\\n|\\\\t|,| )error:"
+#SEARCH_TEXT - regilar expression, which text need to find in LOKI. Need escape characters, "[" = "\\\\["
+SEARCH_TEXT="\\\\[ERROR\\\\]|\\\\[PANIC\\\\]|level=error|level=panic|panic:|(\\\\n|\\\\t|,| )error:"
 
 #LOKI_CHECKER_INTERVAL_MINUTES - interval minutes, for check LOKI log errors
 LOKI_CHECKER_INTERVAL_MINUTES=10
 
-#GRAFANA_LOGIN - login name for Grafana website
-GRAFANA_LOGIN=
+#LOKI_LOGIN - login name for LOKI API website
+LOKI_LOGIN=
 
-#GRAFANA_PASSWORD - password for Grafana website
-GRAFANA_PASSWORD=
+#LOKI_PASSWORD - password for LOKI API website
+LOKI_PASSWORD=
+
+
+#VICTORIA_METRICS_URL - Victoria metrics API URL
+VICTORIA_METRICS_URL=
+
+#VICTORIA_METRICS_LOGIN - Victoria metrics API login
+VICTORIA_METRICS_LOGIN=
+
+#VICTORIA_METRICS_PASSWORD - Victoria metrics API password
+VICTORIA_METRICS_PASSWORD=
+
 
 
 

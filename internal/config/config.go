@@ -13,10 +13,13 @@ var Settings SettingsINI
 
 // SettingsINI - структура для хранения всех нужных переменных окружения
 type SettingsINI struct {
-	GRAFANA_LOGIN                     string
-	GRAFANA_PASSWORD                  string
 	LOKI_URL                          string
-	LOKI_SEARCH_TEXT                  string
+	LOKI_LOGIN                        string
+	LOKI_PASSWORD                     string
+	VICTORIA_METRICS_URL              string
+	VICTORIA_METRICS_LOGIN            string
+	VICTORIA_METRICS_PASSWORD         string
+	SEARCH_TEXT                       string
 	TELEGRAM_CHAT_NAME                string
 	TELEGRAM_MESSAGES_COUNT           int
 	LOKI_CHECKER_INTERVAL_MINUTES     int
@@ -37,8 +40,8 @@ func FillSettings() {
 	Settings = SettingsINI{}
 	Settings.TELEGRAM_CHAT_NAME = os.Getenv("TELEGRAM_CHAT_NAME")
 	Settings.LOKI_URL = os.Getenv("LOKI_URL")
-	Settings.GRAFANA_LOGIN = os.Getenv("GRAFANA_LOGIN")
-	Settings.GRAFANA_PASSWORD = os.Getenv("GRAFANA_PASSWORD")
+	Settings.LOKI_LOGIN = os.Getenv("LOKI_LOGIN")
+	Settings.LOKI_PASSWORD = os.Getenv("LOKI_PASSWORD")
 	Settings.LOKI_CHECKER_INTERVAL_MINUTES, err = strconv.Atoi(os.Getenv("LOKI_CHECKER_INTERVAL_MINUTES"))
 	if err != nil {
 		Settings.LOKI_CHECKER_INTERVAL_MINUTES = 10
@@ -47,11 +50,11 @@ func FillSettings() {
 	if err != nil || Settings.TELEGRAM_MESSAGES_COUNT == 0 {
 		Settings.TELEGRAM_MESSAGES_COUNT = 1
 	}
-	s := os.Getenv("LOKI_SEARCH_TEXT")
-	Settings.LOKI_SEARCH_TEXT = s
-	if Settings.LOKI_SEARCH_TEXT == "" {
-		Settings.LOKI_SEARCH_TEXT = "error:|panic:|ERROR:|PANIC:"
-		//Settings.LOKI_SEARCH_TEXT = "error:%7Cpanic:%7CERROR:%7CPANIC:"
+	s := os.Getenv("SEARCH_TEXT")
+	Settings.SEARCH_TEXT = s
+	if Settings.SEARCH_TEXT == "" {
+		Settings.SEARCH_TEXT = "error:|panic:|ERROR:|PANIC:"
+		//Settings.SEARCH_TEXT = "error:%7Cpanic:%7CERROR:%7CPANIC:"
 	}
 
 	if Settings.TELEGRAM_CHAT_NAME == "" {
@@ -62,12 +65,12 @@ func FillSettings() {
 		log.Panic("Error: Need fill LOKI_URL")
 	}
 
-	if Settings.GRAFANA_LOGIN == "" {
-		log.Panic("Error: Need fill GRAFANA_LOGIN")
+	if Settings.LOKI_LOGIN == "" {
+		log.Panic("Error: Need fill LOKI_LOGIN")
 	}
 
-	if Settings.GRAFANA_PASSWORD == "" {
-		log.Panic("Error: Need fill GRAFANA_PASSWORD")
+	if Settings.LOKI_PASSWORD == "" {
+		log.Panic("Error: Need fill LOKI_PASSWORD")
 	}
 
 	//
@@ -102,6 +105,18 @@ func FillSettings() {
 
 	//
 	Name = "LOKI_API_PATH"
+	microl.Set_FieldFromEnv_String(&Settings, Name, false)
+
+	//
+	Name = "VICTORIA_METRICS_URL"
+	microl.Set_FieldFromEnv_String(&Settings, Name, false)
+
+	//
+	Name = "VICTORIA_METRICS_LOGIN"
+	microl.Set_FieldFromEnv_String(&Settings, Name, false)
+
+	//
+	Name = "VICTORIA_METRICS_PASSWORD"
 	microl.Set_FieldFromEnv_String(&Settings, Name, false)
 
 }
