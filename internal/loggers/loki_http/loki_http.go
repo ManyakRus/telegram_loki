@@ -21,7 +21,7 @@ type LokiAPI_struct struct {
 }
 
 // FindURL - формирует URL для запроса
-func (l LokiAPI_struct) FindURL(ServiceName string, DateFrom, DateTo time.Time, Filter string) string {
+func FindURL(ServiceName string, DateFrom, DateTo time.Time, Filter string) string {
 	Otvet := ""
 
 	slimit := "1000"
@@ -46,7 +46,7 @@ func (l LokiAPI_struct) DownloadLogs(ServiceName string, DateFrom, DateTo time.T
 	Otvet := make([]types.MessageLog, 0)
 	var err error
 
-	MessageLokiFull, err := DownloadLogs_full(l, ServiceName, DateFrom, DateTo)
+	MessageLokiFull, err := DownloadLogs_full(ServiceName, DateFrom, DateTo)
 	if err != nil {
 		err = fmt.Errorf("DownloadLogs_full(), error: %w", err)
 		log.Error(err)
@@ -95,7 +95,7 @@ func (l LokiAPI_struct) DownloadLogs(ServiceName string, DateFrom, DateTo time.T
 }
 
 // DownloadLogs_full - загружает логи с сайта, и возвращает полные логи
-func DownloadLogs_full(LokiAPI LokiAPI_struct, ServiceName string, DateFrom, DateTo time.Time) (types.MessageLoki, error) {
+func DownloadLogs_full(ServiceName string, DateFrom, DateTo time.Time) (types.MessageLoki, error) {
 	Otvet := types.MessageLoki{}
 	var err error
 
@@ -104,7 +104,7 @@ func DownloadLogs_full(LokiAPI LokiAPI_struct, ServiceName string, DateFrom, Dat
 	}
 
 	Filter := config.Settings.SEARCH_TEXT
-	URL := LokiAPI.FindURL(ServiceName, DateFrom, DateTo, Filter)
+	URL := FindURL(ServiceName, DateFrom, DateTo, Filter)
 
 	//запрос http
 	req, err := http.NewRequest(http.MethodGet, URL, http.NoBody)
@@ -128,6 +128,7 @@ func DownloadLogs_full(LokiAPI LokiAPI_struct, ServiceName string, DateFrom, Dat
 		log.Error(err)
 		return Otvet, err
 	}
+	defer response.Body.Close()
 
 	//проверка статуса ответа
 	switch response.StatusCode {
@@ -141,7 +142,6 @@ func DownloadLogs_full(LokiAPI LokiAPI_struct, ServiceName string, DateFrom, Dat
 	}
 
 	//
-	defer response.Body.Close()
 	TextJson, err := io.ReadAll(response.Body)
 	err = json.Unmarshal(TextJson, &Otvet)
 	if err != nil {
@@ -151,4 +151,13 @@ func DownloadLogs_full(LokiAPI LokiAPI_struct, ServiceName string, DateFrom, Dat
 	}
 
 	return Otvet, err
+}
+
+// FindGrafanaURL - находит URL ссылку в LOKI на которую можно кликнуть в телеграмме
+func (l LokiAPI_struct) FindGrafanaURL(ServiceName string, DateFrom, DateTo time.Time) string {
+	sTimeFrom := strconv.FormatInt(DateFrom.UnixMilli(), 10)
+	sTimeTo := strconv.FormatInt(DateTo.UnixMilli(), 10)
+	Otvet := config.Settings.GRAFANA_URL + "/explore?orgId=1&left=%5B%22" + sTimeFrom + "%22,%22" + sTimeTo + "%22,%22Loki%22,%7B%22refId%22:%22A%22,%22expr%22:%22%7Bapp%3D%5C%22" + ServiceName + "%5C%22%7D%22%7D%5D"
+
+	return Otvet
 }

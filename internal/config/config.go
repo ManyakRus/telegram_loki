@@ -29,6 +29,7 @@ type SettingsINI struct {
 	SQL_FILES_FOLDER                  string
 	TELEGRAM_USERS_FILENAME           string
 	LOKI_API_PATH                     string
+	GRAFANA_URL                       string
 }
 
 // FillSettings загружает переменные окружения в структуру из переменных окружения
@@ -117,6 +118,10 @@ func FillSettings() {
 
 	//
 	Name = "VICTORIA_METRICS_PASSWORD"
+	microl.Set_FieldFromEnv_String(&Settings, Name, false)
+
+	//
+	Name = "GRAFANA_URL"
 	microl.Set_FieldFromEnv_String(&Settings, Name, false)
 
 }

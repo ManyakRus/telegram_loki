@@ -41,6 +41,9 @@ VICTORIA_METRICS_LOGIN=
 #VICTORIA_METRICS_PASSWORD - Victoria metrics API password
 VICTORIA_METRICS_PASSWORD=
 
+#GRAFANA_URL - URL сервиса grafana для просмотра логов вручную
+GRAFANA_URL=
+
 
 
 

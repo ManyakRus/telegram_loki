@@ -146,7 +146,7 @@ func Start_period1(LoggerAPI interfaces.ILogger, Message1 *types.Message, DateFr
 	for _, Log1 := range MassMessageLog {
 
 		//
-		URL := LoggerAPI.FindURL(Message1.ServiceName, DateFrom, DateTo)
+		URL := LoggerAPI.FindGrafanaURL(Message1.ServiceName, DateFrom, DateTo)
 
 		TextLog := Log1.Text
 		Date := Log1.Date
