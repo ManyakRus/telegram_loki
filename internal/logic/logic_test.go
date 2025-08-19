@@ -6,7 +6,6 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/config"
 	"github.com/ManyakRus/telegram_loki/internal/constants"
 	"github.com/ManyakRus/telegram_loki/internal/load_json"
-	"github.com/ManyakRus/telegram_loki/internal/logic/loki"
 	"testing"
 	"time"
 )
@@ -24,7 +23,7 @@ func TestStart_period(t *testing.T) {
 
 	ServiceName := "sync-service"
 	DeveloperName := "@ManyakRus"
-	loki.Start_period1(ServiceName, DeveloperName, date1, date2)
+	logic_loggers.Start_period1(ServiceName, DeveloperName, date1, date2)
 }
 
 func TestTime(t *testing.T) {

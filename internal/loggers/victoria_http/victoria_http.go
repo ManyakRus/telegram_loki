@@ -28,7 +28,7 @@ const LayoutDateTimeRus = "02.01.2006T15:04:05"
 func FindURL(ServiceName string, DateFrom, DateTo time.Time, Filter string) string {
 	Otvet := ""
 
-	ServiceName = "monitor-service" //удалить
+	//ServiceName = "monitor-service" //удалить
 
 	sLimit := strconv.Itoa(config.Settings.TELEGRAM_MESSAGES_COUNT)
 	Filter = url.QueryEscape(Filter)
@@ -133,7 +133,7 @@ func DownloadLogs_full(ServiceName string, DateFrom, DateTo time.Time) ([]types.
 		return Otvet, err
 	}
 
-	MassStrings := strings.Split(string(TextJson), "\n")
+	MassStrings := splitJSONStrings(string(TextJson))
 	for _, Line1 := range MassStrings {
 		if Line1 == "" {
 			continue
@@ -159,11 +159,29 @@ func DownloadLogs_full(ServiceName string, DateFrom, DateTo time.Time) ([]types.
 	return Otvet, err
 }
 
-// FindGrafanaURL - находит URL ссылку в LOKI на которую можно кликнуть в телеграмме
-func (v VictoriaAPI_struct) FindGrafanaURL(ServiceName string, DateFrom, DateTo time.Time) string {
-	sTimeFrom := strconv.FormatInt(DateFrom.UnixMilli(), 10)
-	sTimeTo := strconv.FormatInt(DateTo.UnixMilli(), 10)
-	Otvet := config.Settings.GRAFANA_URL + "/explore?orgId=1&left=%5B%22" + sTimeFrom + "%22,%22" + sTimeTo + "%22,%22Loki%22,%7B%22refId%22:%22A%22,%22expr%22:%22%7Bapp%3D%5C%22" + ServiceName + "%5C%22%7D%22%7D%5D"
+//// FindGrafanaURL - находит URL ссылку в LOKI на которую можно кликнуть в телеграмме
+//func (v VictoriaAPI_struct) FindGrafanaURL(ServiceName string, DateFrom, DateTo time.Time) string {
+//	sTimeFrom := strconv.FormatInt(DateFrom.UnixMilli(), 10)
+//	sTimeTo := strconv.FormatInt(DateTo.UnixMilli(), 10)
+//	Otvet := config.Settings.GRAFANA_URL + "/explore?orgId=1&left=%5B%22" + sTimeFrom + "%22,%22" + sTimeTo + "%22,%22Loki%22,%7B%22refId%22:%22A%22,%22expr%22:%22%7Bapp%3D%5C%22" + ServiceName + "%5C%22%7D%22%7D%5D"
+//
+//	return Otvet
+//}
 
-	return Otvet
+// splitJSONStrings - разделяет JSON на отдельные строки
+func splitJSONStrings(input string) []string {
+	// Разделяем строку по "}\n{"
+	parts := strings.Split(input, "}\n{")
+
+	// Восстанавливаем скобки в каждом элементе, кроме первого и последнего
+	for i := range parts {
+		if i > 0 {
+			parts[i] = "{" + parts[i]
+		}
+		if i < len(parts)-1 {
+			parts[i] = parts[i] + "}"
+		}
+	}
+
+	return parts
 }

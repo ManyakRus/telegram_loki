@@ -2,7 +2,7 @@ package logic
 
 import (
 	"github.com/ManyakRus/telegram_loki/internal/config"
-	"github.com/ManyakRus/telegram_loki/internal/logic/loki"
+	"github.com/ManyakRus/telegram_loki/internal/logic/logic_loggers"
 	"github.com/ManyakRus/telegram_loki/internal/logic/sql"
 )
 
@@ -10,7 +10,7 @@ import (
 func Start() {
 	//LOKI
 	if config.Settings.LOKI_CHECKER_ENABLED == true {
-		loki.Start()
+		logic_loggers.Start()
 	}
 
 	//SQL

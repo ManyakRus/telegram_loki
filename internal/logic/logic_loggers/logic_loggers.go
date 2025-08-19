@@ -1,4 +1,4 @@
-package loki
+package logic_loggers
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"github.com/ManyakRus/starter/log"
 	"github.com/ManyakRus/starter/micro"
 	"github.com/ManyakRus/telegram_loki/internal/config"
+	"github.com/ManyakRus/telegram_loki/internal/loggers"
 	"github.com/ManyakRus/telegram_loki/internal/loggers/interfaces"
 	"github.com/ManyakRus/telegram_loki/internal/loggers/loki_http"
 	"github.com/ManyakRus/telegram_loki/internal/loggers/victoria_http"
@@ -147,7 +148,7 @@ func Start_period1(LoggerAPI interfaces.ILogger, Message1 *types.Message, DateFr
 	for _, Log1 := range MassMessageLog {
 
 		//
-		URL := LoggerAPI.FindGrafanaURL(Message1.ServiceName, DateFrom, DateTo)
+		URL := loggers.FindGrafanaURL(Message1.ServiceName, DateFrom, DateTo)
 
 		TextLog := Log1.Text
 		Date := Log1.Date

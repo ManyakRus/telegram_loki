@@ -1,4 +1,4 @@
-package loki
+package logic_loggers
 
 import (
 	"github.com/ManyakRus/starter/config_main"
