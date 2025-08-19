@@ -8,5 +8,5 @@ import (
 // ILogger - интерфейс для разных логгеров
 type ILogger interface {
 	DownloadLogs(ServiceName string, DateFrom, DateTo time.Time) ([]types.MessageLog, error)
-	//FindGrafanaURL(ServiceName string, DateFrom, DateTo time.Time) string
+	FindGrafanaURL(ServiceName string, DateFrom, DateTo time.Time) string
 }
