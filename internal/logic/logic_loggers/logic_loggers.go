@@ -111,7 +111,7 @@ loop_for:
 	LastReadTime = Date2
 
 	if CountText == 0 {
-		log.Debug(`No text "error" found in LOKI`)
+		log.Debug(`No text "error" found in logger`)
 	}
 
 	// если только ошибки - то напишем в телеграм
