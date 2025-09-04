@@ -11,6 +11,7 @@ import (
 	"github.com/ManyakRus/telegram_loki/internal/telegram"
 	"github.com/ManyakRus/telegram_loki/internal/types"
 	"github.com/jackc/pgx/v5"
+	"html"
 	"os"
 	"path"
 	"strings"
@@ -193,6 +194,16 @@ func RunSQL1(Filename string) string {
 	if err != nil {
 		Otvet = fmt.Sprintf("db.QueryRow() Filename: %s, error: %v", FilenameShort, err)
 		log.Error(Otvet)
+
+		//отправим в телеграм
+		TextError := html.EscapeString(err.Error())
+		Message1 := types.Message{}
+		Message1.Text = TextError
+		err = telegram.SendMessage(Message1)
+		if err != nil {
+			log.Error("telegram.SendMessage() error: ", err)
+		}
+
 		return Otvet
 	}
 

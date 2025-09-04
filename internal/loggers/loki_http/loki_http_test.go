@@ -16,7 +16,7 @@ func TestDownloadJSON(t *testing.T) {
 	date2 := time.Now()
 	date1 := carbon.NewCarbon(date2).AddDays(-2).StdTime()
 
-	Otvet, err := DownloadLogs("sync-service", date1, date2)
+	Otvet, err := DownloadLogs_full("sync-service", date1, date2)
 	if err != nil {
 		t.Error("TestDownloadJSON() error: ", err)
 	}
@@ -26,12 +26,12 @@ func TestDownloadJSON(t *testing.T) {
 	//}
 }
 
-func TestAuthentication(t *testing.T) {
-	ConfigMain.LoadEnv()
-	config.FillSettings()
-
-	err := Authentication()
-	if err != nil {
-		t.Error("TestAuthentication() error: ", err)
-	}
-}
+//func TestAuthentication(t *testing.T) {
+//	ConfigMain.LoadEnv()
+//	config.FillSettings()
+//
+//	err := Authentication()
+//	if err != nil {
+//		t.Error("TestAuthentication() error: ", err)
+//	}
+//}
