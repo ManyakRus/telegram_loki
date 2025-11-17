@@ -5,7 +5,7 @@ import (
 )
 
 // Version current version
-const Version = "2.6.7"
+const Version = "2.6.15"
 
 // timezone constants
 const (
@@ -88,6 +88,14 @@ const (
 	December  = time.December
 )
 
+// season constants
+const (
+	Spring = "Spring"
+	Summer = "Summer"
+	Autumn = "Autumn"
+	Winter = "Winter"
+)
+
 // constellation constants
 const (
 	Aries       = "Aries"
@@ -115,14 +123,6 @@ const (
 	Sunday    = time.Sunday
 )
 
-// season constants
-const (
-	Spring = "Spring"
-	Summer = "Summer"
-	Autumn = "Autumn"
-	Winter = "Winter"
-)
-
 // number constants
 const (
 	EpochYear          = 1970
@@ -148,6 +148,28 @@ const (
 	SecondsPerMinute   = 60
 )
 
+// max constants
+const (
+	MaxYear       = 9999
+	MaxMonth      = 12
+	MaxDay        = 31
+	MaxHour       = 23
+	MaxMinute     = 59
+	MaxSecond     = 59
+	MaxNanosecond = 999999999
+)
+
+// min constants
+const (
+	MinYear       = 1
+	MinMonth      = 1
+	MinDay        = 1
+	MinHour       = 0
+	MinMinute     = 0
+	MinSecond     = 0
+	MinNanosecond = 0
+)
+
 // layout constants
 const (
 	AtomLayout     = RFC3339Layout
@@ -158,6 +180,7 @@ const (
 	RubyDateLayout = time.RubyDate
 	UnixDateLayout = time.UnixDate
 	W3cLayout      = RFC3339Layout
+	HttpLayout     = "Mon, 02 Jan 2006 15:04:05 GMT"
 
 	RFC1036Layout      = "Mon, 02 Jan 06 15:04:05 -0700"
 	RFC1123Layout      = time.RFC1123
@@ -228,6 +251,8 @@ const (
 	RssFormat      = "D, d M Y H:i:s O"
 	RubyDateFormat = "D M d H:i:s O Y"
 	UnixDateFormat = "D M  j H:i:s Z Y"
+	W3cFormat      = RFC3339Format
+	HttpFormat     = "D, d M Y H:i:s \\G\\M\\T"
 
 	RFC1036Format      = "D, d M y H:i:s O"
 	RFC1123Format      = "D, d M Y H:i:s Z"

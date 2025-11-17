@@ -7,19 +7,15 @@ import (
 // Now returns a Carbon instance for now.
 func Now(timezone ...string) *Carbon {
 	var (
-		tz  string
 		loc *Location
 		err error
 	)
-	if len(timezone) > 0 {
-		tz = timezone[0]
-	} else {
-		tz = DefaultTimezone
-	}
-	if loc, err = parseTimezone(tz); err != nil {
+	if loc, err = parseTimezone(timezone...); err != nil {
 		return &Carbon{Error: err}
 	}
 	if IsTestNow() {
+		frozenNow.rw.RLock()
+		defer frozenNow.rw.RUnlock()
 		return frozenNow.testNow.Copy().SetLocation(loc)
 	}
 	return CreateFromStdTime(time.Now().In(loc))
@@ -56,13 +52,27 @@ func (c *Carbon) AddDuration(duration string) *Carbon {
 		c.Error = err
 		return c
 	}
-	c.time = c.StdTime().Add(td)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().Add(td)
+	return result
 }
 
 // SubDuration subtracts duration.
 func (c *Carbon) SubDuration(duration string) *Carbon {
-	return c.AddDuration("-" + duration)
+	if c.IsInvalid() {
+		return c
+	}
+	var (
+		td  Duration
+		err error
+	)
+	if td, err = parseDuration(duration); err != nil {
+		c.Error = err
+		return c
+	}
+	result := c.Copy()
+	result.time = c.StdTime().Add(-td)
+	return result
 }
 
 // AddCenturies adds some centuries.
@@ -150,8 +160,9 @@ func (c *Carbon) AddYears(years int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().AddDate(years, 0, 0)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().AddDate(years, 0, 0)
+	return result
 }
 
 // AddYearsNoOverflow adds some years without overflowing month.
@@ -159,15 +170,16 @@ func (c *Carbon) AddYearsNoOverflow(years int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	nanosecond := c.Nanosecond()
-	year, month, day, hour, minute, second := c.DateTime()
+	result := c.Copy()
+	nanosecond := result.Nanosecond()
+	year, month, day, hour, minute, second := result.DateTime()
 	// get the last day of this month after some years
 	lastYear, lastMonth, lastDay := time.Date(year+years, time.Month(month+1), 0, hour, minute, second, nanosecond, c.loc).Date()
 	if day > lastDay {
 		day = lastDay
 	}
-	c.time = time.Date(lastYear, lastMonth, day, hour, minute, second, nanosecond, c.loc)
-	return c
+	result.time = time.Date(lastYear, lastMonth, day, hour, minute, second, nanosecond, c.loc)
+	return result
 }
 
 // AddYear adds one year.
@@ -230,7 +242,7 @@ func (c *Carbon) SubQuarters(quarters int) *Carbon {
 
 // SubQuartersNoOverflow subtracts some quarters without overflowing month.
 func (c *Carbon) SubQuartersNoOverflow(quarters int) *Carbon {
-	return c.AddMonthsNoOverflow(-quarters * MonthsPerQuarter)
+	return c.AddQuartersNoOverflow(-quarters)
 }
 
 // SubQuarter subtracts one quarter.
@@ -248,8 +260,9 @@ func (c *Carbon) AddMonths(months int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().AddDate(0, months, 0)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().AddDate(0, months, 0)
+	return result
 }
 
 // AddMonthsNoOverflow adds some months without overflowing month.
@@ -257,15 +270,16 @@ func (c *Carbon) AddMonthsNoOverflow(months int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	nanosecond := c.Nanosecond()
-	year, month, day, hour, minute, second := c.DateTime()
+	result := c.Copy()
+	nanosecond := result.Nanosecond()
+	year, month, day, hour, minute, second := result.DateTime()
 	// get the last day of this month after some months
 	lastYear, lastMonth, lastDay := time.Date(year, time.Month(month+months+1), 0, hour, minute, second, nanosecond, c.loc).Date()
 	if day > lastDay {
 		day = lastDay
 	}
-	c.time = time.Date(lastYear, lastMonth, day, hour, minute, second, nanosecond, c.loc)
-	return c
+	result.time = time.Date(lastYear, lastMonth, day, hour, minute, second, nanosecond, c.loc)
+	return result
 }
 
 // AddMonth adds one month.
@@ -323,8 +337,9 @@ func (c *Carbon) AddDays(days int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().AddDate(0, 0, days)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().AddDate(0, 0, days)
+	return result
 }
 
 // AddDay adds one day.
@@ -347,8 +362,9 @@ func (c *Carbon) AddHours(hours int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().Add(Duration(hours) * time.Hour)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().Add(Duration(hours) * time.Hour)
+	return result
 }
 
 // AddHour adds one hour.
@@ -371,8 +387,9 @@ func (c *Carbon) AddMinutes(minutes int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().Add(Duration(minutes) * time.Minute)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().Add(Duration(minutes) * time.Minute)
+	return result
 }
 
 // AddMinute adds one minute.
@@ -395,8 +412,9 @@ func (c *Carbon) AddSeconds(seconds int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().Add(Duration(seconds) * time.Second)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().Add(Duration(seconds) * time.Second)
+	return result
 }
 
 // AddSecond adds one second.
@@ -419,8 +437,9 @@ func (c *Carbon) AddMilliseconds(milliseconds int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().Add(Duration(milliseconds) * time.Millisecond)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().Add(Duration(milliseconds) * time.Millisecond)
+	return result
 }
 
 // AddMillisecond adds one millisecond.
@@ -443,8 +462,9 @@ func (c *Carbon) AddMicroseconds(microseconds int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().Add(Duration(microseconds) * time.Microsecond)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().Add(Duration(microseconds) * time.Microsecond)
+	return result
 }
 
 // AddMicrosecond adds one microsecond.
@@ -467,8 +487,9 @@ func (c *Carbon) AddNanoseconds(nanoseconds int) *Carbon {
 	if c.IsInvalid() {
 		return c
 	}
-	c.time = c.StdTime().Add(Duration(nanoseconds) * time.Nanosecond)
-	return c
+	result := c.Copy()
+	result.time = c.StdTime().Add(Duration(nanoseconds) * time.Nanosecond)
+	return result
 }
 
 // AddNanosecond adds one nanosecond.

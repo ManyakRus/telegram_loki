@@ -1,18 +1,21 @@
-# Carbon
+<p align="center" style="margin-bottom: -10px"><a href="https://carbon.go-pkg.com/zh" target="_blank"><img src="https://carbon.go-pkg.com/logo.svg?v=2.6.x" width="15%" alt="carbon" /></a></p>
 
 [![Carbon Release](https://img.shields.io/github/release/dromara/carbon.svg)](https://github.com/dromara/carbon/releases)
 [![Go Test](https://github.com/dromara/carbon/actions/workflows/test.yml/badge.svg)](https://github.com/dromara/carbon/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dromara/carbon/v2)](https://goreportcard.com/report/github.com/dromara/carbon/v2)
 [![Go Coverage](https://codecov.io/gh/dromara/carbon/branch/master/graph/badge.svg)](https://codecov.io/gh/dromara/carbon)
 [![Carbon Doc](https://img.shields.io/badge/go.dev-reference-brightgreen?logo=go&logoColor=white&style=flat)](https://pkg.go.dev/github.com/dromara/carbon/v2)
-<a href="https://hellogithub.com/en/repository/dromara/carbon" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=0eddd8c3469549b7b246f85a83d1c42e&claim_uid=kKBvMpyxSgLhmJO&theme=small" alt="Featured｜HelloGitHub" /></a>
+[![Awesome](https://awesome.re/badge-flat2.svg)](https://github.com/avelino/awesome-go#date-and-time)
+[![HelloGitHub](https://api.hellogithub.com/v1/widgets/recommend.svg?rid=0eddd8c3469549b7b246f85a83d1c42e&claim_uid=kKBvMpyxSgLhmJO&theme=small)](https://hellogithub.com/en/repository/dromara/carbon)
 [![License](https://img.shields.io/github/license/dromara/carbon)](https://github.com/dromara/carbon/blob/master/LICENSE)
 
-English | [简体中文](README.cn.md) | [日本語](README.jp.md)
+English | [简体中文](README.cn.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
 ## Introduction
 
-A simple, semantic and developer-friendly time package for `golang`, `100%` unit test coverage, doesn't depend on `any` third-party package and has been included by [awesome-go](https://github.com/avelino/awesome-go#date-and-time "awesome-go") and [hello-github](https://hellogithub.com/en/repository/dromara/carbon "hello-github")
+`Carbon` is a lightweight, semantic, and developer-friendly `golang` time package that doesn't depend on `any` third-party package, has `100%` unit test coverage, and has been used by [docker](https://github.com/docker/docker-language-server/blob/main/go.mod#L10 "docker") organization as well as included by [awesome-go](https://github.com/yinggaozhen/awesome-go-cn#日期和时间 "awesome-go-cn") and [hello-github](https://hellogithub.com/repository/dromara/carbon "hello-github").
+
+<a href="https://github.com/docker/docker-language-server/blob/main/go.mod#L10" target="_blank"><img src="https://carbon.go-pkg.com/docker.jpg" width="100%" alt="docker"/></a>
 
 ## Repository
 
@@ -25,20 +28,20 @@ A simple, semantic and developer-friendly time package for `golang`, `100%` unit
 ## Quick Start
 
 ### Installation
-> go version >= 1.21
+> go version >= 1.19
 
 ```go
-// By github
+// Via github
 go get -u github.com/dromara/carbon/v2
 import "github.com/dromara/carbon/v2"
 
-// By gitee
+// Via gitee
 go get -u gitee.com/dromara/carbon/v2
 import "gitee.com/dromara/carbon/v2"
 
-// By gitcode
+// Via gitcode
 go get -u gitcode.com/dromara/carbon/v2
-import "gitee.com/dromara/gitcode/v2"
+import "gitcode.com/dromara/gitcode/v2"
 ```
 
 `Carbon` was donated to the [dromara](https://dromara.org/ "dromara") organization, the repository URL has changed. If
@@ -79,9 +82,9 @@ carbon.ClearTestNow()
 carbon.IsTestNow() // false
 ```
 
-## Documentation
+For more usage examples, please refer to <a href="https://carbon.go-pkg.com" target="_blank">official document</a>. 
 
-For full documentation, please visit [carbon.go-pkg.com](https://carbon.go-pkg.com)
+For performance test reports, please refer to [benchmark report](docs/BENCHMARK.en.md)
 
 ## References
 
@@ -99,16 +102,21 @@ Thanks to all the following who contributed to `Carbon`:
 
 <a href="https://github.com/dromara/carbon/graphs/contributors"><img src="https://contrib.rocks/image?repo=dromara/carbon&max=100&columns=16" /></a>
 
+## Translators
+Ask for help to translate `Carbon` in other localized languages
+
+[How to add new localized language support to carbon](https://carbon.go-pkg.com/appendix/contribution-guide.html)
+
 ## Sponsors
 
-`Carbon` is a non-commercial open source project. If you want to support `Carbon`, you can [buy a cup of coffee](https://opencollective.com/go-carbon) for developer.
+`Carbon` is a non-commercial open source project. If you want to support `Carbon`, you can [buy a cup of coffee](https://carbon.go-pkg.com/sponsor.html) for developer.
 
 ## Thanks
 
 `Carbon` had been being developed with GoLand under the free JetBrains Open Source license, I would like to express my
 thanks here.
 
-<a href="https://www.jetbrains.com"><img src="https://foruda.gitee.com/images/1704325523163241662/1bf21f86_544375.png" height="100" alt="JetBrains"/></a>
+<a href="https://www.jetbrains.com" target="_blank"><img src="https://carbon.go-pkg.com/jetbrains.svg?v=2.6.x" height="50" alt="JetBrains"/></a>
 
 ## License
 

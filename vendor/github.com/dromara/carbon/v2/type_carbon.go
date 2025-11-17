@@ -55,6 +55,7 @@ func (c Carbon) MarshalJSON() ([]byte, error) {
 func (c *Carbon) UnmarshalJSON(src []byte) error {
 	v := string(bytes.Trim(src, `"`))
 	if v == "" || v == "null" {
+		c.isEmpty = true
 		return nil
 	}
 	*c = *ParseByLayout(v, DefaultLayout)
@@ -67,9 +68,4 @@ func (c *Carbon) String() string {
 		return ""
 	}
 	return c.Layout(c.currentLayout)
-}
-
-// GormDataType implements "gorm.GormDataTypeInterface" interface for Carbon struct.
-func (c *Carbon) GormDataType() string {
-	return "datetime"
 }

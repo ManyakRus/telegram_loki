@@ -1,3 +1,4 @@
+// копия "golang.org/x/exp/constraints"
 // модуль с вспомогательными небольшими функциями
 
 package micro
@@ -5,13 +6,14 @@ package micro
 import (
 	"bytes"
 	"context"
+	"encoding/csv"
 	"encoding/gob"
 	"errors"
 	"fmt"
 	"github.com/ManyakRus/starter/constants_starter"
+	"github.com/ManyakRus/starter/constraints"
 	"github.com/dromara/carbon/v2"
 	"github.com/google/uuid"
-	"golang.org/x/exp/constraints"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"hash/fnv"
 	"math"
@@ -804,7 +806,7 @@ func SaveTempFile_err(bytes []byte) (string, error) {
 // Hash - возвращает число хэш из строки
 func Hash(s string) uint32 {
 	h := fnv.New32a()
-	h.Write([]byte(s))
+	_, _ = h.Write([]byte(s))
 	return h.Sum32()
 }
 
@@ -1047,6 +1049,51 @@ func StringFromFloat32_Dimension(f float32, Dimension int) string {
 	return Otvet
 }
 
+// StringFromFloat64_DimensionFrom2To5 - форматирования float64 в строку
+// чтоб там было после запятой:
+// 1) не менее 2 знака
+// 2) не более 5 знаков если они не 0
+func StringFromFloat64_DimensionFrom2To5(f float64) string {
+	// Форматируем с 5 знаками после запятой
+	str := fmt.Sprintf("%.5f", f)
+
+	// Разделяем целую и дробную части
+	parts := strings.Split(str, ".")
+	if len(parts) != 2 {
+		return str
+	}
+
+	integerPart := parts[0]
+	fractionalPart := parts[1]
+
+	// Убираем лишние нули в конце, но оставляем минимум 2 знака
+	// Находим позицию последнего ненулевого символа
+	lastNonZero := -1
+	for i := len(fractionalPart) - 1; i >= 0; i-- {
+		if fractionalPart[i] != '0' {
+			lastNonZero = i
+			break
+		}
+	}
+
+	// Определяем сколько знаков оставить
+	digitsToKeep := 2 // минимум 2 знака
+	if lastNonZero >= 0 {
+		digitsToKeep = max(digitsToKeep, lastNonZero+1)
+	}
+
+	// Ограничиваем максимум 5 знаками
+	digitsToKeep = min(digitsToKeep, 5)
+
+	// Формируем результат
+	result := integerPart
+	if digitsToKeep > 0 {
+		result += "." + fractionalPart[:digitsToKeep]
+	}
+
+	return result
+}
+
 // ShowTimePassed - показывает время прошедшее с момента старта
 // запускать:
 // defer micro.ShowTimePassed(time.Now())
@@ -1101,6 +1148,7 @@ func StringIdentifierFromUUID() string {
 }
 
 // IndexSubstringMin - возвращает индекс первого вхождения в строке
+// или -1
 func IndexSubstringMin(s string, MassSubstr ...string) int {
 	Otvet := -1
 
@@ -2086,4 +2134,154 @@ func ReadFile_Linux_Windows(Filename string) ([]byte, error) {
 	}
 
 	return MassBytes, err
+}
+
+// IsTimeAfter проверяет, что TimeForCheck > TimeFrom (только время, без даты)
+func IsTimeAfter(TimeForCheck, TimeFrom time.Time) bool {
+	checkTime := TimeForCheck.Hour()*3600 + TimeForCheck.Minute()*60 + TimeForCheck.Second()
+	fromTime := TimeFrom.Hour()*3600 + TimeFrom.Minute()*60 + TimeFrom.Second()
+	return checkTime > fromTime
+}
+
+// IsTimeBefore проверяет, что TimeForCheck < TimeFrom (только время, без даты)
+func IsTimeBefore(TimeForCheck, TimeFrom time.Time) bool {
+	checkTime := TimeForCheck.Hour()*3600 + TimeForCheck.Minute()*60 + TimeForCheck.Second()
+	fromTime := TimeFrom.Hour()*3600 + TimeFrom.Minute()*60 + TimeFrom.Second()
+	return checkTime < fromTime
+}
+
+// IsTimeNowAfter проверяет, что время сейчас > TimeFrom (только время, без даты)
+func IsTimeNowAfter(TimeFrom time.Time) bool {
+	TimeForCheck := time.Now()
+	Otvet := IsTimeAfter(TimeForCheck, TimeFrom)
+	return Otvet
+}
+
+// IsTimeNowBefore проверяет, что время сейчас < TimeFrom (только время, без даты)
+func IsTimeNowBefore(TimeFrom time.Time) bool {
+	TimeForCheck := time.Now()
+	Otvet := IsTimeBefore(TimeForCheck, TimeFrom)
+	return Otvet
+}
+
+// MassFromCSV - разбивает строку в формате .csv на массив строк
+func MassFromCSV(s string) []string {
+	// Создаем CSV reader
+	reader := csv.NewReader(strings.NewReader(s))
+
+	// Настраиваем параметры парсинга
+	reader.Comma = ','             // разделитель - запятая
+	reader.TrimLeadingSpace = true // обрезать пробелы в начале значений
+	reader.LazyQuotes = true       // разрешить нестандартное использование кавычек
+
+	// Читаем все записи
+	records, err := reader.ReadAll()
+	if err != nil {
+		// В случае ошибки пытаемся прочитать хотя бы одну запись
+		if singleRecord, err := reader.Read(); err == nil {
+			return singleRecord
+		}
+		// Если совсем не получается, возвращаем пустой массив
+		return []string{}
+	}
+
+	// Преобразуем двумерный массив в одномерный
+	if len(records) == 0 {
+		return []string{}
+	}
+
+	// Обычно в CSV одна строка, но на всякий случай объединяем все
+	var result []string
+	for _, row := range records {
+		result = append(result, row...)
+	}
+
+	return result
+}
+
+// CSVFromMass конвертирует слайс строк в CSV строку
+func CSVFromMass(input []string) string {
+	Otvet := CSVFromStrings(input...)
+	return Otvet
+}
+
+// CSVFromStrings конвертирует бесконечное количество строк в CSV формат
+// все строки экранирует ""
+func CSVFromStrings(texts ...string) string {
+	if len(texts) == 0 {
+		return ""
+	}
+
+	var sb strings.Builder
+
+	for i, texts1 := range texts {
+		if i > 0 {
+			sb.WriteString(",")
+		}
+		// Экранируем кавычки и обрамляем в кавычки
+		escaped := strings.ReplaceAll(texts1, `"`, `""`)
+		pos := IndexSubstringMin(escaped, ",", `"`, "\n", "\r")
+		if escaped != "" && pos != -1 {
+			sb.WriteString(`"`)
+		}
+		sb.WriteString(escaped)
+		if escaped != "" && pos != -1 {
+			sb.WriteString(`"`)
+		}
+	}
+
+	return sb.String()
+}
+
+// FirstSymbol - возвращает первый символ строки, или пустую строку
+func FirstSymbol(s string) string {
+	runes := []rune(s)
+	if len(runes) == 0 {
+		return ""
+	}
+	return string(runes[0])
+}
+
+// LastSymbol - возвращает последний символ строки, или пустую строку
+func LastSymbol(s string) string {
+	// Преобразуем строку в срез рун для корректной работы с Unicode
+	runes := []rune(s)
+
+	// Проверяем, что строка не пустая
+	if len(runes) == 0 {
+		return ""
+	}
+
+	// Возвращаем последнюю руну как строку
+	return string(runes[len(runes)-1])
+}
+
+// TextDaFromBool - возвращает текст Да/Нет
+func TextDaFromBool(b bool) string {
+	if b == true {
+		return "Да"
+	} else {
+		return "Нет"
+	}
+}
+
+// TextYesFromBool - возвращает текст Yes/No
+func TextYesFromBool(b bool) string {
+	if b == true {
+		return "Yes"
+	} else {
+		return "No"
+	}
+}
+
+// IsToday - возвращает true если дата = сегодня
+func IsToday(Date1 time.Time) bool {
+	Otvet := false
+
+	DateToday := time.Now()
+	if Date1.Year() == DateToday.Year() && Date1.Month() == DateToday.Month() && Date1.Day() == DateToday.Day() {
+		Otvet = true
+	}
+
+	return Otvet
 }

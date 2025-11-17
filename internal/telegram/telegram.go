@@ -57,6 +57,7 @@ func SendMessage(Message1 types.Message) error {
 	}
 
 	Text = TextServiceName + " " + DeveloperName + " " + TextDate + "\n" + Text
+	Text = micro.SubstringLeft(Text, 4096)
 
 	//отправка в общую группу
 	if config.Settings.TELEGRAM_CHAT_NAME != "" {

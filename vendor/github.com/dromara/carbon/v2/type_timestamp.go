@@ -90,8 +90,8 @@ func (t *TimestampType[T]) UnmarshalJSON(src []byte) error {
 		ts  int64
 		err error
 	)
-	if ts, err = parseTimestamp(v); err != nil {
-		return err
+	if ts, err = strconv.ParseInt(v, 10, 64); err != nil {
+		return ErrInvalidTimestamp(v)
 	}
 	var c *Carbon
 	switch t.getPrecision() {
@@ -132,20 +132,6 @@ func (t *TimestampType[T]) Int64() (ts int64) {
 		ts = t.TimestampNano()
 	}
 	return
-}
-
-// GormDataType implements "gorm.GormDataTypeInterface" interface for TimestampType generic struct.
-func (t *TimestampType[T]) GormDataType() string {
-	return t.getDataType()
-}
-
-// getDataType returns data type of TimestampType generic struct.
-func (t *TimestampType[T]) getDataType() string {
-	var typer T
-	if v, ok := any(typer).(DataTyper); ok {
-		return v.DataType()
-	}
-	return "timestamp"
 }
 
 // getPrecision returns precision of TimestampType generic struct.
