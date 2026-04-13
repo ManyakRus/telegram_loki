@@ -45,7 +45,7 @@ func Start() {
 	//
 	Date2 := time.Now()
 	Date1 := carbon.CreateFromStdTime(Date2).AddMinutes(-1 * config.Settings.LOKI_CHECKER_INTERVAL_MINUTES).StdTime()
-	go Start_period(LoggerAPI, Date1, Date2)
+	Start_period(LoggerAPI, Date1, Date2)
 
 	Ticker = time.NewTicker(time.Duration(config.Settings.LOKI_CHECKER_INTERVAL_MINUTES) * time.Minute)
 	//defer Ticker.Stop()
@@ -117,7 +117,7 @@ loop_for:
 	// если только ошибки - то напишем в телеграм
 	if IsOnlyErrors == true {
 		TextError := fmt.Sprint("Search errors: only errors. Last error: ", err1)
-		log.Debug(TextError)
+		log.Info(TextError)
 		Message1 := types.Message{}
 		Message1.Text = TextError
 		err = telegram.SendMessage(Message1)
@@ -166,6 +166,9 @@ func Start_period1(LoggerAPI interfaces.ILogger, Message1 *types.Message, DateFr
 
 		//запомним последнюю ошибку
 		MapLastErrors[Message1.ServiceName] = TextLog
+
+		//
+		log.Info(TextLog)
 
 		//
 		//Text = TextServiceName + " " + TextDate + DeveloperName + "\n" + TextLog

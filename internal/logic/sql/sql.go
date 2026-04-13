@@ -122,6 +122,9 @@ func RunSQL_all() {
 
 			//отправим в телеграм
 			if Otvet.Text != "" {
+				//
+				log.Info(Otvet.Text)
+
 				err = telegram.SendMessage(Otvet)
 				if err != nil {
 					log.Error("SendMessage() error: ", err)
@@ -193,7 +196,7 @@ func RunSQL1(Filename string) string {
 	//ошибки не должно быть
 	if err != nil {
 		Otvet = fmt.Sprintf("db.QueryRow() Filename: %s, error: %v", FilenameShort, err)
-		log.Error(Otvet)
+		log.Info(Otvet)
 
 		//отправим в телеграм
 		TextError := html.EscapeString(err.Error())
