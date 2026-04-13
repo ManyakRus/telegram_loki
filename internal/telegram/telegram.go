@@ -20,6 +20,10 @@ import (
 func SendMessage(Message1 types.Message) error {
 	var err error
 
+	if telegram_bot.Client == nil {
+		return err
+	}
+
 	//проверка отмены контекста
 	err1 := contextmain.GetContext().Err()
 	if err1 != nil {
@@ -115,6 +119,10 @@ func SendMessage(Message1 types.Message) error {
 
 // StartReadMessages - запускает чтение сообщений из Телеграм
 func StartReadMessages() {
+	if telegram_bot.Client == nil {
+		return
+	}
+
 	stopapp.GetWaitGroup_Main().Add(1)
 	go StartReadMessages_go()
 }
@@ -122,6 +130,10 @@ func StartReadMessages() {
 // StartReadMessages_go - запускает чтение сообщений из Телеграм, внутри горутины
 func StartReadMessages_go() {
 	defer stopapp.GetWaitGroup_Main().Done()
+
+	if telegram_bot.Client == nil {
+		return
+	}
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -145,6 +157,10 @@ func StartReadMessages_go() {
 
 // AddMapTelegramUsers - добавляет пользователя в map
 func AddMapTelegramUsers(Name string, ChatID int64) {
+
+	if telegram_bot.Client == nil {
+		return
+	}
 
 	_, ok := types.MapTelegramUsers[Name]
 	if ok == false {

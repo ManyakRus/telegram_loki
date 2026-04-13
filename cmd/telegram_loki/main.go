@@ -35,7 +35,12 @@ func StartApp() {
 
 	//telegram_client.Connect(nil)
 
-	telegram_bot.Start()
+	//telegram_bot.Start()
+	err := telegram_bot.Connect_err()
+	if err != nil {
+		log.Errorf("telegram_bot.Connect_err() error: %v", err)
+	}
+	defer telegram_bot.CloseConnection()
 
 	telegram.StartReadMessages()
 
