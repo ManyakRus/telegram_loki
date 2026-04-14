@@ -66,7 +66,7 @@ func RunSQL_all() {
 	Files, err := os.ReadDir(DirFilename)
 	if err != nil {
 		err = fmt.Errorf("os.ReadDir() error: %w", err)
-		log.Error(err)
+		//log.Error(err)
 		Otvet.Text = err.Error()
 
 		//отправим в телеграм
@@ -123,7 +123,7 @@ func RunSQL_all() {
 			//отправим в телеграм
 			if Otvet.Text != "" {
 				//
-				log.Info(Otvet.Text)
+				//log.Info(Otvet.Text)
 
 				err = telegram.SendMessage(Otvet)
 				if err != nil {
@@ -196,7 +196,7 @@ func RunSQL1(Filename string) string {
 	//ошибки не должно быть
 	if err != nil {
 		Otvet = fmt.Sprintf("db.QueryRow() Filename: %s, error: %v", FilenameShort, err)
-		log.Info(Otvet)
+		//log.Info(Otvet)
 
 		//отправим в телеграм
 		TextError := html.EscapeString(err.Error())

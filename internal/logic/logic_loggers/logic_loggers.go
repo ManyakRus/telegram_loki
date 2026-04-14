@@ -117,7 +117,7 @@ loop_for:
 	// если только ошибки - то напишем в телеграм
 	if IsOnlyErrors == true {
 		TextError := fmt.Sprint("Search errors: only errors. Last error: ", err1)
-		log.Info(TextError)
+		//log.Info(TextError)
 		Message1 := types.Message{}
 		Message1.Text = TextError
 		err = telegram.SendMessage(Message1)
@@ -168,7 +168,7 @@ func Start_period1(LoggerAPI interfaces.ILogger, Message1 *types.Message, DateFr
 		MapLastErrors[Message1.ServiceName] = TextLog
 
 		//
-		log.Info(TextLog)
+		//log.Info(TextLog)
 
 		//
 		//Text = TextServiceName + " " + TextDate + DeveloperName + "\n" + TextLog

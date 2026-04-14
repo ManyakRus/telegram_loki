@@ -20,10 +20,6 @@ import (
 func SendMessage(Message1 types.Message) error {
 	var err error
 
-	if telegram_bot.Client == nil {
-		return err
-	}
-
 	//проверка отмены контекста
 	err1 := contextmain.GetContext().Err()
 	if err1 != nil {
@@ -63,15 +59,6 @@ func SendMessage(Message1 types.Message) error {
 	Text = TextServiceName + " " + DeveloperName + " " + TextDate + "\n" + Text
 	Text = micro.SubstringLeft(Text, 4096)
 
-	//отправка в общую группу
-	if config.Settings.TELEGRAM_CHAT_NAME != "" {
-		_, err = telegram_bot.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, Text)
-		if err != nil {
-			log.Error("SendMessage() error: ", err)
-			return err
-		}
-	}
-
 	//отправка каждому программисту
 	if ChatName == "" {
 		return err
@@ -89,7 +76,24 @@ func SendMessage(Message1 types.Message) error {
 		Text = TextServiceName + "\n" + Text
 	}
 
-	//
+	//напишем текст в лог
+	log.Info(Text)
+
+	//если нет телеграмма
+	if telegram_bot.Client == nil {
+		return err
+	}
+
+	//отправка в общую группу
+	if config.Settings.TELEGRAM_CHAT_NAME != "" {
+		_, err = telegram_bot.SendMessage(config.Settings.TELEGRAM_CHAT_NAME, Text)
+		if err != nil {
+			log.Error("SendMessage() error: ", err)
+			return err
+		}
+	}
+
+	//отправка каждому программисту
 	MassChatNames := strings.Split(ChatName, ",")
 	for _, ChatName1 := range MassChatNames {
 		//проверка отмены контекста
