@@ -202,6 +202,7 @@ func RunSQL1(Filename string) string {
 		TextError := html.EscapeString(err.Error())
 		Message1 := types.Message{}
 		Message1.Text = TextError
+		Message1.DeveloperName = config.Settings.TELEGRAM_MY_LOGIN
 		err = telegram.SendMessage(Message1)
 		if err != nil {
 			log.Error("telegram.SendMessage() error: ", err)
