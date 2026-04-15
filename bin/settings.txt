@@ -83,3 +83,5 @@ DB_USER=
 DB_PASSWORD=
 
 
+#TELEGRAM_MY_LOGIN - мой логин в телеграм, чтоб в консоли выводить Warn вместо Info (@MyLogin)
+TELEGRAM_MY_LOGIN=

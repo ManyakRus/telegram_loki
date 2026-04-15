@@ -30,6 +30,7 @@ type SettingsINI struct {
 	TELEGRAM_USERS_FILENAME           string
 	LOKI_API_PATH                     string
 	GRAFANA_URL                       string
+	TELEGRAM_MY_LOGIN                 string
 }
 
 // FillSettings загружает переменные окружения в структуру из переменных окружения
@@ -122,6 +123,10 @@ func FillSettings() {
 
 	//
 	Name = "GRAFANA_URL"
+	microl.Set_FieldFromEnv_String(&Settings, Name, false)
+
+	//
+	Name = "TELEGRAM_MY_LOGIN"
 	microl.Set_FieldFromEnv_String(&Settings, Name, false)
 
 }

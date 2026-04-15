@@ -77,7 +77,14 @@ func SendMessage(Message1 types.Message) error {
 	}
 
 	//напишем текст в лог
-	log.Info(Text)
+	MassChatNames := strings.Split(ChatName, ",")
+	if IsSliceContainsString_CaseInsensitive(MassChatNames, config.Settings.TELEGRAM_MY_LOGIN) == true {
+		//себе пишем Warn
+		log.Warn(Text)
+	} else {
+		//остальные ошибки Info
+		log.Info(Text)
+	}
 
 	//если нет телеграмма
 	if telegram_bot.Client == nil {
@@ -94,7 +101,6 @@ func SendMessage(Message1 types.Message) error {
 	}
 
 	//отправка каждому программисту
-	MassChatNames := strings.Split(ChatName, ",")
 	for _, ChatName1 := range MassChatNames {
 		//проверка отмены контекста
 		err1 := contextmain.GetContext().Err()
@@ -174,4 +180,24 @@ func AddMapTelegramUsers(Name string, ChatID int64) {
 		//
 		load_json.SaveMapTelegramUsers()
 	}
+}
+
+// IsSliceContainsString - возвращает true если слайс строк содержит нужную строку
+func IsSliceContainsString(slice []string, target string) bool {
+	for _, item := range slice {
+		if item == target {
+			return true
+		}
+	}
+	return false
+}
+
+// IsSliceContainsString_CaseInsensitive - возвращает true если слайс строк содержит нужную строку, проверка без учёта регистра символов
+func IsSliceContainsString_CaseInsensitive(slice []string, target string) bool {
+	for _, item := range slice {
+		if strings.ToLower(item) == strings.ToLower(target) {
+			return true
+		}
+	}
+	return false
 }
